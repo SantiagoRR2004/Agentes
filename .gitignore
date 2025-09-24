@@ -1,5 +1,9 @@
 .venv/
 
+# The Jason binary
+jason-bin-*.zip
+jason-bin-*/
+
 # Created by Jason
 .gradle/
 build/
