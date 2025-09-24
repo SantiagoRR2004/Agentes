@@ -24,17 +24,31 @@ FILENAME=$(basename "$ASSET_URL")
 # Strip .zip to get folder name
 FOLDER_NAME="${FILENAME%.zip}"
 
-# Download the asset
-echo "Downloading $FILENAME..."
+# Check if zip file already exists
+if [ -f "$FILENAME" ]; then
+  echo "Found existing $FILENAME, skipping download."
+
+else
+  # Download the asset
+  echo "Downloading $FILENAME..."
 curl -L -o "$FILENAME" "$ASSET_URL"
 
 echo "Download complete."
+fi
 
-# Create target extraction directory
-mkdir -p "$FOLDER_NAME"
+# Check if the extracted folder already exists and is not empty
+if [ -d "$FOLDER_NAME" ] && [ "$(ls -A "$FOLDER_NAME" 2>/dev/null)" ]; then
+  echo "Jason is already extracted in directory: $FOLDER_NAME"
+  echo "Skipping extraction."
+  exit 0
 
-# Extract into that folder
-echo "Extracting $FILENAME to ./$FOLDER_NAME..."
-unzip "$FILENAME" -d "$FOLDER_NAME"
+else
+  # Create target extraction directory
+  mkdir -p "$FOLDER_NAME"
 
-echo "Extraction complete. Extracted to: $FOLDER_NAME"
+  # Extract into that folder
+  echo "Extracting $FILENAME to ./$FOLDER_NAME..."
+  unzip "$FILENAME" -d "$FOLDER_NAME"
+
+  echo "Extraction complete. Extracted to: $FOLDER_NAME"
+fi
