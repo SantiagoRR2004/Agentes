@@ -22,5 +22,23 @@
       },
       "problemMatcher": []
     },
+    {
+      "label": "Install JaCaMo4Code Extension",
+      "type": "shell",
+      "command": "code --install-extension tabajara-krausburg.jacamo4code",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "silent",
+        "focus": false,
+        "panel": "new"
+      },
+      "runOptions": {
+        "runOn": "folderOpen" // Run this task when the folder is opened
+      },
+      "problemMatcher": []
+    }
   ]
 }
