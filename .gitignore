@@ -1,1 +1,6 @@
 .venv/
+
+# Created by Jason
+.gradle/
+build/
+*.gradle
