@@ -1,3 +1,7 @@
 {
-  "python.terminal.activateEnvironment": true
+  "python.terminal.activateEnvironment": true,
+  "code-runner.executorMapByFileExtension": {
+    ".mas2j": "./runJason.sh"
+  },
+  "code-runner.fileDirectoryAsCwd": false
 }
