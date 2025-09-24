@@ -23,9 +23,45 @@
       "problemMatcher": []
     },
     {
+      "label": "Download Jason",
+      "type": "shell",
+      "command": "./downloadJason.sh",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "focus": true,
+        "panel": "new"
+      },
+      "runOptions": {
+        "runOn": "folderOpen" // Run this task when the folder is opened
+      },
+      "problemMatcher": []
+    },
+    {
       "label": "Install JaCaMo4Code Extension",
       "type": "shell",
       "command": "code --install-extension tabajara-krausburg.jacamo4code",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "silent",
+        "focus": false,
+        "panel": "new"
+      },
+      "runOptions": {
+        "runOn": "folderOpen" // Run this task when the folder is opened
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Install Code Runner Extension",
+      "type": "shell",
+      "command": "code --install-extension formulahendry.code-runner",
       "group": {
         "kind": "build",
         "isDefault": true
