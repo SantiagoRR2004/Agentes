@@ -8,3 +8,4 @@ jason-bin-*/
 .gradle/
 build/
 *.gradle
+bin/
