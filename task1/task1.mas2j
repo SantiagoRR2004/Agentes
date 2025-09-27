@@ -20,6 +20,7 @@ MAS task1 {
         bobBeliever agentArchClass jaca.CAgentArch ;
         bobMentalist agentArchClass jaca.CAgentArch ;
         bobWatcher agentArchClass jaca.CAgentArch ;
-    
+        bobRevisionist agentArchClass jaca.CAgentArch ;
+
     aslSourcePath: "src/agt";
 }
