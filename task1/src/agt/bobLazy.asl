@@ -1,4 +1,4 @@
-// Agent bob the believer in project task1
+// Agent bob the lazy in project task1
 
 /* Initial beliefs and rules */
 
