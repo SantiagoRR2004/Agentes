@@ -21,6 +21,11 @@
         .send(bobRevisionist,tell,happy(morgana));  .wait(2000);
         .send(bobRevisionist,untell,happy(bob));    .wait(1000); 
         .send(bobRevisionist,untell,happy(alice));
+        .send(bobLazy,tell,happy(bob));
+        .send(bobLazy,tell,happy(alice));    .wait(2000);
+        .send(bobLazy,tell,happy(morgana));  .wait(2000);
+        .send(bobLazy,untell,happy(bob));    .wait(1000); 
+        .send(bobLazy,untell,happy(alice));
         for (.range(I,1,100)) {
             .send(bobWatcher, tell, happy(I));
         }.

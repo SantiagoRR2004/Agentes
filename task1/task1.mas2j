@@ -21,6 +21,7 @@ MAS task1 {
         bobMentalist agentArchClass jaca.CAgentArch ;
         bobWatcher agentArchClass jaca.CAgentArch ;
         bobRevisionist agentArchClass jaca.CAgentArch ;
+        bobLazy agentArchClass jaca.CAgentArch ;
 
     aslSourcePath: "src/agt";
 }
