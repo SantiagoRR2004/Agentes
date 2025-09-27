@@ -6,8 +6,6 @@ sincere(alice).
 
 /* Initial goals */
 
-!create_calendar.
-
 /* Plans */
 
 +happy(bob)[source(A)]
@@ -31,8 +29,3 @@ sincere(alice).
         .print("I hate mondays!");
         .wait(500);
         !say(X).
-
-+!create_calendar
-   <- 
-        makeArtifact("c","Calendar",[],AId);
-        focus(AId).
