@@ -17,6 +17,7 @@ MAS task2 {
     agents: 
         bob;
         tom;
+        john;
 
     aslSourcePath: "src/agt";
 }
