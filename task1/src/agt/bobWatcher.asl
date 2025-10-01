@@ -38,7 +38,8 @@ sincere(alice).
         .print(X);
         .wait(math.random(400)+100);
         !say(X).
+
 +!say(X)
-    <-
+    <- // If the calendar artifact is not working
         !say(X).
 
