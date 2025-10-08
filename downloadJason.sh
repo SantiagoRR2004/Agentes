@@ -1,12 +1,5 @@
 #!/bin/bash
 
-# Ask for user confirmation
-read -p "Do you want to proceed with downloading and extracting Jason? (yes/no): " CONFIRMATION
-if [[ "$CONFIRMATION" != "yes" ]]; then
-  echo "Operation canceled by the user."
-  exit 0
-fi
-
 # Set repo info
 REPO="jason-lang/jason"
 
@@ -36,11 +29,17 @@ if [ -f "$FILENAME" ]; then
   echo "Found existing $FILENAME, skipping download."
 
 else
+  # Ask for user confirmation
+  read -p "Do you want to proceed with downloading and extracting Jason? (yes/no): " CONFIRMATION
+  if [[ "$CONFIRMATION" != "yes" ]]; then
+    echo "Operation canceled by the user."
+    exit 0
+  fi
+
   # Download the asset
   echo "Downloading $FILENAME..."
-curl -L -o "$FILENAME" "$ASSET_URL"
-
-echo "Download complete."
+  curl -L -o "$FILENAME" "$ASSET_URL"
+  echo "Download complete."
 fi
 
 # Check if the extracted folder already exists and is not empty
