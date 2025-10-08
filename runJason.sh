@@ -34,5 +34,8 @@ for FILE in "${FILES[@]}"; do
   fi
 done
 
+# Enable OpenGL in Java
+export _JAVA_OPTIONS="-Dsun.java2d.opengl=true -Dsun.java2d.opengl.fbobject=false"
+
 echo "Using Jason from: $JASON_DIR"
 "$JASON_EXEC" "$1"
