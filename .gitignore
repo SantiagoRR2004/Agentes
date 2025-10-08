@@ -1,4 +1,6 @@
 .venv/
+.env
+ignoreme_*
 
 # The Jason binary
 jason-bin-*.zip

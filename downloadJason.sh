@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# Ask for user confirmation
+read -p "Do you want to proceed with downloading and extracting Jason? (yes/no): " CONFIRMATION
+if [[ "$CONFIRMATION" != "yes" ]]; then
+  echo "Operation canceled by the user."
+  exit 0
+fi
+
 # Set repo info
 REPO="jason-lang/jason"
 
