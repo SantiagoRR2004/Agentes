@@ -18,5 +18,21 @@ if [ ! -f "$JASON_EXEC" ]; then
   exit 1
 fi
 
+# Delete the files and folders if they exist
+MAS2J_DIR=$(dirname "$1")
+FILES=("$MAS2J_DIR/.gradle"
+  "$MAS2J_DIR/build.gradle"
+  "$MAS2J_DIR/bin"
+  "$MAS2J_DIR/build"
+  "$MAS2J_DIR/settings.gradle"
+  )
+
+for FILE in "${FILES[@]}"; do
+  if [ -e "$FILE" ]; then
+    rm -rf "$FILE"
+    echo "Deleted existing $FILE."
+  fi
+done
+
 echo "Using Jason from: $JASON_DIR"
 "$JASON_EXEC" "$1"
