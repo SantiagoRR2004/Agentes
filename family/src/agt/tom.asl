@@ -10,9 +10,23 @@
 
 // The main program
 
-yo(tom).         
+yo(tom).
 
-tab("     "). 
+/*
+           john --- ann       bob --- sally
+                 |                 |
+  |--------------|                 |
+  |              |                 |
+karl           fred ------------- liz
+  |                       |
+  |              | --------------- |
+  |              |                 |
+nico     july - erik              tom
+              |
+              |
+              |
+             eve
+*/
 
 // Relaciones paternales
 
@@ -44,6 +58,13 @@ es_madre_de(ann,karl).
 
 es_madre_de(july,eve).
 
+// matrimonios y divorcios
+casadoCon(john,ann).
+casadoCon(bob,sally).
+casadoCon(fred,liz).
+divorciados(july,erik).
+divorciados(nico,eve).
+
 
 /* Initial goals */
 
@@ -57,65 +78,23 @@ es_madre_de(july,eve).
 
 // El plan introduce un subobjetivo que consiste en realizar un saludo
 
-+!start <- !greet.
++!start <- 
+    !greet;
+    +yo(nico);
+    !greet;
+    !exit.
 
 
-
-// Se planifica la manera de satisfacer el objetivo de saludar en función de la identidad del agente y del estado de ánimo
-
-+!greet : yo(Me) & state(happy) <-
-
- .println("Hola hoy me encuentro feliz de la vida,");
-
- .println("y quiero compartir muchas cosas con vosotros. ");
++!greet : yo(Me) <-
 
  .println("Me llamo: ", Me);
 
- .setof(Y, es_pariente_de(Y,Me), L); // Busca todos los parientes de Me
+ .setof(Y, es_pariente_de(Y,Me), L);
 
- .print("Mis parientes son: ",L);
-
- if (es_madre_de(Z,Me))
-
- {.print("Mi madre es : ",Z)} else
-
- {.print("No tengo madre.")};
-
- .abolish(state(_)); // Se elimina la creencia sobre el estado de ánimo
-
- +state(ungry); // Se añade un nuevo estado de ánimo
-
- !greet. // Repetimos el saludo
+ .print("Mis parientes son: ",L).
 
 
+// Regla final
 
-+!greet : yo(Me) & state(unhappy) <-
-
- .println("Hola soy ", Me, " y estoy triste.");
-
- .abolish(state(_));
-
- +state(happy);
-
- .abolish(yo(_)); // Eliminamos la personalidad/identidad del agente
-
- +yo(nico); // Creamos una nueva identidad
-
- !greet. // Repetimos el saludo
-
-
-
-+!greet : yo(Me) & not state(_) <-
-
- .println("Hola estoy un poco desorientado, creo que me llamo ", Me);
-
- +state(unhappy); // Añadimos un estado de ánimo infeliz
-
- !greet. // Volvemos a saludar
-
-
-
-// Regla para cuando todas las condiciones anteriores fallen
-
--!greet <- .print("Y este cuento se acabo......").
++!exit <- .print("Y este cuento se acabo......").
 
