@@ -71,7 +71,7 @@ es_madre_de(july,eve).
 
  .println("Me llamo: ", Me);
 
- .findall(Y, es_pariente_de(Y,Me), L); // Busca todos los parientes de Me
+ .setof(Y, es_pariente_de(Y,Me), L); // Busca todos los parientes de Me
 
  .print("Mis parientes son: ",L);
 
