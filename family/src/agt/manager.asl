@@ -82,6 +82,7 @@ divorciados(nico,eve).
     +yo(nico);
     !greet;
     !showLists;
+    !ptolemaicDynasty;
     !exit.
 
 
@@ -107,7 +108,12 @@ divorciados(nico,eve).
         .setof([X,Y], es_yerno_de(X,Y), L4);
         .print("Relaciones de yerno: ",L4).
 
-// Regla final
 
++!ptolemaicDynasty
+  <-
+    // https://commons.wikimedia.org/wiki/File:EgyptianPtolemies2.jpg
+    .send(cleopatraVII, achieve, presentation).
+
+// Regla final
 +!exit <- .print("Y este cuento se acabo......").
 

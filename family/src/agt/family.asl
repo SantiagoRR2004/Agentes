@@ -123,3 +123,37 @@ es_pariente_de(X,Y)
 
 
 /* Plans */
+
+
++!presentation
+    <-
+        .my_name(Me);
+        .println("Me llamo: ", Me);
+
+        .setof(X, es_hermano_de(X,Me), L1);
+        .print("Mis hermanos son: ",L1);
+
+        .setof(X, es_antepasadoDirecto_de(X,Me), L2);
+        .print("Mis antepasados directos son: ",L2);
+
+        .setof(X, es_antepasadoIndirecto_de(X,Me), L3);
+        .print("Mis antepasados indirectos son: ",L3);
+
+        .setof(X, es_descendiente_de(X,Me), L4);
+        .print("Mis descendientes son: ",L4);
+
+        .setof(X, es_primoLejano_de(X,Me), L5);
+        .print("Mis primos lejanos son: ",L5);
+
+        .setof(X, divorcios(X,Me), L6);
+        .print("Mis divorcios son: ",L6);
+
+        .setof(X, casadoCon(X,Me), L7);
+        .print("Mis matrimonios son: ",L7);
+
+        .setof(X, es_suegro_de(X,Me), L8);
+        .print("Mis relaciones de suegro son: ",L8);
+
+        .setof(X, es_yerno_de(X,Me), L9);
+        .print("Mis relaciones de yerno son: ",L9).
+

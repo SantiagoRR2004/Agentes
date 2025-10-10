@@ -1,11 +1,11 @@
-// Agent ptolomyXV in project family
+// Agent ptolemyXV in project family
 
 { include("family.asl") }
 
 /* Initial beliefs and rules */
 
-es_padre_de(juliusCaesar,ptolomyXV).
-es_madre_de(cleopatraVII,ptolomyXV).
+es_padre_de(juliusCaesar,ptolemyXV).
+es_madre_de(cleopatraVII,ptolemyXV).
 
 /* Initial goals */
 

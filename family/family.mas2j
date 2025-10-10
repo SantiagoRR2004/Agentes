@@ -15,7 +15,18 @@ MAS family {
     environment: example.Env(10)
 
     agents: 
-        tom;
+        manager;
+
+        alexanderHelios;
+        arsinoeIV;
+        bereniceIV;
+        cleopatraSelene;
+        cleopatraVII;
+        ptolemyPhiladelphus;
+        ptolemyXII;
+        ptolemyXIII;
+        ptolemyXIV;
+        ptolemyXV;
 
     aslSourcePath: "src/agt";
 }

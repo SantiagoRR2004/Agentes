@@ -1,10 +1,10 @@
-// Agent ptolomyXIII in project family
+// Agent ptolemyXIV in project family
 
 { include("family.asl") }
 
 /* Initial beliefs and rules */
 
-es_padre_de(ptolomyXII,ptolomyXIII).
+es_padre_de(ptolemyXII,ptolemyXIV).
 
 /* Initial goals */
 
