@@ -10,8 +10,6 @@
 
 // The main program
 
-yo(tom).
-
 /*
            john --- ann       bob --- sally
                  |                 |
@@ -78,7 +76,8 @@ divorciados(nico,eve).
 
 // El plan introduce un subobjetivo que consiste en realizar un saludo
 
-+!start <- 
++!start <-
+    +yo(tom);
     !greet;
     +yo(nico);
     !greet;
