@@ -82,6 +82,7 @@ divorciados(nico,eve).
     !greet;
     +yo(nico);
     !greet;
+    !showLists;
     !exit.
 
 
@@ -93,6 +94,19 @@ divorciados(nico,eve).
 
  .print("Mis parientes son: ",L).
 
+ +!showLists
+    <-
+        .setof([X,Y], casadoCon(X,Y), L1);
+        .print("Parejas casadas: ",L1);
+
+        .setof([X,Y], divorciados(X,Y), L2);
+        .print("Parejas divorciadas: ",L2);
+
+        .setof([X,Y], es_suegro_de(X,Y), L3);
+        .print("Relaciones de suegro: ",L3);
+
+        .setof([X,Y], es_yerno_de(X,Y), L4);
+        .print("Relaciones de yerno: ",L4).
 
 // Regla final
 

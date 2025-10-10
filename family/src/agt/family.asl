@@ -82,6 +82,24 @@ es_primoLejano_de(X,Y)
         &
             es_descendiente_de(X,Z).
 
+// Suegro o yerno
+
+casadoBidireccional(X,Y)
+    :-
+            casadoCon(X,Y)
+        |
+            casadoCon(Y,X).
+
+es_suegro_de(X,Y)
+    :-
+        parentesco(X,Z)
+    &
+        casadoBidireccional(Z,Y).
+
+es_yerno_de(X,Y)
+    :-
+        es_suegro_de(Y,X).
+
 // Por ultimo las reglas de parentesco
 
 es_pariente_de(X,Y)
