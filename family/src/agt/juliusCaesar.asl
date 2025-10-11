@@ -4,6 +4,8 @@
 
 /* Initial beliefs and rules */
 
+casadoCon(juliusCaesar, cleopatraVII).
+es_padre_de(juliusCaesar, ptolemyXV).
 
 /* Initial goals */
 

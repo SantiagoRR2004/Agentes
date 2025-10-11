@@ -4,6 +4,8 @@
 
 /* Initial beliefs and rules */
 
+casadoCon(lysimachus, arsinoeII).
+es_padre_de(lysimachus, ptolemySon).
 
 /* Initial goals */
 

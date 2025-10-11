@@ -4,6 +4,10 @@
 
 /* Initial beliefs and rules */
 
+es_padre_de(ptolemyX, ptolemyXI).
+es_madre_de(cleopatraSeleneI, ptolemyXI).
+
+divorciados(ptolemyXI, bereniceIII).
 
 /* Initial goals */
 

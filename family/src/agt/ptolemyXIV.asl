@@ -6,6 +6,8 @@
 
 es_padre_de(ptolemyXII,ptolemyXIV).
 
+divorciados(ptolemyXIV, cleopatraVII).
+
 /* Initial goals */
 
 
