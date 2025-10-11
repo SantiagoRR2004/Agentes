@@ -4,6 +4,10 @@
 
 /* Initial beliefs and rules */
 
+casadoCon(cleopatraI, ptolemyV).
+es_madre_de(cleopatraI, ptolemyVI).
+es_madre_de(cleopatraI, cleopatraII).
+es_madre_de(cleopatraI, ptolemyVIII).
 
 /* Initial goals */
 
