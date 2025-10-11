@@ -5,6 +5,7 @@
 /* Initial beliefs and rules */
 
 es_padre_de(ptolemyIX,ptolemyXII).
+es_madre_de(cleopatraIV,ptolemyXII).
 
 casadoCon(ptolemyXII,cleopatraV).
 es_padre_de(ptolemyXII,arsinoeIV).

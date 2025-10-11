@@ -4,18 +4,18 @@
 
 /* Initial beliefs and rules */
 
-es_padre_de(ptolomyXII,cleopatraVII).
+es_padre_de(ptolemyXII,cleopatraVII).
 
-divorciados(cleopatraVII,ptolomyXII).
+divorciados(cleopatraVII,ptolemyXII).
 
-divorciadas(cleopatraVII,ptolomyXIV).
+divorciados(cleopatraVII,ptolemyXIV).
 
 divorciados(cleopatraVII,juliusCaesar).
 es_madre_de(cleopatraVII,ptolemyXV).
 
 casadoCon(cleopatraVII,marcusAntonius).
 es_madre_de(cleopatraVII,alexanderHelios).
-es_madre_de(cleopatraVII,cleopatraSelene).
+es_madre_de(cleopatraVII,cleopatraSeleneII).
 es_madre_de(cleopatraVII,ptolemyPhiladelphus).
 
 /* Initial goals */

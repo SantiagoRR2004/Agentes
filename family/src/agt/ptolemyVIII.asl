@@ -1,11 +1,9 @@
-// Agent benericeIV in project family
+// Agent ptolemyVIII in project family
 
 { include("family.asl") }
 
 /* Initial beliefs and rules */
 
-es_padre_de(ptolemyXII,benericeIV).
-es_madre_de(cleopatraV,benericeIV).
 
 /* Initial goals */
 

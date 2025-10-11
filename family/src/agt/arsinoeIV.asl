@@ -4,7 +4,7 @@
 
 /* Initial beliefs and rules */
 
-es_padre_de(ptolomyXII,arsinoeIV).
+es_padre_de(ptolemyXII,arsinoeIV).
 
 /* Initial goals */
 
