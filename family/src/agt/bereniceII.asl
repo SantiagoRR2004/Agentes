@@ -4,6 +4,9 @@
 
 /* Initial beliefs and rules */
 
+casadoCon(bereniceII,ptolemyIII).
+es_madre_de(bereniceII,arsinoeIII).
+es_madre_de(bereniceII,ptolemyIV).
 
 /* Initial goals */
 

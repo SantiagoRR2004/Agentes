@@ -4,6 +4,8 @@
 
 /* Initial beliefs and rules */
 
+casadoCon(ptolemyII,arsinoeI).
+es_madre_de(arsinoeI,ptolemyIII).
 
 /* Initial goals */
 
