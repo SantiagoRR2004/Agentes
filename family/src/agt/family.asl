@@ -4,11 +4,15 @@
 
 parentesco(X,Y)
     :-
-        es_padre_de(X,Y).
+        es_padre_de(X,Y)
+        &
+        not X=Y.
 
 parentesco(X,Y)
     :-
-        es_madre_de(X,Y).
+        es_madre_de(X,Y)
+        &
+        not X=Y.
 
 // Relaciones de hermanos
 
@@ -130,6 +134,9 @@ es_pariente_de(X,Y)
         .my_name(Me);
         .println("Me llamo: ", Me);
 
+        .setof(X, parentesco(X,Me), L0);
+        .print("Mis parientes son: ",L0);
+
         .setof(X, es_hermano_de(X,Me), L1);
         .print("Mis hermanos son: ",L1);
 
@@ -145,10 +152,10 @@ es_pariente_de(X,Y)
         .setof(X, es_primoLejano_de(X,Me), L5);
         .print("Mis primos lejanos son: ",L5);
 
-        .setof(X, divorcios(X,Me), L6);
+        .setof(X, divorciados(Me,X), L6);
         .print("Mis divorcios son: ",L6);
 
-        .setof(X, casadoCon(X,Me), L7);
+        .setof(X, casadoCon(Me,X), L7);
         .print("Mis matrimonios son: ",L7);
 
         .setof(X, es_suegro_de(X,Me), L8);
