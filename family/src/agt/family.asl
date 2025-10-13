@@ -14,6 +14,18 @@ parentesco(X,Y)
         &
         not X=Y.
 
+
++parents_list(Child, ParentList)[source(Sender)]
+        <- for(.member(P, ParentList)) {
+            .abolish(parentesco(P, Child));
+            +parentesco(P, Child);
+        }.
+
++!get_parents(Subject, Requester)[source(Sender)]
+    <-
+        .findall(P, parentesco(P, Subject), L);
+        .send(Requester, tell, parents_list(Subject, L)).
+
 // Relaciones de hermanos
 
 /*
@@ -58,6 +70,14 @@ es_antepasadoDirecto_de(X,Y)
                     es_antepasadoDirecto_de(Z,Y)
             ).
 
++!get_ancestors(Subject, Requester)[source(Sender)]
+    <- 
+        .findall(P, parentesco(P, Subject), Parents);
+        for ( .member(P, Parents)) {
+            .send(P, achieve, get_ancestors(P, Requester));
+        }
+        .send(Requester, tell, parents_list(Subject, Parents)).
+
 
 es_antepasadoIndirecto_de(X,Y)
     :-
@@ -86,6 +106,26 @@ es_primoLejano_de(X,Y)
         &
             es_descendiente_de(X,Z).
 
++!get_cousins(Subject, Requester)[source(Sender)]
+:
+    not alreadyAsked(Subject, Requester)
+    <- 
+        +alreadyAsked(Subject, Requester); // to avoid infinite loops
+        .findall(P, parentesco(Subject, P), Children);
+        for ( .member(P, Children)) {
+            .send(P, achieve, get_cousins(P, Requester));
+            .send(P, achieve, get_parents(P, Requester));
+        };
+        .findall(P, parentesco(P, Subject), Parents);
+        for ( .member(P, Parents)) {
+            .send(P, achieve, get_cousins(P, Requester));
+        }
+        .send(Requester, tell, parents_list(Subject, Parents)).
+
++!get_cousins(Subject, Requester)[source(Sender)]
+    <-
+        true.
+
 // Suegro o yerno
 
 casadoBidireccional(X,Y)
@@ -94,15 +134,41 @@ casadoBidireccional(X,Y)
         |
             casadoCon(Y,X).
 
++married_list(User, SpouseList)[source(Sender)]
+    <- for(.member(P, SpouseList)) {
+        .abolish(casadoCon(User, P));
+        +casadoCon(User, P);
+    }.
+
+
++!get_spouses(Subject, Requester)[source(Sender)]
+    <-
+        .findall(P, casadoBidireccional(Subject, P), L);
+        .send(Requester, tell, married_list(Subject, L)).
+
 es_suegro_de(X,Y)
     :-
         parentesco(X,Z)
     &
         casadoBidireccional(Z,Y).
 
++!get_suegros(Subject, Requester)[source(Sender)]
+    <-
+        .findall(P, casadoBidireccional(P, Subject), L);
+        for ( .member(P, L)) {
+            .send(P, achieve, get_parents(P, Requester));
+        }.
+
 es_yerno_de(X,Y)
     :-
         es_suegro_de(Y,X).
+
++!get_yernos(Subject, Requester)[source(Sender)]
+    <-
+        .findall(P, parentesco(Subject, P), Children);
+        for ( .member(C, Children)) {
+            .send(C, achieve, get_spouses(C, Requester));
+        }.
 
 // Por ultimo las reglas de parentesco
 
@@ -132,10 +198,17 @@ es_pariente_de(X,Y)
 +!presentation
     <-
         .my_name(Me);
+
+        // Find ancestors first
+        !get_cousins(Me, Me);
+        !get_suegros(Me, Me);
+        !get_yernos(Me, Me);
+        .wait(10000);
+
         .println("Me llamo: ", Me);
 
         .setof(X, parentesco(X,Me), L0);
-        .print("Mis parientes son: ",L0);
+        .print("Mis padres son: ",L0);
 
         .setof(X, es_hermano_de(X,Me), L1);
         .print("Mis hermanos son: ",L1);
@@ -144,7 +217,8 @@ es_pariente_de(X,Y)
         .print("Mis antepasados directos son: ",L2);
 
         .setof(X, es_antepasadoIndirecto_de(X,Me), L3);
-        .print("Mis antepasados indirectos son: ",L3);
+        .difference(L3, L2, R);
+        .print("Mis antepasados indirectos (sin los directos) son: ",R);
 
         .setof(X, es_descendiente_de(X,Me), L4);
         .print("Mis descendientes son: ",L4);

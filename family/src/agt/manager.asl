@@ -112,7 +112,9 @@ divorciados(nico,eve).
 +!ptolemaicDynasty
   <-
     // https://commons.wikimedia.org/wiki/File:EgyptianPtolemies2.jpg
-    .send(cleopatraVII, achieve, presentation).
+    .send(cleopatraVII, achieve, presentation);
+    .wait(5000);
+    .send(ptolemyVIII, achieve, presentation).
 
 // Regla final
 +!exit <- .print("Y este cuento se acabo......").
