@@ -3,10 +3,49 @@
 import jason.environment.grid.GridWorldModel;
 import jason.environment.grid.Area;
 import jason.environment.grid.Location;
+import java.util.*;
 //import jason.asSyntax.*;
 
 /** class that implements the Model of Domestic Robot application */
 public class HouseModel extends GridWorldModel {
+	
+	// Inner class for A* pathfinding nodes
+	private class PathNode implements Comparable<PathNode> {
+		Location loc;
+		PathNode parent;
+		double gCost; // Cost from start to this node
+		double hCost; // Heuristic cost from this node to goal
+		double fCost; // Total cost (g + h)
+		
+		PathNode(Location loc, PathNode parent, double gCost, double hCost) {
+			this.loc = loc;
+			this.parent = parent;
+			this.gCost = gCost;
+			this.hCost = hCost;
+			this.fCost = gCost + hCost;
+		}
+		
+		@Override
+		public int compareTo(PathNode other) {
+			return Double.compare(this.fCost, other.fCost);
+		}
+		
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (!(o instanceof PathNode)) return false;
+			PathNode other = (PathNode) o;
+			return this.loc.equals(other.loc);
+		}
+		
+		@Override
+		public int hashCode() {
+			return loc.hashCode();
+		}
+	}
+	
+	// Cache for planned paths
+	private Map<Integer, List<Location>> agentPaths = new HashMap<>();
 
     // constants for the grid objects
 
@@ -198,9 +237,150 @@ public class HouseModel extends GridWorldModel {
 		}
 	}
 	
+	// A* pathfinding algorithm
+	private List<Location> findPath(int Ag, Location start, Location goal) {
+		if (start.equals(goal)) {
+			return new ArrayList<>();
+		}
+		
+		PriorityQueue<PathNode> openSet = new PriorityQueue<>();
+		Set<String> closedSet = new HashSet<>();
+		Map<String, PathNode> openSetMap = new HashMap<>();
+		
+		PathNode startNode = new PathNode(start, null, 0, start.distance(goal));
+		openSet.add(startNode);
+		openSetMap.put(start.x + "," + start.y, startNode);
+		
+		int[][] directions = {{1,0}, {-1,0}, {0,1}, {0,-1}}; // 4-directional movement
+		
+		while (!openSet.isEmpty()) {
+			PathNode current = openSet.poll();
+			String currentKey = current.loc.x + "," + current.loc.y;
+			openSetMap.remove(currentKey);
+			
+			if (current.loc.equals(goal)) {
+				// Reconstruct path
+				List<Location> path = new ArrayList<>();
+				PathNode node = current;
+				while (node.parent != null) {
+					path.add(0, node.loc);
+					node = node.parent;
+				}
+				return path;
+			}
+			
+			closedSet.add(currentKey);
+			
+			// Explore neighbors
+			for (int[] dir : directions) {
+				int newX = current.loc.x + dir[0];
+				int newY = current.loc.y + dir[1];
+				
+				if (!inGrid(newX, newY) || !canMoveTo(Ag, newX, newY)) {
+					continue;
+				}
+				
+				String neighborKey = newX + "," + newY;
+				if (closedSet.contains(neighborKey)) {
+					continue;
+				}
+				
+				double tentativeG = current.gCost + 1;
+				Location neighborLoc = new Location(newX, newY);
+				
+				PathNode existingNode = openSetMap.get(neighborKey);
+				if (existingNode != null && tentativeG >= existingNode.gCost) {
+					continue;
+				}
+				
+				PathNode neighbor = new PathNode(
+					neighborLoc, 
+					current, 
+					tentativeG, 
+					neighborLoc.distance(goal)
+				);
+				
+				if (existingNode != null) {
+					openSet.remove(existingNode);
+				}
+				
+				openSet.add(neighbor);
+				openSetMap.put(neighborKey, neighbor);
+			}
+		}
+		
+		// No path found
+		return null;
+	}
+	
+	// Check if coordinates are within grid bounds
+	public boolean inGrid(int x, int y) {
+		return x >= 0 && x < 2*GSize && y >= 0 && y < GSize;
+	}
+	
 	boolean moveTowards(int Ag, Location dest) {
+		Location currentPos = getAgPos(Ag);
+		
+		// Check if we need to recalculate the path
+		List<Location> path = agentPaths.get(Ag);
+		
+		// Recalculate path if:
+		// - No path exists
+		// - Path is empty
+		// - Current position doesn't match expected position (agent was moved externally)
+		// - Destination has changed
+		if (path == null || path.isEmpty() || 
+			!currentPos.equals(path.isEmpty() ? currentPos : 
+			(path.size() == 1 ? currentPos : currentPos))) {
+			
+			path = findPath(Ag, currentPos, dest);
+			
+			if (path == null || path.isEmpty()) {
+				// No path found, try simple greedy approach as fallback
+				return moveTowardsGreedy(Ag, dest);
+			}
+			
+			agentPaths.put(Ag, path);
+		}
+		
+		// Follow the path
+		if (!path.isEmpty()) {
+			Location nextStep = path.get(0);
+			
+			// Verify the next step is still valid
+			if (canMoveTo(Ag, nextStep.x, nextStep.y)) {
+				setAgPos(Ag, nextStep);
+				path.remove(0);
+				
+				// Clear path if destination reached
+				if (path.isEmpty() || currentPos.equals(dest)) {
+					agentPaths.remove(Ag);
+				}
+				return true;
+			} else {
+				// Path is blocked, recalculate
+				agentPaths.remove(Ag);
+				path = findPath(Ag, currentPos, dest);
+				
+				if (path != null && !path.isEmpty()) {
+					agentPaths.put(Ag, path);
+					Location nextStep2 = path.get(0);
+					if (canMoveTo(Ag, nextStep2.x, nextStep2.y)) {
+						setAgPos(Ag, nextStep2);
+						path.remove(0);
+						return true;
+					}
+				}
+			}
+		}
+		
+		return true;
+	}
+	
+	// Fallback greedy movement (old algorithm)
+	private boolean moveTowardsGreedy(int Ag, Location dest) {
         Location r1 = getAgPos(Ag); 
-        Location r2 = getAgPos(Ag); 
+        Location r2 = new Location(r1.x, r1.y); // Create a copy to track if movement occurred
 		
 		if (r1.distance(dest)>0) {
 			if (r1.x < dest.x && canMoveTo(Ag,r1.x+1,r1.y)) {
@@ -214,7 +394,7 @@ public class HouseModel extends GridWorldModel {
 			};
         };
 		
-		if (r1 == r2 && r1.distance(dest)>0) { // could not move the agent
+		if (r1.equals(r2) && r1.distance(dest)>0) { // could not move the agent
 			if (r1.x == dest.x && canMoveTo(Ag,r1.x+1,r1.y)) {
 				r1.x++;
 			} else if (r1.x == dest.x && canMoveTo(Ag,r1.x-1,r1.y)) {
