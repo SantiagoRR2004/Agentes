@@ -12,8 +12,6 @@
 
 MAS family {
 
-    environment: example.Env(10)
-
     agents: 
         manager;
 

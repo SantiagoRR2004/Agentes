@@ -1,4 +1,4 @@
-package time;
+package env;
 
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;

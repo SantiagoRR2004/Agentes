@@ -65,5 +65,5 @@ too_much(B) :-
    <- -+available(beer,fridge).
 
 +?time(T) : true
-  <-  time.check(T).
+  <-  env.check(T).
 
