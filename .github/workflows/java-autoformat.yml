@@ -1,0 +1,51 @@
+name: Formatting Java Code
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      # Set up Java and Maven
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: "21"
+          distribution: "temurin"
+
+      # Download the latest google-java-format JAR
+      - name: Fetch latest google-java-format JAR
+        run: |
+          latest_version=$(curl -s https://api.github.com/repos/google/google-java-format/releases/latest | jq -r .tag_name)
+          version_number=${latest_version#v}  # Strip leading 'v'
+          jar_url="https://github.com/google/google-java-format/releases/download/${latest_version}/google-java-format-${version_number}-all-deps.jar"
+          echo "Downloading $jar_url"
+          curl -L -o /tmp/google-java-format.jar "$jar_url"
+
+      - name: Format Java files
+        run: |
+          find . -name "*.java" -print0 | xargs -0 java -jar /tmp/google-java-format.jar -i
+
+      # Commit and push changes if any formatting was applied
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          if ! git diff --quiet; then
+            git add .
+            git commit -m "chore: Auto-format Java code [GitHub Action]"
+            git push
+          else
+            echo "No changes to push."
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
