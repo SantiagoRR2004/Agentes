@@ -118,10 +118,13 @@ public class HouseModel extends GridWorldModel {
     // create a GSize x 2GSize grid with 3 mobile agent
     super(2 * GSize, GSize, 2);
 
-    // initial location of robot (column 3, line 3)
-    // ag code 0 means the robot
-    setAgPos(0, 2, 4);
-    setAgPos(1, GSize / 2 + 2, GSize - 3);
+    // Randomize starting positions
+    Random rand = new Random();
+    Location robotStart = getRandomValidLocation(rand, 0);
+    Location ownerStart = getRandomValidLocation(rand, 1);
+    
+    setAgPos(0, robotStart.x, robotStart.y);
+    setAgPos(1, ownerStart.x, ownerStart.y);
     // setAgPos(2, GSize*2-1, GSize*3/5);
 
     // Do a new method to create literals for each object placed on
@@ -208,6 +211,29 @@ public class HouseModel extends GridWorldModel {
     }
     ;
     return byDefault;
+  }
+
+  // Get a random valid location for an agent
+  private Location getRandomValidLocation(Random rand, int agentId) {
+    int maxAttempts = 1000;
+    int attempts = 0;
+    
+    while (attempts < maxAttempts) {
+      int x = rand.nextInt(2 * GSize);
+      int y = rand.nextInt(GSize);
+      
+      if (canMoveTo(agentId, x, y)) {
+        return new Location(x, y);
+      }
+      attempts++;
+    }
+    
+    // Fallback to default positions if no valid location found
+    if (agentId == 0) {
+      return new Location(2, 4); // robot default
+    } else {
+      return new Location(GSize / 2 + 2, GSize - 3); // owner default
+    }
   }
 
   boolean sit(int Ag, Location dest) {
