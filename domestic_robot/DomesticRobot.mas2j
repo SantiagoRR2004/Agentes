@@ -1,16 +1,24 @@
-/* Jason Project
+/*
+    DomesticRobot
+    ---------------------------
 
-   See Prometheus specification in doc folder
+    Jason Application File
 
+    This file defines the initial state of the MAS
+
+    Jason 3.3.0
+    octubre 19, 1497 - 11:35:41
 */
 
 MAS domestic_robot {
-    
-    environment: HouseEnv(gui) // use "nogui" as parameter to not show the GUI
 
+    environment: domotic.HouseEnv(gui) // use "nogui" as parameter to not show the GUI
+    
     agents: robot;
-            owner;
-            supermarket;
+			//auxiliar;
+            owner; 
+			//guest owner.asl;
+            repartidor supermarket.asl;
 
     aslSourcePath: "src/agt";
 }

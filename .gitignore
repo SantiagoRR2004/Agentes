@@ -11,3 +11,4 @@ jason-bin-*/
 build/
 *.gradle
 bin/
+**/.DS_Store
