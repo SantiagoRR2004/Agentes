@@ -33,7 +33,9 @@ jobs:
 
       - name: Format Java files
         run: |
-          find . -name "*.java" -print0 | xargs -0 java -jar /tmp/google-java-format.jar -i
+          find . -name "*.java" -print0 | while IFS= read -r -d '' file; do
+            java -jar /tmp/google-java-format.jar -i "$file" || echo "Skipping $file (failed to format)"
+          done
 
       # Commit and push changes if any formatting was applied
       - name: Commit and push changes
