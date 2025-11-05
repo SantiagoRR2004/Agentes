@@ -14,95 +14,89 @@ connect(bedroom2, hallway, doorBed2).
 connect(hallway, bedroom2, doorBed2).
 connect(bedroom3, hallway, doorBed3).
 connect(hallway, bedroom3, doorBed3).
-connect(hall, livingroom, doorSal1).        
+connect(hall, livingroom, doorSal1).
 connect(livingroom, hall, doorSal1).
 connect(hallway, livingroom, doorSal2).       
-connect(livingroom, hallway, doorSal2).     
+connect(livingroom, hallway, doorSal2).
 
-// initially, robot is free
-free.
-
-
-// initially, I believe that there is some cell dirty at kitchen 
-dirty(kitchen).
-   
-answer(Request, "It will be nice to check the weather forecast, don't?.") :-
-	.substring("tiempo", Request).  
-	
-answer(Request, "I don't understand what are you talking about.").
-
-cleanning(Room) :- dirty(Room) & atRoom(Room).
 
 /* GOALS*/
-!checkMoves.
+!main.
+
+/* Plans to check dirty rooms */
++!print_dirty_rooms 
+    <- .findall(Room, dirty(Room), DirtyRooms);
+       if (.length(DirtyRooms, 0)) {
+           .println("No dirty rooms found.");
+       } else {
+           .println("Dirty rooms: ", DirtyRooms);
+       }.
 
 /* Plans */
 
-+!checkMoves : at(robot,dirty) <-
-	.println("Hay suciedad bajo mis pies. Tengo que limpiarla y moverme.");
-	clean(dirty);
-	.wait(3000);
-	moveDown(down);
-	!checkMoves.
++!main
+	:
+	dirty(Room)
+	<-
+	!gotToDirtyRoom(Room);
+	!main.
 
-+!checkMoves : not at(robot,dirty) <-
-	moveDown(down);
-	.wait(2000);
-	moveLeft(left);
-	.wait(2000);
-	moveRight(right);
-	.wait(2000);
-	moveUp(up);
-	!checkMoves.
+-!main
+	<-
+	!main.
 
-+!at(Ag, P) : at(Ag, P) <- 
-	.println(Ag, " is at ",P);
-	.wait(500).
-+!at(Ag, P) : not at(Ag, P) <- 
-	.println("Going to ", P, " <=======================");  
-	.wait(200);
-	!go(P);                                        
-	.println("Checking if is at ", P, " ============>");
-	!at(Ag, P).            
-	                                                   
-+!go(P) : atRoom(RoomAg) & atRoom(P, RoomAg) <- 
-	.println("<================== 1 =====================>");
-	.println("Al estar en la misma habitación se debe mover directamente a: ", P);
-	move_towards(P).  
-+!go(P) : atRoom(RoomAg) & atRoom(P, RoomP) & not RoomAg == RoomP &
-		  connect(RoomAg, RoomP, Door) & not atDoor <-
-	.println("<================== 3 =====================>");
-	.println("Al estar en una habitación contigua se mueve hacia la puerta: ", Door);
-	move_towards(Door); 
-	!go(P).                     
-+!go(P) : atRoom(RoomAg) & atRoom(P, RoomP) & not RoomAg == RoomP &
-		  connect(RoomAg, RoomP, Door) <- //& not atDoor <-
-	.println("<================== 3 =====================>");
-	.println("Al estar en la puerta de la habitación contigua se mueve hacia ", P);
-	move_towards(P); 
-	!go(P).       
-+!go(P) : atRoom(RoomAg) & atRoom(P, RoomP) & not RoomAg == RoomP &
-		  not connect(RoomAg, RoomP, _) & connect(RoomAg, Room, DoorR) &
-		  connect(Room, RoomP, DoorP) & not atDoor <-
-	.println("<================== 4 =====================>");
-	.println("Se mueve a: ", DoorR, " para ir a la habitación contigua, ", Room);
-	move_towards(DoorR); 
-	!go(P). 
-+!go(P) : atRoom(RoomAg) & atRoom(P, RoomP) & not RoomAg == RoomP &
-		  not connect(RoomAg, RoomP, _) & connect(RoomAg, Room, DoorR) &
-		  connect(Room, RoomP, DoorP) & atDoor <-
-	.println("<================== 4 BIS =====================>");
-	.println("Se mueve a: ", DoorP, " para acceder a la habitación ", RoomP);
-	move_towards(DoorP); 
-	!go(P). 
-+!go(P) : atRoom(RoomAg) & atRoom(P, RoomP) & not RoomAg == RoomP <- //& not atDoor <-
-	.println("Owner is at ", RoomAg,", that is not a contiguous room to ", RoomP);
-	.println("<================== 5 =====================>");
-	move_towards(P).                                                          
--!go(P) <- 
-	.println("¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿ WHAT A FUCK !!!!!!!!!!!!!!!!!!!!");
-	.println("..........SOMETHING GOES WRONG......").                                        
-	                                                                        
+// +!searchDirtyRooms(Room)
+// 	:
+// 	dirty(Room)
+// 	<-
+// 	!gotToDirtyRoom(Room).
+
++!gotToDirtyRoom(Room) : dirty(Room) & atRoom(Room) <-
+	.println("I am already in the room: ", Room);
+	!sweepRoom(Room).
+	.wait(1000).
+
++!gotToDirtyRoom(Room) : dirty(Room) & not atRoom(Room) <-
+	.println("I am not in the room ", Room, " to clean it.");
+	!goToRoom(Room);
+	!gotToDirtyRoom(Room).
+
++!goToRoom(Room): connect(Room, _, Door) & at(robot, Door) <-
+	.println("I am already at the door: ", Door).
+
++!goToRoom(Room): connect(Room, _, Door) & not at(robot, Door) <-
+	move_towards(Door).
+
++!sweepRoom(Room) : atRoom(Room) <-
+	.println("I am already in the room: ", Room);
+	moveLeft(robot);
+	moveLeft(robot);
+	moveUp(robot);
+	moveUp(robot).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // when the supermarket makes a delivery, try the 'has' goal again
 +delivered(drug, _Qtd, _OrderId)[source(repartidor)]
   :  true
