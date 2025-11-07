@@ -20,6 +20,21 @@ connect(livingroom, hallway, doorSal2).
 
 sittable([sofa, chair1, chair2, chair3, chair4]).
 
+
+findPath(Current, Target, _, [])
+    :-
+		Current=Target.
+
+findPath(Current, Target, Visited, Path)
+	:-
+			connect(Current, NextRoom, Door)
+		&
+			not .member(Door, Visited)
+		&
+			findPath(NextRoom, Target, [Door|Visited], SubPath)
+		&
+			Path = [Door|SubPath].
+
 /* Initial goals */
 
 !main.
@@ -29,9 +44,7 @@ sittable([sofa, chair1, chair2, chair3, chair4]).
 +!main:
 	wantToSit(Object)
 	<-
-	.println("Owner wants to sit at ", Object);
-	.wait(5000);
-	-wantToSit(Object);
+	!sitOnObjective;
 	!main.
 
 +!main
@@ -55,3 +68,45 @@ sittable([sofa, chair1, chair2, chair3, chair4]).
 	.nth(IndexInt, SittableList, ChosenPlace);
 	+wantToSit(ChosenPlace).
 	  
+
++!sitOnObjective:
+		wantToSit(ChosenPlace)
+		&
+		not at(ChosenPlace)
+	<-
+	.println("Owner moving towards ", ChosenPlace);
+	// .wait(1000);
+	!moveTowardsAdvanced(ChosenPlace).
+	// -wantToSit(ChosenPlace).
+
+
++!moveTowardsAdvanced(Objective):
+	// Check if they are in the same Room
+		atRoom(CurrentRoom)
+		&
+		atRoom(Objective, CurrentRoom)
+	<-
+	.println("They are on the same room");
+	move_towards(Objective).
+
++!moveTowardsAdvanced(Objective):
+	// They are not in the same Room
+	atRoom(CurrentRoom)
+	&
+	atRoom(Objective, ObjectiveRoom)
+	&
+	not ObjectiveRoom = CurrentRoom
+	<-
+	.println("They are in different rooms");
+	!goToRoom(ObjectiveRoom).
+
+
++!goToRoom(ObjectiveRoom):
+	atRoom(CurrentRoom)
+	&
+	findPath(CurrentRoom, ObjectiveRoom, [], Path)
+	<-
+	.println("Going to room: ", ObjectiveRoom);
+	// Move towards the first door in the path
+	.nth(0, Path, FirstDoor);
+	move_towards(FirstDoor).
