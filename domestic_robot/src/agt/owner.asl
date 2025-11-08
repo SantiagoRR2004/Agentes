@@ -20,20 +20,50 @@ connect(livingroom, hallway, doorSal2).
 
 sittable([sofa, chair1, chair2, chair3, chair4]).
 
+minusOne(X, Y)
+	:-
+	Y = X - 1.
 
-findPath(Current, Target, _, [])
+
+numberOfDoors(X)
+	:-
+		.setof(Door, connect(_, _, Door), DoorList)
+	&
+		.length(DoorList, X).
+
+findPathRoom(Current, Target, _, [], MaxDepth)
     :-
 		Current=Target.
 
-findPath(Current, Target, Visited, Path)
+
+findPathRoom(Current, Target, Visited, Path, MaxDepth)
 	:-
 			connect(Current, NextRoom, Door)
 		&
+			minusOne(MaxDepth, N1)
+		&
+			N1 > 0
+		&
 			not .member(Door, Visited)
 		&
-			findPath(NextRoom, Target, [Door|Visited], SubPath)
+			findPathRoom(NextRoom, Target, [Door|Visited], SubPath, N1)
 		&
 			Path = [Door|SubPath].
+
+shortestRoomPath(Current, Target, Path, MaxDepth)
+	:-
+			MaxDepth > 0
+		&
+			(
+				(
+					minusOne(MaxDepth, N1)
+				&
+					shortestRoomPath(Current, Target, Path, N1)
+				)
+			|
+				findPathRoom(Current, Target, [], Path, MaxDepth)
+			).
+
 
 /* Initial goals */
 
@@ -104,9 +134,40 @@ findPath(Current, Target, Visited, Path)
 +!goToRoom(ObjectiveRoom):
 	atRoom(CurrentRoom)
 	&
-	findPath(CurrentRoom, ObjectiveRoom, [], Path)
+	numberOfDoors(MaxDepth)
+	&
+	shortestRoomPath(CurrentRoom, ObjectiveRoom, Path, MaxDepth)
 	<-
-	.println("Going to room: ", ObjectiveRoom);
 	// Move towards the first door in the path
 	.nth(0, Path, FirstDoor);
-	move_towards(FirstDoor).
+	if (atDoor) {
+		+wasAtDoor;
+	} else {
+		-wasAtDoor;
+	};
+	move_towards(FirstDoor);
+	if (atDoor & wasAtDoor) {
+		.println("Stuck in a door.");
+		!unstuckFromDoor;
+	}.
+
++!unstuckFromDoor
+	<-
+	.random(R);
+	if (R < 0.25) {
+		moveLeft(owner);
+	} else {
+		if (R < 0.5) {
+			moveRight(owner);
+		} else {
+			if (R < 0.75) {
+				moveUp(owner);
+			} else {
+				moveDown(owner);
+			};
+		};
+	};
+	// Keep trying
+	if (atDoor) {
+		!unstuckFromDoor;
+	}.
