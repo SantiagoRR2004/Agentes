@@ -109,22 +109,26 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
 
 +!unstuckFromDoor
 	<-
-    .my_name(Me);
-	.random(R);
-	if (R < 0.25) {
-		moveLeft(Me);
-	} else {
-		if (R < 0.5) {
-			moveRight(Me);
-		} else {
-			if (R < 0.75) {
-				moveUp(Me);
-			} else {
-				moveDown(Me);
-			};
-		};
-	};
+    !moveRandomly;
 	// Keep trying
 	if (atDoor) {
 		!unstuckFromDoor;
 	}.
+
++!moveRandomly
+    <-
+    .my_name(Me);
+    .random(R);
+    if (R < 0.25) {
+        moveLeft(Me);
+    } else {
+        if (R < 0.5) {
+            moveRight(Me);
+        } else {
+            if (R < 0.75) {
+                moveUp(Me);
+            } else {
+                moveDown(Me);
+            };
+        };
+    }.
