@@ -72,7 +72,6 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
 		&
             atRoom(Objective, CurrentRoom)
 	<-
-        .println("They are on the same room");
         move_towards(Objective).
 
 +!moveTowardsAdvanced(Objective):

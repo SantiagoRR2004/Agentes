@@ -1,24 +1,6 @@
+{ include("movement.asl") }
+
 /* Initial beliefs and rules */
-
-connect(kitchen, hall, doorKit1).
-connect(kitchen, hallway, doorKit2).
-connect(hall, kitchen, doorKit1).
-connect(hallway, kitchen, doorKit2).
-connect(bath1, hallway, doorBath1).
-connect(bath2, bedroom1, doorBath2).
-connect(hallway, bath1, doorBath1).
-connect(bedroom1, bath2, doorBath2).
-connect(bedroom1, hallway, doorBed1).
-connect(hallway, bedroom1, doorBed1).
-connect(bedroom2, hallway, doorBed2).
-connect(hallway, bedroom2, doorBed2).
-connect(bedroom3, hallway, doorBed3).
-connect(hallway, bedroom3, doorBed3).
-connect(hall, livingroom, doorSal1).
-connect(livingroom, hall, doorSal1).
-connect(hallway, livingroom, doorSal2).       
-connect(livingroom, hallway, doorSal2).
-
 
 /* GOALS*/
 !main.
@@ -54,25 +36,16 @@ connect(livingroom, hallway, doorSal2).
 +!gotToDirtyRoom(Room) : dirty(Room) & atRoom(Room) <-
 	.println("I am already in the room: ", Room);
 	!sweepRoom(Room).
-	.wait(1000).
 
 +!gotToDirtyRoom(Room) : dirty(Room) & not atRoom(Room) <-
 	.println("I am not in the room ", Room, " to clean it.");
 	!goToRoom(Room);
 	!gotToDirtyRoom(Room).
 
-+!goToRoom(Room): connect(Room, _, Door) & at(robot, Door) <-
-	.println("I am already at the door: ", Door).
-
-+!goToRoom(Room): connect(Room, _, Door) & not at(robot, Door) <-
-	move_towards(Door).
-
 +!sweepRoom(Room) : atRoom(Room) <-
 	.println("I am already in the room: ", Room);
-	moveLeft(robot);
-	moveLeft(robot);
-	moveUp(robot);
-	moveUp(robot).
+	clean(robot);
+	!moveRandomly.
 
 
 
