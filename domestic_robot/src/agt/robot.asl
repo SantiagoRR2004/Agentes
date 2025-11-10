@@ -2,6 +2,9 @@
 
 /* Initial beliefs and rules */
 
+originalHeight(6).
+originalWidth(16).
+
 /* GOALS*/
 !main.
 
@@ -75,12 +78,76 @@
 
 
 +!sweepRoom(Room):
-	// TODO: Implement cleaning action
+	// Start going down
 			atRoom(Room)
 		&
 		    dirty(Room)
+		&
+			originalHeight(Height)
+		&
+			not bottomReached
+		&
+			not height(X)
 	<-
-	!moveRandomly.
+	+height(Height).
+
++!sweepRoom(Room):
+	// Go down until bottom reached
+			atRoom(Room)
+		&
+		    dirty(Room)
+		&
+			not bottomReached
+		&
+			height(X)
+	<-
+		!moveDownNoExit;
+		-height(X);
+		+height(X-1);
+		if (X-1 == 0) {
+			+bottomReached;
+			.println("Bottom reached");
+		}.
+
++!sweepRoom(Room):
+	// Start going left
+			atRoom(Room)
+		&
+		    dirty(Room)
+		&
+			bottomReached
+		&
+			not leftReached
+		&
+			originalWidth(Width)
+		&
+			not width(Y)
+	<-
+		+width(Width).
+
++!sweepRoom(Room):
+	// Go left until left reached
+			atRoom(Room)
+		&
+			dirty(Room)
+		&
+			bottomReached
+		&
+			not leftReached
+		&
+			width(Y)
+	<-
+		!moveLeftNoExit;
+		-width(Y);
+		+width(Y-1);
+		if (Y-1 == 0) {
+			+leftReached;
+			.println("Left reached");
+		}.
+
++!sweepRoom(Room)
+	<-
+	true.
 
 
 +!goToCharger:

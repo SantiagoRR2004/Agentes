@@ -156,7 +156,7 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
             moveDown(Me);
         }.
 
-+moveLeftNoExit:
++!moveLeftNoExit:
     // Move left, but do not exit the room
             .my_name(Me)
         &
@@ -167,7 +167,7 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
             moveRight(Me);
         }.
 
-+moveRightNoExit:
++!moveRightNoExit:
     // Move right, but do not exit the room
             .my_name(Me)
         &
