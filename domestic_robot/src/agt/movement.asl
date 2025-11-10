@@ -103,7 +103,8 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
         if (atDoor & wasAtDoor) {
             .println("Stuck in a door.");
             !unstuckFromDoor;
-        }.
+        };
+        -wasAtDoor.
 
 
 +!unstuckFromDoor
