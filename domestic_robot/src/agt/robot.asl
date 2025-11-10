@@ -39,7 +39,8 @@ originalWidth(16).
 	// No dirty rooms, go to the charge station
 		not dirty(Room)
 	<-
-		!goToCharger.
+		!goToCharger;
+		!main.
 
 -!main
 	<-
@@ -58,7 +59,12 @@ originalWidth(16).
 	// If the room is not dirty, stop cleaning
 		not dirty(Room)
 	<-
-		-currentlyCleaning(Room).
+		-currentlyCleaning(Room);
+		-bottomReached;
+		-leftReached;
+		-height(X);
+		-width(Y);
+		-movingUp.
 
 +!cleanRoom(Room):
 	// Go to the dirty room if not there
@@ -189,7 +195,7 @@ originalWidth(16).
 	// End the sweep
 			width(0)
 		&
-			height(0)
+			height(H)
 		&
 			verticalSweepA
 		&
@@ -197,11 +203,10 @@ originalWidth(16).
 		&
 			originalHeight(H)
 	<-
-		.println("Finished sweeping the room.");
+		.println("Finished verticalSweepA.");
 		-verticalSweepA;
 		+horizontalSweepA;
 		-width(0);
-		-height(0);
 		+width(W);
 		+height(H).
 
@@ -211,13 +216,12 @@ originalWidth(16).
 		&
 			width(W)
 		&
-			not W=0
+			not width(0)
 		&
 			originalHeight(H)
 		&
 			verticalSweepA
 	<-
-		.println("Reached top or bottom");
 		!moveRightNoExit;
 		-width(W);
 		+width(W-1);
@@ -244,7 +248,6 @@ originalWidth(16).
 		&
 			movingUp
 	<-
-		.println("Moving up");
 		!moveUpNoExit;
 		-height(H);
 		+height(H-1).
@@ -263,7 +266,6 @@ originalWidth(16).
 		&
 			not movingUp
 	<-
-		.println("Moving down");
 		!moveDownNoExit;
 		-height(H);
 		+height(H-1).

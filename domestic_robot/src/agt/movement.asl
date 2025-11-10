@@ -141,7 +141,7 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
             atRoom(CurrentRoom)
     <-                  
         moveDown(Me);
-        if (not atRoom(CurrentRoom)) {
+        if (not atRoom(CurrentRoom) | atDoor) {
             moveUp(Me);
         }.
 
@@ -152,7 +152,7 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
             atRoom(CurrentRoom)
     <-
         moveUp(Me);
-        if (not atRoom(CurrentRoom)) {
+        if (not atRoom(CurrentRoom) | atDoor) {
             moveDown(Me);
         }.
 
@@ -163,7 +163,7 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
             atRoom(CurrentRoom)
     <-
         moveLeft(Me);
-        if (not atRoom(CurrentRoom)) {
+        if (not atRoom(CurrentRoom) | atDoor) {
             moveRight(Me);
         }.
 
@@ -174,6 +174,6 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
             atRoom(CurrentRoom)
     <-
         moveRight(Me);
-        if (not atRoom(CurrentRoom)) {
+        if (not atRoom(CurrentRoom) | atDoor) {
             moveLeft(Me);
         }.
