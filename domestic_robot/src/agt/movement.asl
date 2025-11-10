@@ -132,3 +132,48 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
             };
         };
     }.
+
+
++!moveDownNoExit:
+    // Move down, but do not exit the room
+            .my_name(Me)
+        &
+            atRoom(CurrentRoom)
+    <-                  
+        moveDown(Me);
+        if (not atRoom(CurrentRoom)) {
+            moveUp(Me);
+        }.
+
++!moveUpNoExit:
+    // Move up, but do not exit the room
+            .my_name(Me)
+        &
+            atRoom(CurrentRoom)
+    <-
+        moveUp(Me);
+        if (not atRoom(CurrentRoom)) {
+            moveDown(Me);
+        }.
+
++moveLeftNoExit:
+    // Move left, but do not exit the room
+            .my_name(Me)
+        &
+            atRoom(CurrentRoom)
+    <-
+        moveLeft(Me);
+        if (not atRoom(CurrentRoom)) {
+            moveRight(Me);
+        }.
+
++moveRightNoExit:
+    // Move right, but do not exit the room
+            .my_name(Me)
+        &
+            atRoom(CurrentRoom)
+    <-
+        moveRight(Me);
+        if (not atRoom(CurrentRoom)) {
+            moveLeft(Me);
+        }.
