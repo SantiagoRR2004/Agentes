@@ -100,12 +100,16 @@ originalWidth(16).
 			not bottomReached
 		&
 			height(X)
+		&
+			originalHeight(H)
 	<-
 		!moveDownNoExit;
 		-height(X);
 		+height(X-1);
 		if (X-1 == 0) {
 			+bottomReached;
+			-height(X-1);
+			+height(H);
 			.println("Bottom reached");
 		}.
 
@@ -136,18 +140,34 @@ originalWidth(16).
 			not leftReached
 		&
 			width(Y)
+		&
+			originalWidth(W)
 	<-
 		!moveLeftNoExit;
 		-width(Y);
 		+width(Y-1);
 		if (Y-1 == 0) {
 			+leftReached;
+			-width(Y-1);
+			+width(W);
+			+verticalSweepA;
+			+movingUp;
 			.println("Left reached");
 		}.
 
-+!sweepRoom(Room)
++!sweepRoom(Room):
+
+			atRoom(Room)
+		&
+			dirty(Room)
+		&
+			bottomReached
+		&
+			leftReached
+		&
+			verticalSweepA
 	<-
-	true.
+		!verticalSweepA.
 
 
 +!goToCharger:
@@ -165,13 +185,88 @@ originalWidth(16).
 
 
 
++!verticalSweepA:
+	// End the sweep
+			width(0)
+		&
+			height(0)
+		&
+			verticalSweepA
+		&
+			originalWidth(W)
+		&
+			originalHeight(H)
+	<-
+		.println("Finished sweeping the room.");
+		-verticalSweepA;
+		+horizontalSweepA;
+		-width(0);
+		-height(0);
+		+width(W);
+		+height(H).
 
++!verticalSweepA:
+	// Reach top or bottom
+			height(0)
+		&
+			width(W)
+		&
+			not W=0
+		&
+			originalHeight(H)
+		&
+			verticalSweepA
+	<-
+		.println("Reached top or bottom");
+		!moveRightNoExit;
+		-width(W);
+		+width(W-1);
+		-height(0);
+		+height(H);
+		if (movingUp) {
+			-movingUp;
+		}
+		else {
+			+movingUp;
+		}.
 
++!verticalSweepA:
+	// Moving up
+			height(H)
+		&
+			width(W)
+		&
+			not height(0)
+		&
+			not width(0)
+		&
+			verticalSweepA
+		&
+			movingUp
+	<-
+		.println("Moving up");
+		!moveUpNoExit;
+		-height(H);
+		+height(H-1).
 
-
-
-
-
++!verticalSweepA:
+	// Moving down
+			height(H)
+		&
+			width(W)
+		&
+			not height(0)
+		&
+			not width(0)
+		&
+			verticalSweepA
+		&
+			not movingUp
+	<-
+		.println("Moving down");
+		!moveDownNoExit;
+		-height(H);
+		+height(H-1).
 
 
 
