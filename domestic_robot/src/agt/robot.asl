@@ -192,83 +192,57 @@ originalWidth(16).
 
 
 +!verticalSweepA:
-	// End the sweep
-			width(0)
+			width(W)
 		&
 			height(H)
 		&
 			verticalSweepA
 		&
-			originalWidth(W)
+			originalWidth(OW)
 		&
-			originalHeight(H)
+			originalHeight(OH)
 	<-
-		.println("Finished verticalSweepA.");
-		-verticalSweepA;
-		+horizontalSweepA;
-		-width(0);
-		+width(W);
-		+height(H).
-
-+!verticalSweepA:
-	// Reach top or bottom
-			height(0)
-		&
-			width(W)
-		&
-			not width(0)
-		&
-			originalHeight(H)
-		&
-			verticalSweepA
-	<-
-		!moveRightNoExit;
-		-width(W);
-		+width(W-1);
-		-height(0);
-		+height(H);
-		if (movingUp) {
-			-movingUp;
-		}
-		else {
-			+movingUp;
+		if (height(OH) & width(0)) {
+			// End the sweep
+			.println("Finished verticalSweepA.");
+			-verticalSweepA;
+			+horizontalSweepA;
+			-width(0);
+			+width(OW);
+			+height(OH);
+		} else {
+			if (not width(0) & height(0)) {
+				// Reach top or bottom
+				!moveRightNoExit;
+				-width(W);
+				+width(W-1);
+				-height(0);
+				+height(OH);
+				if (movingUp) {
+					-movingUp;
+				}
+				else {
+					+movingUp;
+				};
+			} else {
+				if (not width(0) & not height(0) & movingUp) {
+					// Moving up
+					!moveUpNoExit;
+					-height(H);
+					+height(H-1);
+				} else {
+					if (not width(0) & not height(0) & not movingUp) {
+						// Moving down
+						!moveDownNoExit;
+						-height(H);
+						+height(H-1);
+					} else {
+						// Should not happen
+						.println("Error in verticalSweepA logic.");
+					};
+				};
+			};
 		}.
-
-+!verticalSweepA:
-	// Moving up
-			height(H)
-		&
-			width(W)
-		&
-			not height(0)
-		&
-			not width(0)
-		&
-			verticalSweepA
-		&
-			movingUp
-	<-
-		!moveUpNoExit;
-		-height(H);
-		+height(H-1).
-
-+!verticalSweepA:
-	// Moving down
-			height(H)
-		&
-			width(W)
-		&
-			not height(0)
-		&
-			not width(0)
-		&
-			verticalSweepA
-		&
-			not movingUp
-	<-
-		!moveDownNoExit;
-		-height(H);
-		+height(H-1).
 
 
 
