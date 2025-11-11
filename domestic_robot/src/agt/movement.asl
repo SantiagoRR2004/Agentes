@@ -18,6 +18,8 @@ connect(livingroom, hall, doorSal1).
 connect(hallway,livingroom, doorSal2).
 connect(livingroom, hallway, doorSal2).
 
+originalPatience(100).
+patience(100).
 
 minusOne(X, Y)
 	:-
@@ -72,7 +74,8 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
 		&
             atRoom(Objective, CurrentRoom)
 	<-
-        move_towards(Objective).
+        move_towards(Objective);
+        !reducePatience.
 
 +!moveTowardsAdvanced(Objective):
 	// They are not in the same Room
@@ -82,7 +85,8 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
         &
             not ObjectiveRoom = CurrentRoom
 	<-
-        !goToRoom(ObjectiveRoom).
+        !goToRoom(ObjectiveRoom);
+        !reducePatience.
 
 
 +!goToRoom(ObjectiveRoom):
@@ -177,3 +181,22 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
         if (not atRoom(CurrentRoom) | atDoor) {
             moveLeft(Me);
         }.
+
+
++patience(0)
+    <-
+        !moveRandomly;
+        .println("Patience exhausted, moving randomly.");
+        !resetPatience.
+
++!reducePatience:
+        patience(P)
+    <-
+        -patience(P);
+        +patience(P-1).
+
++!resetPatience:
+        originalPatience(OP)
+    <-
+        -patience(_);
+        +patience(OP).

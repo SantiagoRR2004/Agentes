@@ -45,7 +45,8 @@ sleepOn([bed1, bed2, bed3]).
 	} else {
 		// 50% chance to want to sleep
 		!chooseSleepingPlace;
-	}.
+	};
+	!resetPatience.
 
 +!chooseSittingPlace:
 		sittable(SittableList)

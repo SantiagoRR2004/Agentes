@@ -58,6 +58,7 @@ originalWidth(16).
 		dirty(Room)
 	<-
 		.println("Chosen room to clean: ", Room);
+		!resetPatience;
 		+currentlyCleaning(Room).
 
 
