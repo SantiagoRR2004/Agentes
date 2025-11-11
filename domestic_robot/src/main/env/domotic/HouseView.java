@@ -63,7 +63,7 @@ public class HouseView extends GridWorldView {
   public void draw(Graphics g, int x, int y, int object) {
     Location lRobot = hmodel.getAgPos(0);
     Location lOwner = hmodel.getAgPos(1);
-    // Location lGuest = hmodel.getAgPos(2);
+    Location lGuest = hmodel.getAgPos(2);
     Location loc = new Location(x, y);
     String objPath = currentDirectory;
     // super.drawAgent(g, x, y, Color.white, -1);
@@ -193,7 +193,8 @@ public class HouseView extends GridWorldView {
   public void drawAgent(Graphics g, int x, int y, Color c, int id) {
     Location lRobot = hmodel.getAgPos(0);
     Location lOwner = hmodel.getAgPos(1);
-    // Location lGuest = hmodel.getAgPos(2);
+    Location lGuest = hmodel.getAgPos(2);
+
     String objPath = currentDirectory;
 
     if (id < 1) {
@@ -214,9 +215,16 @@ public class HouseView extends GridWorldView {
         super.drawString(g, x, y, defaultFont, "Rob");
       }
     } else if (id > 1) {
-      drawMan(g, x, y, "down");
+      drawMan(g, lGuest.x, lGuest.y, "walkf");
     } else {
-      if (lOwner.equals(hmodel.lChair1)) {
+      if (lOwner.equals(hmodel.lBed1)) {
+        drawMultipleScaledMan(g, hmodel.lBed1.x, hmodel.lBed1.y, "right");
+        // drawMan(g, hmodel.lBed1.x, hmodel.lBed1.y, "right");
+      } else if (lOwner.equals(hmodel.lBed2)) {
+        drawMultipleScaledMan(g, hmodel.lBed2.x, hmodel.lBed2.y, "down");
+      } else if (lOwner.equals(hmodel.lBed3)) {
+        drawMultipleScaledMan(g, hmodel.lBed3.x, hmodel.lBed3.y, "down");
+      } else if (lOwner.equals(hmodel.lChair1)) {
         drawMan(g, hmodel.lChair1.x, hmodel.lChair1.y, "left");
       } else if (lOwner.equals(hmodel.lChair2)) {
         drawMan(g, hmodel.lChair2.x, hmodel.lChair2.y, "down");
@@ -386,6 +394,46 @@ public class HouseView extends GridWorldView {
         Img.getImage(), x * cellSizeW + 1, y * cellSizeH + 1, cellSizeW - 2, cellSizeH - 2, null);
   }
 
+  // drawMultipleScaledImage(g, x, y, objPath, 2, 2, 60, 90);
+  public void drawMultipleScaledMan(Graphics g, int x, int y, String how) {
+    String resource = "/doc/sitd.png"; // currentDirectory.concat("/doc/sitd.png");
+    switch (how) {
+      case "right":
+        resource = "/doc/sitr.png"; // currentDirectory.concat("/doc/sitr.png");
+        break;
+      case "left":
+        resource = "/doc/sitl.png"; // currentDirectory.concat("/doc/sitl.png");
+        break;
+      case "up":
+        resource = "/doc/situ.png"; // currentDirectory.concat("/doc/situ.png");
+        break;
+      case "down":
+        resource = "/doc/sitd.png"; // currentDirectory.concat("/doc/sitd.png");
+        break;
+      case "stand":
+        resource = "/doc/sits.png"; // currentDirectory.concat("/doc/sits.png");
+        break;
+      case "walkr":
+        resource = "/doc/walklr.png"; // currentDirectory.concat("/doc/walklr.png");
+        break;
+    }
+    URL url = getClass().getResource(resource);
+    ImageIcon Img = new ImageIcon();
+    if (url == null) System.out.println("Could not find image! " + resource);
+    else Img = new ImageIcon(getClass().getResource(resource));
+    // ImageIcon Img = new ImageIcon(getClass().getResource(resource));
+    // g.drawImage(Img.getImage(), x * cellSizeW + 1, y * cellSizeH + 1, cellSizeW - 3, cellSizeH -
+    // 3, null);
+    // drawMultipleScaledImage(g, x, y, objPath, 2, 2, 60, 90);
+    g.drawImage(
+        Img.getImage(),
+        x * cellSizeW + 2 * cellSizeW / 5,
+        y * cellSizeH + 2 * cellSizeH / 20 + 1,
+        2 * cellSizeW * 6 / 10,
+        2 * cellSizeH * 9 / 10,
+        null);
+  }
+
   public void drawMan(Graphics g, int x, int y, String how) {
     String resource = "/doc/sitd.png"; // currentDirectory.concat("/doc/sitd.png");
     switch (how) {
@@ -403,6 +451,9 @@ public class HouseView extends GridWorldView {
         break;
       case "stand":
         resource = "/doc/sits.png"; // currentDirectory.concat("/doc/sits.png");
+        break;
+      case "walkf":
+        resource = "/doc/walkf.png"; // currentDirectory.concat("/doc/walklr.png");
         break;
       case "walkr":
         resource = "/doc/walklr.png"; // currentDirectory.concat("/doc/walklr.png");

@@ -26,7 +26,7 @@ public class HouseModel extends GridWorldModel {
   // the grid size
   public static final int GSize = 12; // Cells
   public final int GridSize = 1080; // Width
-  public final int DirtyPlacesNumber = GSize * GSize / 11;
+  public final int DirtyPlacesNumber = GSize * GSize / 19;
 
   boolean fridgeOpen = false; // whether the fridge is open
   boolean carryingDrug = false; // whether the robot is carrying drug
@@ -62,16 +62,15 @@ public class HouseModel extends GridWorldModel {
   Location lDoorBath2 = new Location(GSize * 2 - 4, GSize / 2 + 1); // (20,7)
 
   // Initialization of the area modeling the home rooms
-  Area kitchen = new Area(0, 0, GSize / 2 + 1, GSize / 2 - 1); // (0,0,7,5)
-  Area livingroom = new Area(GSize / 3, GSize / 2 + 1, GSize, GSize - 1); // (4,7,12,11)
+  Area kitchen = new Area(0, 0, GSize / 2, GSize / 2); // (0,0,6,6)
+  Area livingroom = new Area(GSize / 3, GSize / 2, GSize, GSize - 1); // (4,6,12,11)
   Area bath1 = new Area(GSize / 2 + 2, 0, GSize - 1, GSize / 3); // (8,0,11,4)
-  Area bath2 = new Area(GSize * 2 - 3, GSize / 2 + 1, GSize * 2 - 1, GSize - 1); // (21,7,23,11)
-  Area bedroom1 = new Area(GSize + 1, GSize / 2 + 1, GSize * 2 - 4, GSize - 1); // (13,7,20,11)
+  Area bath2 = new Area(GSize * 2 - 4, GSize / 2 + 1, GSize * 2 - 1, GSize - 1); // (20,7,23,11)
+  Area bedroom1 = new Area(GSize + 1, GSize / 2, GSize * 2 - 4, GSize - 1); // (13,6,20,11)
   Area bedroom2 = new Area(GSize + 1, 0, GSize * 4 / 3 + 1, GSize / 3); // (13,0,17,4)
   Area bedroom3 = new Area(GSize * 4 / 3 + 3, 0, GSize * 2 - 1, GSize / 3); // (19,0,23,4)
   Area hall = new Area(0, GSize / 2 + 1, GSize / 4, GSize - 1); // (0,7,3,11)
-  Area hallway = new Area(GSize / 2 + 2, GSize / 2 - 1, GSize * 2 - 1, GSize / 2); // (8,7,23,6)
-
+  Area hallway = new Area(GSize / 2 + 1, GSize / 2 - 1, GSize * 2 - 1, GSize / 2 - 1); // (7,5,23,5)
   /*
   Modificar el modelo para que la casa sea un conjunto de habitaciones
   Dar un codigo a cada habitación y vincular un Area a cada habitación
@@ -89,7 +88,7 @@ public class HouseModel extends GridWorldModel {
               try {
                 while (true) {
                   createIntruder();
-                  Thread.sleep(60000);
+                  Thread.sleep(40000);
                 }
               } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -105,7 +104,7 @@ public class HouseModel extends GridWorldModel {
               try {
                 while (true) {
                   createDirtyPlaces();
-                  Thread.sleep(40000);
+                  Thread.sleep(30000);
                 }
               } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -154,6 +153,9 @@ public class HouseModel extends GridWorldModel {
 
     // Do new methods to create literals for each object placed on
     // the model indicating their nature to inform agents their existence
+    initRooms();
+
+    addDirty(new Location(GSize * 2 - 2, GSize * 3 / 4));
 
     // initial location of visual objects
     add(FRIDGE, lFridge);
@@ -195,8 +197,6 @@ public class HouseModel extends GridWorldModel {
     add(DOOR, lDoorBed3);
     add(DOOR, lDoorBath2);
 
-    initRooms();
-
     dirtyPlaces.start();
 
     intruder.start();
@@ -216,89 +216,107 @@ public class HouseModel extends GridWorldModel {
 
   void createIntruder() {
     Location loc = getFreePos();
-    setAgPos(2, loc);
+    if (isFreeOfObject(loc.x, loc.y)) {
+      setAgPos(2, loc);
+      try {
+        Thread.sleep(30000);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+      ;
+      setAgPos(2, outHouse);
+    }
   }
 
   void addDirty(Location loc) {
     int val;
     add(DIRTY, loc);
+    System.out.println("Suciedad en (" + loc.x + ", " + loc.y + ").");
     if (bath1.contains(loc)) {
       val = dirtyRooms.get("bath1");
       val++;
       dirtyRooms.put("bath1", val);
+      System.out.println("En el bath1 hay " + val + " celdas sucias.");
     }
     ;
     if (bath2.contains(loc)) {
       val = dirtyRooms.get("bath2");
       val++;
       dirtyRooms.put("bath2", val);
+      System.out.println("En el bath2 hay " + val + " celdas sucias.");
     }
     ;
     if (bedroom1.contains(loc)) {
       val = dirtyRooms.get("bedroom1");
       val++;
       dirtyRooms.put("bedroom1", val);
+      System.out.println("En el bedroom1 hay " + val + " celdas sucias.");
     }
     ;
     if (bedroom2.contains(loc)) {
       val = dirtyRooms.get("bedroom2");
       val++;
       dirtyRooms.put("bedroom2", val);
+      System.out.println("En el bedroom2 hay " + val + " celdas sucias.");
     }
     ;
     if (bedroom3.contains(loc)) {
       val = dirtyRooms.get("bedroom3");
       val++;
       dirtyRooms.put("bedroom3", val);
+      System.out.println("En el bedroom3 hay " + val + " celdas sucias.");
     }
     ;
     if (hallway.contains(loc)) {
       val = dirtyRooms.get("hallway");
       val++;
       dirtyRooms.put("hallway", val);
+      System.out.println("En el hallway hay " + val + " celdas sucias.");
     }
     ;
     if (hall.contains(loc)) {
       val = dirtyRooms.get("hall");
       val++;
       dirtyRooms.put("hall", val);
+      System.out.println("En el hall hay " + val + " celdas sucias.");
     }
     ;
     if (livingroom.contains(loc)) {
       val = dirtyRooms.get("livingroom");
       val++;
       dirtyRooms.put("livingroom", val);
+      System.out.println("En el livingroom hay " + val + " celdas sucias.");
     }
     ;
     if (kitchen.contains(loc)) {
       val = dirtyRooms.get("kitchen");
       val++;
       dirtyRooms.put("kitchen", val);
+      System.out.println("En la kitchen hay " + val + " celdas sucias.");
     }
     ;
-    System.out.println("Suciedad en (" + loc.x + ", " + loc.y + ").");
   }
 
   boolean isFreeTable(int x, int y) {
-    return isFree(TABLE, x, y) & isFree(TABLE, x - 1, y);
+    return isFree(TABLE, x, y) && isFree(TABLE, x - 1, y);
   }
 
   boolean isFreeSofa(int x, int y) {
-    return isFree(SOFA, x, y) & isFree(SOFA, x - 1, y);
+    return isFree(SOFA, x, y) && isFree(SOFA, x - 1, y);
   }
 
   boolean isFreeBed(int x, int y) {
     return isFree(BED, x, y)
-        & isFree(BED, x - 1, y)
-        & isFree(BED, x - 1, y - 1)
-        & isFree(BED, x, y - 1);
+        && isFree(BED, x - 1, y)
+        && isFree(BED, x - 1, y - 1)
+        && isFree(BED, x, y - 1);
   }
 
   boolean isFreeOfObject(int x, int y) {
     boolean free;
     free = isFree(DIRTY, x, y) && isFree(FRIDGE, x, y) && isFree(CHAIR, x, y);
     free = free && isFree(CHARGER, x, y) && isFree(WASHER, x, y);
-    free = isFreeSofa(x, y) && isFreeTable(x, y) && isFreeBed(x, y);
+    free = free && isFreeSofa(x, y) && isFreeTable(x, y) && isFreeBed(x, y);
 
     return free && isFreeOfObstacle(x, y);
   }
@@ -310,13 +328,9 @@ public class HouseModel extends GridWorldModel {
       int x = rand.nextInt(GSize * 2 - 1); // entre 0 y GSize inclusive
       int y = rand.nextInt(GSize - 1);
       String room1 = getRoom(new Location(x, y));
-      String room2 = getRoom(getAgPos(1));
+      String room2 = getRoom(getAgPos(0));
 
-      if (isFreeOfObject(x, y)) {
-        // if (isFree(x,y) && isFree(DIRTY,x,y) && isFree(FRIDGE,x,y) && isFree(CHAIR,x,y) &&
-        //    isFree(CHARGER,x,y) && isFree(WASHER,x,y) && isFreeSofa(x,y) && isFreeTable(x,y) &&
-        //	isFreeBed(x,y) && !room1.equals(room2)) {
-        // if (hasObject(CLEAN, x, y)){
+      if (isFreeOfObject(x, y) && !room1.equals(room2)) {
         addDirty(new Location(x, y));
       }
       ;
@@ -381,7 +395,7 @@ public class HouseModel extends GridWorldModel {
 
   boolean clean(int Ag) {
     Location loc = getAgPos(Ag);
-    int val;
+    int val = 0;
 
     if (hasObject(DIRTY, loc)) {
       remove(DIRTY, loc.x, loc.y);
@@ -443,7 +457,10 @@ public class HouseModel extends GridWorldModel {
       System.out.println("Se ha limpiado suciedad en (" + loc.x + ", " + loc.y + ").");
     }
     ;
-
+    if (val > 0) {
+      System.out.println("Aun queda suciedad en la habitación.");
+    }
+    ;
     return true;
   }
 

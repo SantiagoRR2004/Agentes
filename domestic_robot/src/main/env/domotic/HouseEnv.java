@@ -132,8 +132,11 @@ public class HouseEnv extends Environment {
   /** creates the agents percepts based on the HouseModel */
   void updatePercepts() {
     // clear the percepts of the agents
-    clearPercepts("robot");
-    clearPercepts("owner");
+    clearAllPercepts();
+    // clearPercepts();
+    // clearPercepts("robot");
+    // clearPercepts("owner");
+    // clearPercepts("repartidor");
 
     updateAgentsPlace();
     updateThingsPlace();
@@ -274,7 +277,8 @@ public class HouseEnv extends Environment {
     for (String room : model.dirtyRooms.keySet()) {
       if (model.dirtyRooms.get(room) > 0) {
         System.out.println("La habitación: " + room + " está sucia");
-        addPercept(Literal.parseLiteral("dirty(" + room + ")"));
+        addPercept("robot", Literal.parseLiteral("dirty(" + room + ")"));
+        addPercept("owner", Literal.parseLiteral("dirty(" + room + ")"));
       }
     }
   }
@@ -293,6 +297,15 @@ public class HouseEnv extends Environment {
       String l = action.getTerm(0).toString();
       Location dest = null;
       switch (l) {
+        case "bed1":
+          dest = model.lBed1;
+          break;
+        case "bed2":
+          dest = model.lBed2;
+          break;
+        case "bed3":
+          dest = model.lBed3;
+          break;
         case "chair1":
           dest = model.lChair1;
           break;
@@ -339,6 +352,15 @@ public class HouseEnv extends Environment {
           break;
         case "delivery":
           dest = model.lDeliver;
+          break;
+        case "bed1":
+          dest = model.lBed1;
+          break;
+        case "bed2":
+          dest = model.lBed2;
+          break;
+        case "bed3":
+          dest = model.lBed3;
           break;
         case "chair1":
           dest = model.lChair1;
@@ -453,6 +475,7 @@ public class HouseEnv extends Environment {
 
     if (result) {
       updatePercepts();
+      logger.info("stop here after " + action + "--------------------------------");
       try {
         Thread.sleep(300);
       } catch (Exception e) {
