@@ -10,6 +10,11 @@ sleepOn([bed1, bed2, bed3]).
 
 /* Plans */
 
++intruderDetected[source(robot)]
+	// Handle intruder alert from robot
+	<-
+		alert("He could be you, he could be me, he could even be-").
+
 +!main:
 	wantToSit(Object)
 	<-

@@ -10,14 +10,20 @@ originalWidth(16).
 
 /* Plans */
 
-+!main:
++at(Me, dirty):
 	// Clean if dirty
-			.my_name(Me)
-		&
-			at(Me, dirty)
+	// Activate on belief
+		.my_name(Me)
 	<-
-		clean(robot);
-		!main.
+		clean(robot).
+
++at(Me, intruder):
+	// Detect intruder
+	// Activate on belief
+		.my_name(Me)
+	<-
+		alert("INTRUDER ALERT! A RED SPY IS IN THE BASE!");
+		.send(owner, tell, intruderDetected).
 
 +!main:
 	// If there is a dirty room, choose one to clean
