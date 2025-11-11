@@ -233,7 +233,7 @@ originalWidth(16).
 			// End the sweep
 			.println("Finished verticalSweepA.");
 			-verticalSweepA;
-			+horizontalSweepA;
+			+horizontalSweepB;
 			-width(0);
 			+width(OW);
 			+height(OH);
@@ -287,7 +287,7 @@ originalWidth(16).
 			// End the sweep
 			.println("Finished horizontalSweepA.");
 			-horizontalSweepA;
-			+verticalSweepB;
+			+verticalSweepA;
 			+width(OW);
 			-height(0);
 			+height(OH);
@@ -299,22 +299,22 @@ originalWidth(16).
 				+height(H-1);
 				-width(0);
 				+width(OW);
-				if (movingRight) {
-					-movingRight;
+				if (movingLeft) {
+					-movingLeft;
 				}
 				else {
-					+movingRight;
+					+movingLeft;
 				};
 			} else {
-				if (not height(0) & not width(0) & movingRight) {
-					// Moving right
-					!moveRightNoExit;
+				if (not height(0) & not width(0) & movingLeft) {
+					// Moving left
+					!moveLeftNoExit;
 					-width(W);
 					+width(W-1);
 				} else {
-					if (not height(0) & not width(0) & not movingRight) {
-						// Moving left
-						!moveLeftNoExit;
+					if (not height(0) & not width(0) & not movingLeft) {
+						// Moving right
+						!moveRightNoExit;
 						-width(W);
 						+width(W-1);
 					} else {
@@ -341,7 +341,7 @@ originalWidth(16).
 			// End the sweep
 			.println("Finished verticalSweepB.");
 			-verticalSweepB;
-			+horizontalSweepB;
+			+horizontalSweepA;
 			-width(0);
 			+width(OW);
 			+height(OH);
@@ -395,7 +395,7 @@ originalWidth(16).
 			// End the sweep
 			.println("Finished horizontalSweepB.");
 			-horizontalSweepB;
-			+verticalSweepA;
+			+verticalSweepB;
 			+width(OW);
 			-height(0);
 			+height(OH);
@@ -407,22 +407,22 @@ originalWidth(16).
 				+height(H-1);
 				-width(0);
 				+width(OW);
-				if (movingLeft) {
-					-movingLeft;
+				if (movingRight) {
+					-movingRight;
 				}
 				else {
-					+movingLeft;
+					+movingRight;
 				};
 			} else {
-				if (not height(0) & not width(0) & movingLeft) {
-					// Moving left
-					!moveLeftNoExit;
+				if (not height(0) & not width(0) & movingRight) {
+					// Moving right
+					!moveRightNoExit;
 					-width(W);
 					+width(W-1);
 				} else {
-					if (not height(0) & not width(0) & not movingLeft) {
-						// Moving right
-						!moveRightNoExit;
+					if (not height(0) & not width(0) & not movingRight) {
+						// Moving left
+						!moveLeftNoExit;
 						-width(W);
 						+width(W-1);
 					} else {
