@@ -194,8 +194,7 @@ originalWidth(16).
 					};
 				};
 			};
-		};
-		-dirty(Room).
+		}.
 
 
 +!goToCharger:

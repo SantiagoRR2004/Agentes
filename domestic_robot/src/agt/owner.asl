@@ -39,8 +39,7 @@ sleepOn([bed1, bed2, bed3]).
 		!chooseSittingPlace;
 	} else {
 		// 50% chance to want to sleep
-		// TODO Can't move_towards beds because they are missing from the switch in HouseEnv
-		!chooseSittingPlace;
+		!chooseSleepingPlace;
 	}.
 
 +!chooseSittingPlace:
@@ -116,7 +115,7 @@ sleepOn([bed1, bed2, bed3]).
 		&
 			at(Me, ChosenPlace)
 	<-
-		// Can't actually interact with beds
+		sit(ChosenPlace);
 		.random(X);
 		// Between 2 and 7 seconds
 		.wait(X*5000+2000);
