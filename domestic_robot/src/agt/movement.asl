@@ -143,10 +143,49 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
             .my_name(Me)
         &
             atRoom(CurrentRoom)
+        &
+            height(H)
     <-                  
         moveDown(Me);
         if (not atRoom(CurrentRoom) | atDoor) {
             moveUp(Me);
+            -height(H);
+            +height(0);
+        } else {
+            -height(H);
+            +height(H-1);
+        }.
+
++!moveDownNoExit:
+    // Move down, but do not exit the room
+            .my_name(Me)
+        &
+            atRoom(CurrentRoom)
+        &
+            not height(H)
+    <-
+        moveDown(Me);
+        if (not atRoom(CurrentRoom) | atDoor) {
+            moveUp(Me);
+        }.
+
+
++!moveUpNoExit:
+    // Move up, but do not exit the room
+            .my_name(Me)
+        &
+            atRoom(CurrentRoom)
+        &
+            height(H)
+    <-
+        moveUp(Me);
+        if (not atRoom(CurrentRoom) | atDoor) {
+            moveDown(Me);
+            -height(H);
+            +height(0);
+        } else {
+            -height(H);
+            +height(H-1);
         }.
 
 +!moveUpNoExit:
@@ -154,10 +193,31 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
             .my_name(Me)
         &
             atRoom(CurrentRoom)
+        &
+            not height(H)
     <-
         moveUp(Me);
         if (not atRoom(CurrentRoom) | atDoor) {
             moveDown(Me);
+        }.
+
+
++!moveLeftNoExit:
+    // Move left, but do not exit the room
+            .my_name(Me)
+        &
+            atRoom(CurrentRoom)
+        &
+            width(W)
+    <-
+        moveLeft(Me);
+        if (not atRoom(CurrentRoom) | atDoor) {
+            moveRight(Me);
+            -width(W);
+            +width(0);
+        } else {
+            -width(W);
+            +width(W-1);
         }.
 
 +!moveLeftNoExit:
@@ -165,10 +225,31 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
             .my_name(Me)
         &
             atRoom(CurrentRoom)
+        &
+            not width(W)
     <-
         moveLeft(Me);
         if (not atRoom(CurrentRoom) | atDoor) {
             moveRight(Me);
+        }.
+
+
++!moveRightNoExit:
+    // Move right, but do not exit the room
+            .my_name(Me)
+        &
+            atRoom(CurrentRoom)
+        &
+            width(W)
+    <-
+        moveRight(Me);
+        if (not atRoom(CurrentRoom) | atDoor) {
+            moveLeft(Me);
+            -width(W);
+            +width(0);
+        } else {
+            -width(W);
+            +width(W-1);
         }.
 
 +!moveRightNoExit:
@@ -176,6 +257,8 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
             .my_name(Me)
         &
             atRoom(CurrentRoom)
+        &
+            not width(W)
     <-
         moveRight(Me);
         if (not atRoom(CurrentRoom) | atDoor) {

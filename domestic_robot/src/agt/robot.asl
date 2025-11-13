@@ -80,7 +80,6 @@ ownerLimit(5).
 	<-
 		.println("Sorry owner, I will get out of your way.");
 		!moveRandomly;
-		!resetCleaning;
 		!main.
 
 +!evadeOwner:
@@ -200,11 +199,9 @@ ownerLimit(5).
 			originalHeight(H)
 	<-
 		!moveDownNoExit;
-		-height(X);
-		+height(X-1);
-		if (X-1 == 0) {
+		if (height(0)) {
 			+bottomReached;
-			-height(X-1);
+			-height(0);
 			+height(H);
 			.println("Bottom reached");
 		}.
@@ -240,11 +237,9 @@ ownerLimit(5).
 			originalWidth(W)
 	<-
 		!moveLeftNoExit;
-		-width(Y);
-		+width(Y-1);
-		if (Y-1 == 0) {
+		if (width(0)) {
 			+leftReached;
-			-width(Y-1);
+			-width(0);
 			+width(W);
 			+verticalSweepA;
 			+movingUp;
@@ -317,8 +312,6 @@ ownerLimit(5).
 			if (not width(0) & height(0)) {
 				// Reach top or bottom
 				!moveRightNoExit;
-				-width(W);
-				+width(W-1);
 				-height(0);
 				+height(OH);
 				if (movingUp) {
@@ -331,14 +324,10 @@ ownerLimit(5).
 				if (not width(0) & not height(0) & movingUp) {
 					// Moving up
 					!moveUpNoExit;
-					-height(H);
-					+height(H-1);
 				} else {
 					if (not width(0) & not height(0) & not movingUp) {
 						// Moving down
 						!moveDownNoExit;
-						-height(H);
-						+height(H-1);
 					} else {
 						// Should not happen
 						.println("Error in verticalSweepA logic.");
@@ -371,8 +360,6 @@ ownerLimit(5).
 			if (not height(0) & width(0)) {
 				// Reach left or right
 				!moveDownNoExit;
-				-height(H);
-				+height(H-1);
 				-width(0);
 				+width(OW);
 				if (movingLeft) {
@@ -385,14 +372,10 @@ ownerLimit(5).
 				if (not height(0) & not width(0) & movingLeft) {
 					// Moving left
 					!moveLeftNoExit;
-					-width(W);
-					+width(W-1);
 				} else {
 					if (not height(0) & not width(0) & not movingLeft) {
 						// Moving right
 						!moveRightNoExit;
-						-width(W);
-						+width(W-1);
 					} else {
 						// Should not happen
 						.println("Error in horizontalSweepA logic.");
@@ -425,8 +408,6 @@ ownerLimit(5).
 			if (not width(0) & height(0)) {
 				// Reach top or bottom
 				!moveLeftNoExit;
-				-width(W);
-				+width(W-1);
 				-height(0);
 				+height(OH);
 				if (movingDown) {
@@ -439,14 +420,10 @@ ownerLimit(5).
 				if (not width(0) & not height(0) & movingDown) {
 					// Moving down
 					!moveDownNoExit;
-					-height(H);
-					+height(H-1);
 				} else {
 					if (not width(0) & not height(0) & not movingDown) {
 						// Moving up
 						!moveUpNoExit;
-						-height(H);
-						+height(H-1);
 					} else {
 						// Should not happen
 						.println("Error in verticalSweepB logic.");
@@ -479,8 +456,6 @@ ownerLimit(5).
 			if (not height(0) & width(0)) {
 				// Reach left or right
 				!moveUpNoExit;
-				-height(H);
-				+height(H-1);
 				-width(0);
 				+width(OW);
 				if (movingRight) {
@@ -493,14 +468,10 @@ ownerLimit(5).
 				if (not height(0) & not width(0) & movingRight) {
 					// Moving right
 					!moveRightNoExit;
-					-width(W);
-					+width(W-1);
 				} else {
 					if (not height(0) & not width(0) & not movingRight) {
 						// Moving left
 						!moveLeftNoExit;
-						-width(W);
-						+width(W-1);
 					} else {
 						// Should not happen
 						.println("Error in horizontalSweepB logic.");
@@ -508,38 +479,3 @@ ownerLimit(5).
 				};
 			};
 		}.
-
-
-
-
-
-
-
-/*
-// when the supermarket makes a delivery, try the 'has' goal again
-+delivered(drug, _Qtd, _OrderId)[source(repartidor)]
-  :  true
-  <- +delivered;
-	 .wait(2000). 
-	 
-	 // Code changed from original example 
-	 // +available(drug, fridge);
-     // !has(owner, drug).
-
-// When the fridge is opened, the drug stock is perceived
-// and thus the available belief is updated
-+stock(drug, 0)
-   :  available(drug, fridge)
-   <- -available(drug, fridge). 
-   
-+stock(drug, N)
-   :  N > 0 & not available(drug, fridge)
-   <- +available(drug, fridge).     
-   
-+chat(Msg)[source(Ag)] : answer(Msg, Answ) <-  
-	.println("El agente ", Ag, " me ha chateado: ", Msg);
-	.send(Ag, tell, msg(Answ)). 
-                                     
-+?time(T) : true
-  <-  time.check(T).
-*/
