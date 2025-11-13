@@ -5,6 +5,9 @@
 originalHeight(6).
 originalWidth(16).
 
+originalOwnerLimit(5).
+ownerLimit(5).
+
 /* GOALS*/
 !main.
 
@@ -32,23 +35,69 @@ originalWidth(16).
 			not currentlyCleaning(Room2)
 	<-
 		!chooseRoomToClean;
-		!main.
+		!evadeOwner.
 
 +!main:
 	// If currently cleaning a room, go to it and clean
 		currentlyCleaning(Room)
 	<-
 		!cleanRoom(Room);
-		!main.
+		!evadeOwner.
 
 +!main:
 	// No dirty rooms, go to the charge station
 		not dirty(Room)
 	<-
 		!goToCharger;
-		!main.
+		!evadeOwner.
 
 -!main
+	<-
+		!evadeOwner.
+
++!evadeOwner:
+	// Count how many times near owner
+			.my_name(Me)
+		&
+			at(Me, owner)
+		&
+			not ownerLimit(0)
+		&
+			ownerLimit(Limit)
+	<-
+		-ownerLimit(Limit);
+		+ownerLimit(Limit-1);
+		!main.
+
+
++!evadeOwner:
+	// Evade owner when limit reached
+			.my_name(Me)
+		&
+			at(Me, owner)
+		&
+			ownerLimit(0)
+	<-
+		.println("Sorry owner, I will get out of your way.");
+		!moveRandomly;
+		!resetCleaning;
+		!main.
+
++!evadeOwner:
+	// Reset owner limit when far from owner
+			.my_name(Me)
+		&
+			not at(Me, owner)
+		&
+			originalOwnerLimit(OriginalOwnerLimit)
+		&
+			not ownerLimit(OriginalOwnerLimit)
+	<-
+		-ownerLimit(_);
+		+ownerLimit(OriginalOwnerLimit);
+		!main.
+
++!evadeOwner
 	<-
 		!main.
 
@@ -65,6 +114,10 @@ originalWidth(16).
 +!cleanRoom(Room):
 	// If the room is not dirty, stop cleaning
 		not dirty(Room)
+	<-
+		!resetCleaning.
+
++!resetCleaning
 	<-
 		-currentlyCleaning(Room);
 		-bottomReached;
