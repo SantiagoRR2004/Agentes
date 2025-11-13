@@ -28,32 +28,37 @@ ownerLimit(5).
 		alert("INTRUDER ALERT! A RED SPY IS IN THE BASE!");
 		.send(owner, tell, intruderDetected).
 
-+!main:
+
++!main
+	<-
+		!cleaningLoop;
+		!evadeOwner;
+		!main.
+
+-!main
+	<-
+		!main.
+
+
++!cleaningLoop:
 	// If there is a dirty room, choose one to clean
 			dirty(Room)
 		&
 			not currentlyCleaning(Room2)
 	<-
-		!chooseRoomToClean;
-		!evadeOwner.
+		!chooseRoomToClean.
 
-+!main:
++!cleaningLoop:
 	// If currently cleaning a room, go to it and clean
 		currentlyCleaning(Room)
 	<-
-		!cleanRoom(Room);
-		!evadeOwner.
+		!cleanRoom(Room).
 
-+!main:
++!cleaningLoop:
 	// No dirty rooms, go to the charge station
 		not dirty(Room)
 	<-
-		!goToCharger;
-		!evadeOwner.
-
--!main
-	<-
-		!evadeOwner.
+		!goToCharger.
 
 
 +!evadeOwner:
@@ -67,8 +72,7 @@ ownerLimit(5).
 			ownerLimit(Limit)
 	<-
 		-ownerLimit(Limit);
-		+ownerLimit(Limit-1);
-		!main.
+		+ownerLimit(Limit-1).
 
 +!evadeOwner:
 	// Evade owner when limit reached
@@ -79,8 +83,7 @@ ownerLimit(5).
 			ownerLimit(0)
 	<-
 		.println("Sorry owner, I will get out of your way.");
-		!moveRandomly;
-		!main.
+		!moveRandomly.
 
 +!evadeOwner:
 	// Reset owner limit when far from owner
@@ -93,12 +96,12 @@ ownerLimit(5).
 			not ownerLimit(OriginalOwnerLimit)
 	<-
 		-ownerLimit(_);
-		+ownerLimit(OriginalOwnerLimit);
-		!main.
+		+ownerLimit(OriginalOwnerLimit).
 
 +!evadeOwner
+	// Default plan - do nothing when no evasion is needed
 	<-
-		!main.
+		?true.
 
 
 +!chooseRoomToClean:
@@ -299,7 +302,7 @@ ownerLimit(5).
 			at(Me, charger)
 	<-
 		// Empty plan
-		?at(Me, charger).
+		?true.
 
 
 +!verticalSweepA:
