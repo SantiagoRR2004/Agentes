@@ -109,6 +109,7 @@ originalWidth(16).
 		&
 			not height(X)
 	<-
+	!moveUpNoExit;
 	+height(Height).
 
 +!sweepRoom(Room):
