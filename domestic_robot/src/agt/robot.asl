@@ -103,9 +103,31 @@ ownerLimit(5).
 
 
 +!chooseRoomToClean:
-	// TODO: Choose the closest dirty room
-		dirty(Room)
+	// Choose the closest dirty room
+	// The hallway is only chosen if there are no other options
+			atRoom(CurrentRoom)
+		&
+            numberOfDoors(MaxDepth)
 	<-
+		.setof(X, dirty(X), Rooms);
+		.shuffle(Rooms, ShuffledRooms);
+
+		-bestRoom(_,_);
+		+bestRoom(nil, MaxDepth+1);
+
+		for ( .member(Room, ShuffledRooms) ) {
+			?shortestRoomPath(CurrentRoom, Room, Path, MaxDepth);
+			.length(Path, PathLength);
+
+			?bestRoom(CurrentBest, BestLen);
+
+			if ((PathLength < BestLen | CurrentBest = hallway) & (not Room =hallway | CurrentBest = nil)) {
+				-bestRoom(_,_);
+				+bestRoom(Room, PathLength);
+			};
+		};
+
+		?bestRoom(Room, _);
 		.println("Chosen room to clean: ", Room);
 		!resetPatience;
 		+currentlyCleaning(Room).

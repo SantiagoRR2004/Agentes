@@ -18,8 +18,8 @@ connect(livingroom, hall, doorSal1).
 connect(hallway,livingroom, doorSal2).
 connect(livingroom, hallway, doorSal2).
 
-originalPatience(100).
-patience(100).
+originalPatience(50).
+patience(50).
 
 minusOne(X, Y)
 	:-
