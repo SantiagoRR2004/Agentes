@@ -108,6 +108,7 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
             .println("Stuck in a door.");
             !unstuckFromDoor;
         };
+        !reducePatience;
         -wasAtDoor.
 
 
@@ -137,6 +138,24 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
         };
     }.
 
+
++!moveRandomlyNoExit
+    <-
+    .my_name(Me);
+    .random(R);
+    if (R < 0.25) {
+        !moveLeftNoExit;
+    } else {
+        if (R < 0.5) {
+            !moveRightNoExit;
+        } else {
+            if (R < 0.75) {
+                !moveUpNoExit;
+            } else {
+                !moveDownNoExit;
+            };
+        };
+    }.
 
 +!moveDownNoExit:
     // Move down, but do not exit the room

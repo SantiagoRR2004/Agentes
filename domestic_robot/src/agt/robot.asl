@@ -55,6 +55,7 @@ ownerLimit(5).
 	<-
 		!evadeOwner.
 
+
 +!evadeOwner:
 	// Count how many times near owner
 			.my_name(Me)
@@ -68,7 +69,6 @@ ownerLimit(5).
 		-ownerLimit(Limit);
 		+ownerLimit(Limit-1);
 		!main.
-
 
 +!evadeOwner:
 	// Evade owner when limit reached
@@ -278,15 +278,28 @@ ownerLimit(5).
 +!goToCharger:
 	// Go to the charging station if not already there
 	// TODO: Fix the environment to add the charger location
-		not at(bath1)
+		not atRoom(bath1)
 	<-
 		!goToRoom(bath1).
 
 +!goToCharger:
-	// Already at the charging station
-		at(bath1)
+	// Already in the bathroom
+			atRoom(bath1)
+		&
+			.my_name(Me)
+		&
+			not at(Me, charger)
 	<-
-		true.
+		!moveRandomlyNoExit.
+
++!goToCharger:
+	// Already at the charger
+			.my_name(Me)
+		&
+			at(Me, charger)
+	<-
+		// Empty plan
+		?at(Me, charger).
 
 
 +!verticalSweepA:
