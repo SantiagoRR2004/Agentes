@@ -82,9 +82,9 @@ El contador de paciencia se reinicia en dos situaciones: automáticamente cuando
 
 Para el robot, que debe barrer habitaciones sin salir de ellas, existen variantes especiales de los movimientos básicos: `moveUpNoExit`, `moveDownNoExit`, `moveLeftNoExit` y `moveRightNoExit`. Estas versiones verifican después de cada movimiento si el agente ha salido de la habitación o está en una puerta, y en ese caso deshacen el movimiento. Además, actualizan los contadores de posición (`height` y `width`) que el robot usa para controlar el barrido sistemático.
 
-<img src="./diagramaMovement.png" width="600"/>
+<img src="./diagramaMovement.png" width="500"/>
 
-<img src="./diagramaPatience.png" width="600"/>
+<img src="./diagramaPatience.png" width="420"/>
 
 ## Agente Robot
 
