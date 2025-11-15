@@ -10,12 +10,11 @@ El problema que se aborda es el siguiente: un robot debe recorrer todas las habi
 
 El sistema se compone de tres archivos principales que definen el comportamiento de los agentes:
 
-- [`movement.asl`](./src/agt/movement.asl) es un módulo compartido que proporciona las funcionalidades básicas de navegación. Contiene la representación del entorno (cómo están conectadas las habitaciones), algoritmos de planificación de rutas y mecanismos para evitar que los agentes se queden atascados.
+- [`movement.asl`](../src/agt/movement.asl) es un módulo compartido que proporciona las funcionalidades básicas de navegación. Contiene la representación del entorno (cómo están conectadas las habitaciones), algoritmos de planificación de rutas y mecanismos para evitar que los agentes se queden atascados.
 
-- [`robot.asl`](./src/agt/robot.asl) define el comportamiento del robot limpiador, incluyendo la estrategia de selección de habitaciones a limpiar, el algoritmo de barrido sistemático de cada habitación y la lógica para evitar molestar al propietario.
+- [`robot.asl`](../src/agt/robot.asl) define el comportamiento del robot limpiador, incluyendo la estrategia de selección de habitaciones a limpiar, el algoritmo de barrido sistemático de cada habitación y la lógica para evitar molestar al propietario.
 
-- [`owner.asl`](./src/agt/owner.asl) simula el comportamiento humano del dueño de la casa, que elige aleatoriamente entre diversas actividades como sentarse en diferentes muebles o acostarse en las camas.
-
+- [`owner.asl`](../src/agt/owner.asl) simula el comportamiento humano del dueño de la casa, que elige aleatoriamente entre diversas actividades como sentarse en diferentes muebles o acostarse en las camas.
 Para que funcionen estos agentes con su entorno, se necesita la siguiente configuración de carpetas:
 
 ```text
@@ -141,6 +140,22 @@ El sistema presenta varias características que merecen destacarse. En términos
 Respecto a la eficiencia, la planificación de rutas encuentra siempre el camino más corto entre habitaciones, y el algoritmo de barrido garantiza una cobertura completa sin redundancia. La priorización inteligente de habitaciones evita trabajo innecesario en el pasillo.
 
 La coordinación entre agentes es emergente más que explícita. El robot evita proactivamente al propietario tras múltiples encuentros, pero no hay negociación ni planificación conjunta. La comunicación se limita a alertas asíncronas mediante mensajes. Cada agente persigue sus objetivos de manera independiente, y el sistema funciona por la suma de estos comportamientos individuales.
+
+## Mejoras al entorno
+
+Nos gustaría proponer algunas mejoras al entorno:
+
+### Charger
+
+Ahora mismo el `move_towards` no funciona con el cargador aunque el robot se encuentre en la misma habitación.
+
+### Detectar obstáculos
+
+Ahora mismo el robot limpia muy lentamente porque no sabe cuando no puede continuar. Esto se podría solucionar de varias formas, por ejemplo:
+
+- Añadir una percepción que se choque con un obstáculo.
+- Añadir unas percepciones que dicen si hay obstáculos en las celdas adyacentes (arriba, abajo, izquierda, derecha).
+- Añadir unas percepciones que dicen la distancia al obstáculo más cercano en cada dirección.
 
 ## Conclusiones
 
