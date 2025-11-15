@@ -137,7 +137,7 @@ El owner también puede recibir comunicación del robot. Específicamente, si el
 
 El sistema presenta varias características que merecen destacarse. En términos de robustez, los mecanismos de paciencia y detección de atascos garantizan que los agentes nunca se bloqueen indefinidamente. La validación de movimientos durante el barrido asegura que el robot no abandone prematuramente una habitación.
 
-Respecto a la eficiencia, la planificación de rutas encuentra siempre el camino más corto entre habitaciones, y el algoritmo de barrido garantiza una cobertura completa sin redundancia. La priorización inteligente de habitaciones evita trabajo innecesario en el pasillo.
+Respecto a la eficiencia, la planificación de rutas encuentra siempre el camino más corto entre habitaciones, y el algoritmo de barrido garantiza una cobertura completa. La priorización inteligente de habitaciones evita trabajo innecesario en el pasillo.
 
 La coordinación entre agentes es emergente más que explícita. El robot evita proactivamente al propietario tras múltiples encuentros, pero no hay negociación ni planificación conjunta. La comunicación se limita a alertas asíncronas mediante mensajes. Cada agente persigue sus objetivos de manera independiente, y el sistema funciona por la suma de estos comportamientos individuales.
 
@@ -153,7 +153,7 @@ Ahora mismo el `move_towards` no funciona con el cargador aunque el robot se enc
 
 Ahora mismo el robot limpia muy lentamente porque no sabe cuando no puede continuar. Esto se podría solucionar de varias formas, por ejemplo:
 
-- Añadir una percepción que se choque con un obstáculo.
+- Añadir una percepción cuando se choque con un obstáculo.
 - Añadir unas percepciones que dicen si hay obstáculos en las celdas adyacentes (arriba, abajo, izquierda, derecha).
 - Añadir unas percepciones que dicen la distancia al obstáculo más cercano en cada dirección.
 

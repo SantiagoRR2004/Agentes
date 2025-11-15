@@ -3,5 +3,6 @@
   "code-runner.executorMapByFileExtension": {
     ".mas2j": "./runJason.sh"
   },
-  "code-runner.fileDirectoryAsCwd": false
+  "code-runner.fileDirectoryAsCwd": false,
+  "markdown-pdf.displayHeaderFooter": false
 }
