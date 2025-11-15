@@ -37,7 +37,7 @@ domestic_robot/
 │     │           ├── HouseModel.java
 │     │           └── HouseView.java
 │     └── resources/
-│         └── domotic/
+│         └── doc/
 │             └── All the visual files
 ```
 
@@ -87,9 +87,12 @@ for ( .member(Room, ShuffledRooms) ) {
 }
 ```
 
-Una vez que el robot llega a la habitación elegida, comienza el proceso de barrido sistemático. Este es quizás el aspecto más técnico del comportamiento del robot. El barrido se realiza en cuatro fases distintas que garantizan que cada celda de la habitación sea visitada exactamente una vez:
+Una vez que el robot llega a la habitación elegida, comienza el proceso de barrido sistemático. Este es quizás el aspecto más técnico del comportamiento del robot. El barrido se realiza en cuatro fases distintas que garantizan que cada celda de la habitación sea visitada al menos una vez después de bajar a la parte inferior izquierda:
 
-La primera fase (Vertical A) consiste en bajar hasta la parte inferior de la habitación y luego ir subiendo columna por columna hacia la derecha. La segunda fase (Horizontal B) continúa desde donde terminó la anterior, moviéndose horizontalmente hacia la derecha y subiendo fila por fila. La tercera fase (Vertical B) invierte el patrón, bajando columna por columna mientras se mueve hacia la izquierda. Finalmente, la fase Horizontal A completa el barrido moviéndose hacia la izquierda fila por fila bajando.
+- La primera fase (Vertical A) consiste en subir/bajar por las columnas de la habitación hacia la derecha.
+- La segunda fase (Horizontal B) continúa desde donde terminó la anterior, moviéndose horizontalmente y limpiando fila por fila.
+- La tercera fase (Vertical B) invierte el patrón, columna por columna mientras se mueve hacia la izquierda.
+- Finalmente, la fase Horizontal A completa el barrido moviéndose hacia la izquierda fila por fila.
 
 El robot mantiene varias variables de estado para controlar este proceso: `height(X)` y `width(Y)` rastrean la posición relativa en el barrido, `bottomReached` y `leftReached` marcan el fin de las fases iniciales de posicionamiento, y las variables `movingUp`, `movingDown`, etc., indican la dirección actual del movimiento. Los flags `verticalSweepA`, `horizontalSweepB`, etc., determinan qué fase del barrido está activa.
 
