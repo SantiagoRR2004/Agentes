@@ -1,39 +1,32 @@
 @startuml
 start
 
-:Recibir objetivo goToRoom(Target);
+:Llamada a goToRoom(Target) o moveTowardsAdvanced(Objective);
 
-:Calcular camino más corto
-usando shortestRoomPath;
-
-:Obtener primera puerta del camino;
-
-while (No llegó a Target) is (continuar)
-  :Mover hacia primera puerta;
-
+if (¿Está en la misma habitación que el objetivo?) then (sí)
+  :move_towards(Objective);
+else (no)
+  :Calcular camino más corto usando shortestRoomPath;
+  :Obtener primera puerta del camino;
+  
   if (¿Está en una puerta?) then (sí)
-    if (¿Estaba en puerta antes?) then (sí)
-      :Detectado atasco;
-      repeat
-        :Movimiento aleatorio;
-      repeat while (¿Sigue en puerta?) is (sí)
-      ->no;
-    endif
-  endif
-
-  if (¿Paciencia = 0?) then (sí)
-    :Movimiento aleatorio;
-    :Reiniciar paciencia;
+    :Marcar wasAtDoor = true;
   else (no)
-    :Decrementar paciencia;
+    :Marcar wasAtDoor = false;
   endif
-
-  if (¿Cambió de habitación?) then (sí)
-    :Recalcular camino;
+  
+  :Mover hacia primera puerta;
+  
+  if (¿Está en puerta Y wasAtDoor?) then (sí)
+    :Atasco detectado;
+    repeat
+      :Movimiento aleatorio (unstuckFromDoor);
+    repeat while (¿Sigue en puerta?) is (sí)
+    ->no;
   endif
-endwhile (llegó)
+endif
 
-:Reiniciar paciencia;
+:Decrementar paciencia;
 
 stop
 @enduml

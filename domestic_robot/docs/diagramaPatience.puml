@@ -1,0 +1,22 @@
+@startuml
+title Mecanismo de Paciencia (Reactivo)
+
+start
+
+:Agente realiza movimiento;
+:patience = patience - 1;
+
+if (¿patience == 0?) then (sí)
+  note right
+    Se activa automáticamente
+    el plan +patience(0)
+  end note
+  :Movimiento aleatorio;
+  :patience = originalPatience;
+  :Continuar ejecución normal;
+else (no)
+  :Continuar ejecución normal;
+endif
+
+stop
+@enduml

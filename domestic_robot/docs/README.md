@@ -41,9 +41,11 @@ domestic_robot/
 │             └── All the visual files
 ```
 
-## Módulo de Movimiento
+## Módulo de Movimiento y Navegación
 
 El módulo de movimiento actúa como biblioteca base para todos los agentes del sistema. La representación del entorno se basa en conexiones explícitas entre habitaciones mediante predicados del tipo `connect(habitacion1, habitacion2, puerta)`. Por ejemplo, `connect(kitchen, hall, doorKit1)` indica que la cocina y el hall están conectados a través de la puerta doorKit1.
+
+### Planificación de Rutas
 
 La planificación de rutas se realiza mediante dos predicados principales. El predicado `findPathRoom` implementa una búsqueda en profundidad limitada que explora recursivamente las conexiones entre habitaciones. Este predicado es especialmente interesante porque mantiene una lista de puertas visitadas para evitar ciclos:
 
@@ -65,7 +67,25 @@ findPathRoom(Current, Target, Visited, Path, MaxDepth)
 
 El predicado `shortestRoomPath` optimiza la búsqueda intentando primero con profundidades menores, lo que garantiza encontrar el camino más corto.
 
-Un elemento clave para la robustez del sistema es el mecanismo de paciencia. Cada agente mantiene un contador que se decrementa con cada movimiento. Si este contador llega a cero (lo que indica que el agente probablemente está atascado), se ejecuta un movimiento aleatorio y se reinicia el contador. Esto previene situaciones de bloqueo indefinido.
+### Navegación entre Habitaciones
+
+La navegación entre habitaciones se gestiona mediante el plan `goToRoom`, que calcula el camino óptimo y luego realiza un único movimiento hacia la primera puerta del camino. Este plan no es cíclico: se invoca repetidamente desde el bucle del agente que lo llama, pero cada invocación realiza solo un paso de movimiento.
+
+Un aspecto crítico de la navegación es la detección y resolución de atascos. Si el agente se encuentra en una puerta durante dos ciclos consecutivos (lo que se detecta mediante la variable temporal `wasAtDoor`), se considera que está atascado y ejecuta movimientos aleatorios hasta liberarse.
+
+### Mecanismo de Paciencia
+
+Un elemento clave para la robustez del sistema es el mecanismo de paciencia. Cada agente mantiene un contador (`patience`) que se decrementa con cada movimiento. Cuando este contador llega a cero, se activa automáticamente un plan reactivo (mediante `+patience(0)`) que ejecuta un movimiento aleatorio y reinicia el contador. Este mecanismo funciona de forma similar a como se activan otros planes reactivos como `+at(robot, dirty)`.
+
+El contador de paciencia se reinicia en dos situaciones: automáticamente cuando llega a cero tras el movimiento aleatorio, o manualmente cuando el robot o el owner alcanzan sus objetivos y llaman a `!resetPatience`.
+
+### Movimientos Especiales para el Barrido
+
+Para el robot, que debe barrer habitaciones sin salir de ellas, existen variantes especiales de los movimientos básicos: `moveUpNoExit`, `moveDownNoExit`, `moveLeftNoExit` y `moveRightNoExit`. Estas versiones verifican después de cada movimiento si el agente ha salido de la habitación o está en una puerta, y en ese caso deshacen el movimiento. Además, actualizan los contadores de posición (`height` y `width`) que el robot usa para controlar el barrido sistemático.
+
+<img src="./diagramaMovement.png" width="600"/>
+
+<img src="./diagramaPatience.png" width="600"/>
 
 ## Agente Robot
 
@@ -113,16 +133,6 @@ Una vez elegido el objetivo, el propietario navega hacia él utilizando el plan 
 El owner también puede recibir comunicación del robot. Específicamente, si el robot detecta un intruso, envía un mensaje que el propietario recibe y procesa, aunque en esta implementación solo emite una alerta.
 
 <img src="./diagramaOwner.png" width="600"/>
-
-## Sistema de Navegación Compartido
-
-El módulo de movimiento merece un análisis separado por su importancia en el sistema. La navegación entre habitaciones se gestiona mediante el plan `goToRoom`, que calcula el camino óptimo y luego mueve al agente hacia la primera puerta del camino.
-
-Un aspecto crítico de la navegación es la detección y resolución de atascos. Si el agente se encuentra en una puerta durante dos ciclos consecutivos (lo que se detecta mediante la variable temporal `wasAtDoor`), se considera que está atascado y ejecuta movimientos aleatorios hasta liberarse. Este mecanismo, combinado con el sistema de paciencia, hace que el sistema sea robusto frente a situaciones imprevistas.
-
-Para el robot, que debe barrer habitaciones sin salir de ellas, existen variantes especiales de los movimientos básicos: `moveUpNoExit`, `moveDownNoExit`, etc. Estas versiones verifican después de cada movimiento si el agente ha salido de la habitación o está en una puerta, y en ese caso deshacen el movimiento. Además, actualizan los contadores de posición (`height` y `width`) que el robot usa para controlar el barrido.
-
-<img src="./diagramaMovement.png" width="400"/>
 
 ## Características Destacadas del Diseño
 
