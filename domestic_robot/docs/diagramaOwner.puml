@@ -1,0 +1,23 @@
+@startuml
+[*] --> SeleccionarActividad
+
+SeleccionarActividad --> ElegirDondeSentarse : 50% sit
+SeleccionarActividad --> ElegirDondeDormir : 50% sleep
+
+ElegirDondeSentarse --> NavegarAObjetoSit
+ElegirDondeDormir --> NavegarAObjetoSleep
+
+NavegarAObjetoSit --> NavegarAObjetoSit : No llegó
+NavegarAObjetoSit --> Sentarse : Llegó
+
+NavegarAObjetoSleep --> NavegarAObjetoSleep : No llegó
+NavegarAObjetoSleep --> Acostarse : Llegó
+
+Sentarse --> EvaluarCambio : Esperar 1-2s
+Acostarse --> EvaluarCambio : Esperar 2-7s
+
+EvaluarCambio --> SeleccionarActividad : 10% cambiar
+EvaluarCambio --> Sentarse : 90% continuar (si sentado)
+EvaluarCambio --> Acostarse : 90% continuar (si acostado)
+
+@enduml

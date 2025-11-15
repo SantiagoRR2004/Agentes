@@ -1,0 +1,47 @@
+@startuml
+left to right direction
+
+[*] --> BuclePrincipal
+
+state BuclePrincipal {
+  [*] --> CleaningLoop
+  CleaningLoop --> EvadeOwner
+  EvadeOwner --> CleaningLoop
+  
+  state CleaningLoop {
+    [*] --> VerificarHabitacionesSucias
+    VerificarHabitacionesSucias --> ElegirHabitacion : Hay sucias
+    VerificarHabitacionesSucias --> IrACargador : No hay sucias
+    
+    ElegirHabitacion --> NavegarAHabitacion
+    NavegarAHabitacion --> BarrerHabitacion : Llegó
+    NavegarAHabitacion --> NavegarAHabitacion : No llegó
+    
+    state BarrerHabitacion {
+      [*] --> Posicionamiento
+      Posicionamiento --> VerticalA
+      VerticalA --> HorizontalB : Completado
+      HorizontalB --> VerticalB : Completado
+      VerticalB --> HorizontalA : Completado
+      HorizontalA --> [*] : Completado
+    }
+    
+    BarrerHabitacion --> [*] : Habitación limpia
+    IrACargador --> [*]
+  }
+  
+  state EvadeOwner {
+    [*] --> VerificarProximidad
+    VerificarProximidad --> ContarEncuentros : Cerca del owner
+    VerificarProximidad --> ReiniciarContador : Lejos del owner
+    ContarEncuentros --> MovimientoAleatorio : Límite alcanzado
+    MovimientoAleatorio --> [*]
+    ContarEncuentros --> [*] : Límite no alcanzado
+    ReiniciarContador --> [*]
+  }
+  
+  CleaningLoop -[hidden]right-> EvadeOwner
+}
+
+BuclePrincipal --> BuclePrincipal
+@enduml

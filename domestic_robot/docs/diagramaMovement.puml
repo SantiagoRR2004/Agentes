@@ -1,0 +1,39 @@
+@startuml
+start
+
+:Recibir objetivo goToRoom(Target);
+
+:Calcular camino más corto
+usando shortestRoomPath;
+
+:Obtener primera puerta del camino;
+
+while (No llegó a Target) is (continuar)
+  :Mover hacia primera puerta;
+
+  if (¿Está en una puerta?) then (sí)
+    if (¿Estaba en puerta antes?) then (sí)
+      :Detectado atasco;
+      repeat
+        :Movimiento aleatorio;
+      repeat while (¿Sigue en puerta?) is (sí)
+      ->no;
+    endif
+  endif
+
+  if (¿Paciencia = 0?) then (sí)
+    :Movimiento aleatorio;
+    :Reiniciar paciencia;
+  else (no)
+    :Decrementar paciencia;
+  endif
+
+  if (¿Cambió de habitación?) then (sí)
+    :Recalcular camino;
+  endif
+endwhile (llegó)
+
+:Reiniciar paciencia;
+
+stop
+@enduml
