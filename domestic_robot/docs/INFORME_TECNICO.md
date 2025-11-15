@@ -72,55 +72,7 @@ Además de la limpieza, el robot reacciona a percepciones del entorno mediante p
 
 La evasión del propietario es un comportamiento interesante que añade "cortesía" al robot. El sistema cuenta cuántas veces consecutivas el robot coincide con el dueño en la misma celda. Tras 5 coincidencias, el robot se disculpa y realiza un movimiento aleatorio para salir del camino. Este contador se reinicia cuando el robot ya no está cerca del propietario.
 
-```plantuml
-@startuml
-left to right direction
-
-[*] --> BuclePrincipal
-
-state BuclePrincipal {
-  [*] --> CleaningLoop
-  CleaningLoop --> EvadeOwner
-  EvadeOwner --> CleaningLoop
-  
-  state CleaningLoop {
-    [*] --> VerificarHabitacionesSucias
-    VerificarHabitacionesSucias --> ElegirHabitacion : Hay sucias
-    VerificarHabitacionesSucias --> IrACargador : No hay sucias
-    
-    ElegirHabitacion --> NavegarAHabitacion
-    NavegarAHabitacion --> BarrerHabitacion : Llegó
-    NavegarAHabitacion --> NavegarAHabitacion : No llegó
-    
-    state BarrerHabitacion {
-      [*] --> Posicionamiento
-      Posicionamiento --> VerticalA
-      VerticalA --> HorizontalB : Completado
-      HorizontalB --> VerticalB : Completado
-      VerticalB --> HorizontalA : Completado
-      HorizontalA --> [*] : Completado
-    }
-    
-    BarrerHabitacion --> [*] : Habitación limpia
-    IrACargador --> [*]
-  }
-  
-  state EvadeOwner {
-    [*] --> VerificarProximidad
-    VerificarProximidad --> ContarEncuentros : Cerca del owner
-    VerificarProximidad --> ReiniciarContador : Lejos del owner
-    ContarEncuentros --> MovimientoAleatorio : Límite alcanzado
-    MovimientoAleatorio --> [*]
-    ContarEncuentros --> [*] : Límite no alcanzado
-    ReiniciarContador --> [*]
-  }
-  
-  CleaningLoop -[hidden]right-> EvadeOwner
-}
-
-BuclePrincipal --> BuclePrincipal
-@enduml
-```
+<img src="./diagramaRobot.png" width="400"/>
 
 ## Agente Owner
 
@@ -132,31 +84,7 @@ Una vez elegido el objetivo, el propietario navega hacia él utilizando el plan 
 
 El owner también puede recibir comunicación del robot. Específicamente, si el robot detecta un intruso, envía un mensaje que el propietario recibe y procesa, aunque en esta implementación solo emite una alerta.
 
-```plantuml
-@startuml
-[*] --> SeleccionarActividad
-
-SeleccionarActividad --> ElegirDondeSentarse : 50% sit
-SeleccionarActividad --> ElegirDondeDormir : 50% sleep
-
-ElegirDondeSentarse --> NavegarAObjetoSit
-ElegirDondeDormir --> NavegarAObjetoSleep
-
-NavegarAObjetoSit --> NavegarAObjetoSit : No llegó
-NavegarAObjetoSit --> Sentarse : Llegó
-
-NavegarAObjetoSleep --> NavegarAObjetoSleep : No llegó
-NavegarAObjetoSleep --> Acostarse : Llegó
-
-Sentarse --> EvaluarCambio : Esperar 1-2s
-Acostarse --> EvaluarCambio : Esperar 2-7s
-
-EvaluarCambio --> SeleccionarActividad : 10% cambiar
-EvaluarCambio --> Sentarse : 90% continuar (si sentado)
-EvaluarCambio --> Acostarse : 90% continuar (si acostado)
-
-@enduml
-```
+<img src="./diagramaOwner.png" width="600"/>
 
 ## Sistema de Navegación Compartido
 
@@ -166,47 +94,7 @@ Un aspecto crítico de la navegación es la detección y resolución de atascos.
 
 Para el robot, que debe barrer habitaciones sin salir de ellas, existen variantes especiales de los movimientos básicos: `moveUpNoExit`, `moveDownNoExit`, etc. Estas versiones verifican después de cada movimiento si el agente ha salido de la habitación o está en una puerta, y en ese caso deshacen el movimiento. Además, actualizan los contadores de posición (`height` y `width`) que el robot usa para controlar el barrido.
 
-```plantuml
-@startuml
-start
-
-:Recibir objetivo goToRoom(Target);
-
-:Calcular camino más corto
-usando shortestRoomPath;
-
-:Obtener primera puerta del camino;
-
-while (No llegó a Target) is (continuar)
-  :Mover hacia primera puerta;
-  
-  if (¿Está en una puerta?) then (sí)
-    if (¿Estaba en puerta antes?) then (sí)
-      :Detectado atasco;
-      repeat
-        :Movimiento aleatorio;
-      repeat while (¿Sigue en puerta?) is (sí)
-      ->no;
-    endif
-  endif
-  
-  if (¿Paciencia = 0?) then (sí)
-    :Movimiento aleatorio;
-    :Reiniciar paciencia;
-  else (no)
-    :Decrementar paciencia;
-  endif
-  
-  if (¿Cambió de habitación?) then (sí)
-    :Recalcular camino;
-  endif
-endwhile (llegó)
-
-:Reiniciar paciencia;
-
-stop
-@enduml
-```
+<img src="./diagramaMovement.png" width="400"/>
 
 ## Características Destacadas del Diseño
 
