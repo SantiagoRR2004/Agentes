@@ -10,11 +10,36 @@ El problema que se aborda es el siguiente: un robot debe recorrer todas las habi
 
 El sistema se compone de tres archivos principales que definen el comportamiento de los agentes:
 
-`movement.asl` es un módulo compartido que proporciona las funcionalidades básicas de navegación. Contiene la representación del entorno (cómo están conectadas las habitaciones), algoritmos de planificación de rutas y mecanismos para evitar que los agentes se queden atascados.
+- [`movement.asl`](./src/agt/movement.asl) es un módulo compartido que proporciona las funcionalidades básicas de navegación. Contiene la representación del entorno (cómo están conectadas las habitaciones), algoritmos de planificación de rutas y mecanismos para evitar que los agentes se queden atascados.
 
-`robot.asl` define el comportamiento del robot limpiador, incluyendo la estrategia de selección de habitaciones a limpiar, el algoritmo de barrido sistemático de cada habitación y la lógica para evitar molestar al propietario.
+- [`robot.asl`](./src/agt/robot.asl) define el comportamiento del robot limpiador, incluyendo la estrategia de selección de habitaciones a limpiar, el algoritmo de barrido sistemático de cada habitación y la lógica para evitar molestar al propietario.
 
-`owner.asl` simula el comportamiento humano del dueño de la casa, que elige aleatoriamente entre diversas actividades como sentarse en diferentes muebles o acostarse en las camas.
+- [`owner.asl`](./src/agt/owner.asl) simula el comportamiento humano del dueño de la casa, que elige aleatoriamente entre diversas actividades como sentarse en diferentes muebles o acostarse en las camas.
+
+Para que funcionen estos agentes con su entorno, se necesita la siguiente configuración de carpetas:
+
+```text
+domestic_robot/
+│ ├── docs/
+│ │   └── README.md
+│ ├── DomesticRobot.mas2j
+│ ├── lib/
+│ │   └── All the .jar dependencies
+│ └── src/
+│     ├── agt/
+│     │   ├── movement.asl
+│     │   ├── owner.asl
+│     │   └── robot.asl
+│     └── main/
+│     │   └── env/
+│     │       └── domotic/
+│     │           ├── HouseEnv.java
+│     │           ├── HouseModel.java
+│     │           └── HouseView.java
+│     └── resources/
+│         └── domotic/
+│             └── All the visual files
+```
 
 ## Módulo de Movimiento
 
@@ -24,18 +49,18 @@ La planificación de rutas se realiza mediante dos predicados principales. El pr
 
 ```prolog
 findPathRoom(Current, Target, Visited, Path, MaxDepth)
-	:-
-		connect(Current, NextRoom, Door)
-	&
-		minusOne(MaxDepth, N1)
-	&
-		N1 > 0
-	&
-		not .member(Door, Visited)
-	&
-		findPathRoom(NextRoom, Target, [Door|Visited], SubPath, N1)
-	&
-		Path = [Door|SubPath].
+ :-
+   connect(Current, NextRoom, Door)
+  &
+   minusOne(MaxDepth, N1)
+  &
+   N1 > 0
+  &
+   not .member(Door, Visited)
+  &
+   findPathRoom(NextRoom, Target, [Door|Visited], SubPath, N1)
+  &
+   Path = [Door|SubPath].
 ```
 
 El predicado `shortestRoomPath` optimiza la búsqueda intentando primero con profundidades menores, lo que garantiza encontrar el camino más corto.
@@ -50,15 +75,15 @@ La estrategia de limpieza del robot es sofisticada y se divide en varias fases. 
 
 ```prolog
 for ( .member(Room, ShuffledRooms) ) {
-	?shortestRoomPath(CurrentRoom, Room, Path, MaxDepth);
-	.length(Path, PathLength);
-	?bestRoom(CurrentBest, BestLen);
-	
-	if ((PathLength < BestLen | CurrentBest = hallway) & 
-	    (not Room = hallway | CurrentBest = nil)) {
-		-bestRoom(_,_);
-		+bestRoom(Room, PathLength);
-	};
+ ?shortestRoomPath(CurrentRoom, Room, Path, MaxDepth);
+ .length(Path, PathLength);
+ ?bestRoom(CurrentBest, BestLen);
+ 
+ if ((PathLength < BestLen | CurrentBest = hallway) & 
+     (not Room = hallway | CurrentBest = nil)) {
+  -bestRoom(_,_);
+  +bestRoom(Room, PathLength);
+ };
 }
 ```
 
