@@ -110,6 +110,8 @@ ownerLimit(5).
 			atRoom(CurrentRoom)
 		&
             numberOfDoors(MaxDepth)
+		&
+			not currentlyCleaning(Room)
 	<-
 		.setof(X, dirty(X), Rooms);
 		.shuffle(Rooms, ShuffledRooms);
@@ -250,7 +252,7 @@ ownerLimit(5).
 		}.
 
 +!sweepRoom(Room):
-
+	// Perform sweeping until room is clean
 			atRoom(Room)
 		&
 			dirty(Room)
