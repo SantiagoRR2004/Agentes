@@ -280,22 +280,15 @@ ownerLimit(5).
 		}.
 
 
-+!goToCharger:
-	// Go to the charging station if not already there
-	// TODO: Fix the environment to add the charger location
-		not atRoom(bath1)
-	<-
-		!goToRoom(bath1).
 
 +!goToCharger:
-	// Already in the bathroom
-			atRoom(bath1)
-		&
+	// Move towards the charger
 			.my_name(Me)
 		&
 			not at(Me, charger)
 	<-
-		!moveRandomlyNoExit.
+		moveTowardsAdvanced(charger);
+		!reducePatience.
 
 +!goToCharger:
 	// Already at the charger
