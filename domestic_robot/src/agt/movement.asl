@@ -1,3 +1,5 @@
+{ include("sweep.asl") }
+
 /* Initial Beliefs */
 connect(kitchen, hall, doorKit1).
 connect(kitchen, hallway, doorKit2).
