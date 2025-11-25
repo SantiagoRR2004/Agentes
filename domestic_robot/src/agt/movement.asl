@@ -62,6 +62,7 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
     for ( .member(O, Objects) ) {
         ?atRoom(O, Room);
         +couldBeDoor(O, Room);
+    // TODO Tell other agents you aren't a door
     }.
 
 +at(Me, Object):
@@ -165,13 +166,17 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
         &
             currentlyDooring(Object)
         &
-            couldBeDoor(Object2, Room)
+            .setof(Object2, atRoom(Object2, Room), Objects)
         &
-            not Object=Object2
+            .length(Objects, Len)
+        &
+            Len > 1
     <-
         -currentlyDooring(Object);
+        ?(.member(Object2, Objects) & not Object2 = Object);
         .println("Changing to ", Object2);
-        +currentlyDooring(Object2).
+        +currentlyDooring(Object2);
+        !moveTowardsAdvanced(Object2).
 
 +!findDoors:
     // There is no other object except a door
@@ -181,10 +186,14 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
         &
             currentlyDooring(Object)
         &
-            not (couldBeDoor(Object2, Room) & not Object=Object2)
+            .setof(Object2, atRoom(Object2, Room), Objects)
+        &
+            .length(Objects, Len)
+        &
+            Len = 1
     <-
-        // TODO Look at the other branch and add the connection
-        .print("I think we are at a door", Object).
+        !findConnection(Object);
+        -currentlyDooring(Object).
 
 +!findDoors:
     // Searching for a door and it can still be
@@ -193,6 +202,74 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
             couldBeDoor(Object, Room)
     <-
         !moveTowardsAdvanced(Object).
+
+
++!findConnection(Door):
+    // Try to find a connection for the door
+            atRoom(Room1)
+        &
+            couldBeDoor(Door, Room1)
+    <-
+        moveUp;
+        if (not atDoor) {
+            ?atRoom(Room2);
+            if (not Room1 = Room2) {
+                !addConnection(Room1, Room2, Door);
+            } else {
+                moveDown;
+            };
+        };
+        // Check that it returned to the door
+        ?atDoor(Door);
+        moveLeft;
+        if (not atDoor) {
+            ?atRoom(Room2);
+            if (not Room1 = Room2) {
+                !addConnection(Room1, Room2, Door);
+            } else {
+                moveRight;
+            };
+        };
+        // Check that it returned to the door
+        ?atDoor(Door);
+        moveDown;
+        if (not atDoor) {
+            ?atRoom(Room2);
+            if (not Room1 = Room2) {
+                !addConnection(Room1, Room2, Door);
+            } else {
+                moveUp;
+            };
+        };
+        // Check that it returned to the door
+        ?atDoor(Door);
+        moveRight;
+        if (not atDoor) {
+            ?atRoom(Room2);
+            if (not Room1 = Room2) {
+                !addConnection(Room1, Room2, Door);
+            } else {
+                moveLeft;
+            };
+        };
+        // Check that it returned to the door
+        ?atDoor(Door).
+
+-!findConnection(Door)
+    // Could not find a connection
+    <-
+        // TODO the front door of the class
+        ?true.
+
+
++!addConnection(Room1, Room2, Door)
+    <-
+        +connect(Room1, Room2, Door);
+        +connect(Room2, Room1, Door);
+        // Send the belief to all other agents
+        .broadcast(tell, connect(Room1, Room2, Door));
+        .broadcast(tell, connect(Room2, Room1, Door));
+        .println("Added connection: ", Room1, " <-> ", Room2, " via ", Door).
 
 +!unstuckFromDoor
 	<-
