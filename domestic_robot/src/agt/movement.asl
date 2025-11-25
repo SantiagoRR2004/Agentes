@@ -56,12 +56,26 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
 /* Plans */
 
 +!findDoors
+    // Find all the possible doors in the environment
     <-
     .setof(Object, atRoom(Object ,_), Objects);
     for ( .member(O, Objects) ) {
         ?atRoom(O, Room);
         +couldBeDoor(O, Room);
     }.
+
++at(Me, Object):
+	// If it can be at, it is not a door
+	// Activate on belief
+            .my_name(Me)
+        &
+            at(Me, Object)
+        &
+            couldBeDoor(Object, Room)
+	<-
+		-couldBeDoor(Object, Room);
+        .broadcast(untell, couldBeDoor(Object, Room)).
+
 
 +!moveTowardsAdvanced(Objective):
 	// They are in the same Room
