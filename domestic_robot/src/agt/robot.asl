@@ -130,7 +130,9 @@ ownerLimit(5).
 		};
 
 		?bestRoom(Room, _);
-		?not Room = nil;
+		if (Room = nil) {
+			.fail;
+		};
 		.println("Chosen room to clean: ", Room);
 		!resetPatience;
 		+currentlyCleaning(Room).
