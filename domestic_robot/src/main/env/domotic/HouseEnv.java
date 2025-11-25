@@ -106,7 +106,9 @@ public class HouseEnv extends Environment {
   }
 
   void updateThingsPlace() {
-    // get the fridge location
+
+    String chargerPlace = model.getRoom(model.lCharger);
+    addPercept(Literal.parseLiteral("atRoom(charger, " + chargerPlace + ")"));
     String fridgePlace = model.getRoom(model.lFridge);
     addPercept(Literal.parseLiteral("atRoom(fridge, " + fridgePlace + ")"));
     String sofaPlace = model.getRoom(model.lSofa);
@@ -127,6 +129,27 @@ public class HouseEnv extends Environment {
     addPercept(Literal.parseLiteral("atRoom(bed2, " + bed2Place + ")"));
     String bed3Place = model.getRoom(model.lBed3);
     addPercept(Literal.parseLiteral("atRoom(bed3, " + bed3Place + ")"));
+
+    String doorHomePlace = model.getRoom(model.lDoorHome);
+    addPercept(Literal.parseLiteral("atRoom(doorHome, " + doorHomePlace + ")"));
+    String doorBed1Place = model.getRoom(model.lDoorBed1);
+    addPercept(Literal.parseLiteral("atRoom(doorBed1, " + doorBed1Place + ")"));
+    String doorBed2Place = model.getRoom(model.lDoorBed2);
+    addPercept(Literal.parseLiteral("atRoom(doorBed2, " + doorBed2Place + ")"));
+    String doorBed3Place = model.getRoom(model.lDoorBed3);
+    addPercept(Literal.parseLiteral("atRoom(doorBed3, " + doorBed3Place + ")"));
+    String doorKit1Place = model.getRoom(model.lDoorKit1);
+    addPercept(Literal.parseLiteral("atRoom(doorKit1, " + doorKit1Place + ")"));
+    String doorKit2Place = model.getRoom(model.lDoorKit2);
+    addPercept(Literal.parseLiteral("atRoom(doorKit2, " + doorKit2Place + ")"));
+    String doorSal1Place = model.getRoom(model.lDoorSal1);
+    addPercept(Literal.parseLiteral("atRoom(doorSal1, " + doorSal1Place + ")"));
+    String doorSal2Place = model.getRoom(model.lDoorSal2);
+    addPercept(Literal.parseLiteral("atRoom(doorSal2, " + doorSal2Place + ")"));
+    String doorBath1Place = model.getRoom(model.lDoorBath1);
+    addPercept(Literal.parseLiteral("atRoom(doorBath1, " + doorBath1Place + ")"));
+    String doorBath2Place = model.getRoom(model.lDoorBath2);
+    addPercept(Literal.parseLiteral("atRoom(doorBath2, " + doorBath2Place + ")"));
   }
 
   /** creates the agents percepts based on the HouseModel */

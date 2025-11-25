@@ -53,10 +53,10 @@ public class HouseView extends GridWorldView {
   /** draw application objects */
   // @Override
   // public void drawEmpty(Graphics g, int x, int y) {
-  //    g.setColor(Color.lightGray);
-  //    g.fillRect(x * cellSizeW + 1, y * cellSizeH+1, cellSizeW-2, cellSizeH-2);
-  //    g.setColor(Color.white);
-  //    g.drawRect(x * cellSizeW, y * cellSizeH, cellSizeW, cellSizeH);
+  // g.setColor(Color.lightGray);
+  // g.fillRect(x * cellSizeW + 1, y * cellSizeH+1, cellSizeW-2, cellSizeH-2);
+  // g.setColor(Color.white);
+  // g.drawRect(x * cellSizeW, y * cellSizeH, cellSizeW, cellSizeH);
   // }
 
   @Override
@@ -167,9 +167,23 @@ public class HouseView extends GridWorldView {
           // drawScaledImage(g, x, y, "doc/closeWasher.png", 50, 60);
         }
         break;
+      case HouseModel.WASHER:
+        g.setColor(Color.lightGray);
+        if (lRobot.isNeigbour(hmodel.lWasher) || lOwner.isNeigbour(hmodel.lWasher)) {
+          objPath = "/doc/openWasher.png"; // currentDirectory.concat("/doc/openNevera.png");
+          drawImage(g, x, y, objPath);
+          g.setColor(Color.yellow);
+          // super.drawAgent(g, x, y, Color.red, -1);
+        } else {
+          objPath = "/doc/closeWasher.png"; // currentDirectory.concat("/doc/closeNevera.png");
+          drawImage(g, x, y, objPath);
+          g.setColor(Color.blue);
+        }
+        drawString(g, x, y, defaultFont, "Fr (" + hmodel.availableDrugs + ")");
+        break;
       case HouseModel.FRIDGE:
         g.setColor(Color.lightGray);
-        if (lRobot.isNeigbour(hmodel.lFridge)) {
+        if (lRobot.isNeigbour(hmodel.lFridge) || lOwner.isNeigbour(hmodel.lFridge)) {
           objPath = "/doc/openNevera.png"; // currentDirectory.concat("/doc/openNevera.png");
           drawImage(g, x, y, objPath);
           g.setColor(Color.yellow);
@@ -422,8 +436,8 @@ public class HouseView extends GridWorldView {
     if (url == null) System.out.println("Could not find image! " + resource);
     else Img = new ImageIcon(getClass().getResource(resource));
     // ImageIcon Img = new ImageIcon(getClass().getResource(resource));
-    // g.drawImage(Img.getImage(), x * cellSizeW + 1, y * cellSizeH + 1, cellSizeW - 3, cellSizeH -
-    // 3, null);
+    // g.drawImage(Img.getImage(), x * cellSizeW + 1, y * cellSizeH + 1, cellSizeW -
+    // 3, cellSizeH - 3, null);
     // drawMultipleScaledImage(g, x, y, objPath, 2, 2, 60, 90);
     g.drawImage(
         Img.getImage(),
