@@ -51,11 +51,11 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
 
 /* Initial goals */
 
-!findDoors.
+!findPossibleDoors.
 
 /* Plans */
 
-+!findDoors
++!findPossibleDoors
     // Find all the possible doors in the environment
     <-
     .setof(Object, atRoom(Object ,_), Objects);
@@ -74,6 +74,7 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
             couldBeDoor(Object, Room)
 	<-
 		-couldBeDoor(Object, Room);
+        .println(Object, " couldn't be a door.");
         .broadcast(untell, couldBeDoor(Object, Room)).
 
 
@@ -130,6 +131,36 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
     // Could not find a path
     <-
         .println("Error in goToRoom.").
+
+
++!findDoors:
+    // Searching for a door and it can still be
+            currentlyDooring(Object)
+        &
+            couldBeDoor(Object, Room)
+    <-
+        move_towards(Object).
+
++!findDoors:
+    // Searching for a door that can't be
+            currentlyDooring(Object)
+        &
+            not couldBeDoor(Object, Room)
+    <-
+        -currentlyDooring(Object).
+
++!findDoors:
+    // Find a possible door
+            not currentlyDooring(Object)
+        & 
+            couldBeDoor(Object, Room)
+        &
+            numberOfDoors(MaxDepth)
+        &
+            findPathRoom(CurrentRoom, Room, _, Path, MaxDepth + 1)
+    <-
+        .println("Search if ", Object, "is a door.");
+        +currentlyDooring(Object).
 
 
 +!unstuckFromDoor

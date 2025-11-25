@@ -131,7 +131,9 @@ ownerLimit(5).
 
 		?bestRoom(Room, _);
 		if (Room = nil) {
-			.fail;
+			// TODO
+			?not Room = nil;
+			?false;
 		};
 		.println("Chosen room to clean: ", Room);
 		!resetPatience;
