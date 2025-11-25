@@ -133,13 +133,6 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
         .println("Error in goToRoom.").
 
 
-+!findDoors:
-    // Searching for a door and it can still be
-            currentlyDooring(Object)
-        &
-            couldBeDoor(Object, Room)
-    <-
-        move_towards(Object).
 
 +!findDoors:
     // Searching for a door that can't be
@@ -151,17 +144,55 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
 
 +!findDoors:
     // Find a possible door
-            not currentlyDooring(Object)
-        & 
+            not currentlyDooring(_)
+        &
+            atRoom(CurrentRoom)
+        &
             couldBeDoor(Object, Room)
         &
             numberOfDoors(MaxDepth)
         &
-            findPathRoom(CurrentRoom, Room, _, Path, MaxDepth + 1)
+            findPathRoom(CurrentRoom, Room, _2, Path, MaxDepth + 2)
     <-
-        .println("Search if ", Object, "is a door.");
+        .println("Search if ", Object, " is a door.");
         +currentlyDooring(Object).
 
++!findDoors:
+    // Search if there is another object in the room
+            atDoor
+        &
+            atRoom(Room)
+        &
+            currentlyDooring(Object)
+        &
+            couldBeDoor(Object2, Room)
+        &
+            not Object=Object2
+    <-
+        -currentlyDooring(Object);
+        .println("Changing to ", Object2);
+        +currentlyDooring(Object2).
+
++!findDoors:
+    // There is no other object except a door
+            atDoor
+        &
+            atRoom(Room)
+        &
+            currentlyDooring(Object)
+        &
+            not (couldBeDoor(Object2, Room) & not Object=Object2)
+    <-
+        // TODO Look at the other branch and add the connection
+        .print("I think we are at a door", Object).
+
++!findDoors:
+    // Searching for a door and it can still be
+            currentlyDooring(Object)
+        &
+            couldBeDoor(Object, Room)
+    <-
+        !moveTowardsAdvanced(Object).
 
 +!unstuckFromDoor
 	<-
