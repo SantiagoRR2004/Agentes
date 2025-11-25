@@ -117,22 +117,34 @@ ownerLimit(5).
 		+bestRoom(nil, MaxDepth+1);
 
 		for ( .member(Room, ShuffledRooms) ) {
-			?shortestRoomPath(CurrentRoom, Room, Path, MaxDepth);
-			.length(Path, PathLength);
+			if (shortestRoomPath(CurrentRoom, Room, Path, MaxDepth + 1)) {
+				.length(Path, PathLength);
 
-			?bestRoom(CurrentBest, BestLen);
+				?bestRoom(CurrentBest, BestLen);
 
-			if ((PathLength < BestLen | CurrentBest = hallway) & (not Room =hallway | CurrentBest = nil)) {
-				-bestRoom(_,_);
-				+bestRoom(Room, PathLength);
+				if ((PathLength < BestLen | CurrentBest = hallway) & (not Room =hallway | CurrentBest = nil)) {
+					-bestRoom(_,_);
+					+bestRoom(Room, PathLength);
+				};
 			};
 		};
 
 		?bestRoom(Room, _);
+		?not Room = nil;
 		.println("Chosen room to clean: ", Room);
 		!resetPatience;
 		+currentlyCleaning(Room).
 
+-!chooseRoomToClean:
+	// Could not find a path, find doors
+		couldBeDoor(Door, _)
+	<-
+		!findDoors.
+
+-!chooseRoomToClean
+	// Could not find a path
+	<-
+		.println("Error in chooseRoomToClean.").
 
 +!cleanRoom(Room):
 	// If the room is not dirty, stop cleaning

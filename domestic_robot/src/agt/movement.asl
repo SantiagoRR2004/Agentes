@@ -103,7 +103,7 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
         &
             numberOfDoors(MaxDepth)
         &
-            shortestRoomPath(CurrentRoom, ObjectiveRoom, Path, MaxDepth)
+            shortestRoomPath(CurrentRoom, ObjectiveRoom, Path, MaxDepth + 1)
 	<-
         // Move towards the first door in the path
         .nth(0, Path, FirstDoor);
@@ -119,6 +119,17 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
         };
         !reducePatience;
         -wasAtDoor.
+
++!goToRoom(ObjectiveRoom):
+    // Could not find a path, find doors
+        couldBeDoor(Door, _)
+    <-
+        !findDoors.
+
+-!goToRoom(ObjectiveRoom)
+    // Could not find a path
+    <-
+        .println("Error in goToRoom.").
 
 
 +!unstuckFromDoor
