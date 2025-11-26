@@ -347,8 +347,7 @@ public class HouseModel extends GridWorldModel {
 
     // This part of code will be comment on running
     for (String room : dirtyRooms.keySet()) {
-      if (dirtyRooms.get(room) > 0) {
-      }
+      if (dirtyRooms.get(room) > 0) {}
     }
     ;
   }
@@ -468,8 +467,7 @@ public class HouseModel extends GridWorldModel {
       ;
     }
     ;
-    if (val > 0) {
-    }
+    if (val > 0) {}
     ;
     return true;
   }
