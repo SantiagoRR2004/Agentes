@@ -79,7 +79,6 @@ public class chat extends DefaultInternalAction {
 			
 			//agState = ts.getAg().getAgState();
 			//sMind = agTransformer.transform(agState);*/
-			System.out.println("\nCreating completion...");
 			CompletionRequest completionRequest = CompletionRequest.builder()
                 .model("ada")
                 //.prompt("Somebody once told me the world is gonna roll me")

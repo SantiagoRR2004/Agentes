@@ -249,68 +249,58 @@ public class HouseModel extends GridWorldModel {
   void addDirty(Location loc) {
     int val;
     add(DIRTY, loc);
-    System.out.println("Suciedad en (" + loc.x + ", " + loc.y + ").");
     if (bath1.contains(loc)) {
       val = dirtyRooms.get("bath1");
       val++;
       dirtyRooms.put("bath1", val);
-      System.out.println("En el bath1 hay " + val + " celdas sucias.");
     }
     ;
     if (bath2.contains(loc)) {
       val = dirtyRooms.get("bath2");
       val++;
       dirtyRooms.put("bath2", val);
-      System.out.println("En el bath2 hay " + val + " celdas sucias.");
     }
     ;
     if (bedroom1.contains(loc)) {
       val = dirtyRooms.get("bedroom1");
       val++;
       dirtyRooms.put("bedroom1", val);
-      System.out.println("En el bedroom1 hay " + val + " celdas sucias.");
     }
     ;
     if (bedroom2.contains(loc)) {
       val = dirtyRooms.get("bedroom2");
       val++;
       dirtyRooms.put("bedroom2", val);
-      System.out.println("En el bedroom2 hay " + val + " celdas sucias.");
     }
     ;
     if (bedroom3.contains(loc)) {
       val = dirtyRooms.get("bedroom3");
       val++;
       dirtyRooms.put("bedroom3", val);
-      System.out.println("En el bedroom3 hay " + val + " celdas sucias.");
     }
     ;
     if (hallway.contains(loc)) {
       val = dirtyRooms.get("hallway");
       val++;
       dirtyRooms.put("hallway", val);
-      System.out.println("En el hallway hay " + val + " celdas sucias.");
     }
     ;
     if (hall.contains(loc)) {
       val = dirtyRooms.get("hall");
       val++;
       dirtyRooms.put("hall", val);
-      System.out.println("En el hall hay " + val + " celdas sucias.");
     }
     ;
     if (livingroom.contains(loc)) {
       val = dirtyRooms.get("livingroom");
       val++;
       dirtyRooms.put("livingroom", val);
-      System.out.println("En el livingroom hay " + val + " celdas sucias.");
     }
     ;
     if (kitchen.contains(loc)) {
       val = dirtyRooms.get("kitchen");
       val++;
       dirtyRooms.put("kitchen", val);
-      System.out.println("En la kitchen hay " + val + " celdas sucias.");
     }
     ;
   }
@@ -358,7 +348,6 @@ public class HouseModel extends GridWorldModel {
     // This part of code will be comment on running
     for (String room : dirtyRooms.keySet()) {
       if (dirtyRooms.get(room) > 0) {
-        System.out.println("La habitación: " + room + " está sucia");
       }
     }
     ;
@@ -477,11 +466,9 @@ public class HouseModel extends GridWorldModel {
         dirtyRooms.put("kitchen", val);
       }
       ;
-      System.out.println("Se ha limpiado suciedad en (" + loc.x + ", " + loc.y + ").");
     }
     ;
     if (val > 0) {
-      System.out.println("Aun queda suciedad en la habitación.");
     }
     ;
     return true;

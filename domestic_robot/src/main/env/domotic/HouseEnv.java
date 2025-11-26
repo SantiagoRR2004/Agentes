@@ -168,9 +168,7 @@ public class HouseEnv extends Environment {
     Location lOwner = model.getAgPos(1);
     Location lIntruder = model.getAgPos(2);
     if (lIntruder != null) {
-      logger.info("Hay un intruso en la posición: (" + lIntruder.x + ", " + lIntruder.y + ")");
     } else {
-      logger.info("No Hay intrusos en la casa");
     }
 
     if (lRobot.distance(model.lFridge) < 2) {
@@ -218,74 +216,58 @@ public class HouseEnv extends Environment {
 
     if (lOwner.distance(model.lBed1) == 0) {
       addPercept("owner", ob1);
-      System.out.println("[owner] is at Bed1.");
     }
     if (lRobot.distance(model.lBed1) == 1) {
       addPercept("robot", ab1);
-      System.out.println("[robot] is at Bed1.");
     }
 
     if (lOwner.distance(model.lBed2) == 0) {
       addPercept("owner", ob2);
-      System.out.println("[owner] is at Bed2.");
     }
     if (lRobot.distance(model.lBed2) == 1) {
       addPercept("robot", ab2);
-      System.out.println("[robot] is at Bed2.");
     }
 
     if (lOwner.distance(model.lBed3) == 0) {
       addPercept("owner", ob3);
-      System.out.println("[owner] is at Bed3.");
     }
     if (lRobot.distance(model.lBed3) == 1) {
       addPercept("robot", ab3);
-      System.out.println("[robot] is at Bed3.");
     }
 
     if (lOwner.distance(model.lChair1) == 0) {
       addPercept("owner", oac1);
-      System.out.println("[owner] is at Chair1.");
     }
     if (lRobot.distance(model.lChair1) == 1) {
       addPercept("robot", ac1);
-      System.out.println("[robot] is at Chair1.");
     }
 
     if (lOwner.distance(model.lChair2) == 0) {
       addPercept("owner", oac2);
-      System.out.println("[owner] is at Chair2.");
     }
     if (lRobot.distance(model.lChair2) == 1) {
       addPercept("robot", ac2);
-      System.out.println("[robot] is at Chair2.");
     }
 
     if (lOwner.distance(model.lChair3) == 0) {
       addPercept("owner", oac3);
-      System.out.println("[owner] is at Chair3.");
     }
     if (lRobot.distance(model.lChair3) == 1) {
       addPercept("robot", ac3);
-      System.out.println("[robot] is at Chair3.");
     }
 
     if (lOwner.distance(model.lChair4) == 0) {
       addPercept("owner", oac4);
-      System.out.println("[owner] is at Chair4.");
     }
     if (lRobot.distance(model.lChair4) == 1) {
       addPercept("robot", ac4);
-      System.out.println("[robot] is at Chair4.");
     }
 
     if (lOwner.distance(model.lSofa) == 0) {
       addPercept("owner", oasf);
-      System.out.println("[owner] is at Sofa.");
     }
     if (lRobot.distance(model.lSofa) == 1) {
       addPercept("robot", asf);
-      System.out.println("[robot] is at Sofa.");
     }
 
     // add drug "status" the percepts
@@ -299,7 +281,6 @@ public class HouseEnv extends Environment {
 
     for (String room : model.dirtyRooms.keySet()) {
       if (model.dirtyRooms.get(room) > 0) {
-        System.out.println("La habitación: " + room + " está sucia");
         addPercept("robot", Literal.parseLiteral("dirty(" + room + ")"));
         addPercept("owner", Literal.parseLiteral("dirty(" + room + ")"));
       }
@@ -309,7 +290,6 @@ public class HouseEnv extends Environment {
   @Override
   public boolean executeAction(String ag, Structure action) {
 
-    System.out.println("[" + ag + "] doing: " + action);
     // java.util.List<Literal> perceptsOwner = consultPercepts("owner");
     // java.util.List<Literal> perceptsRobot = consultPercepts("robot");
     // System.out.println("[owner] has the following percepts: "+perceptsOwner);
@@ -348,10 +328,8 @@ public class HouseEnv extends Environment {
       ;
       try {
         if (ag.equals("robot")) {
-          System.out.println("[robot] is trying to sit down");
           result = model.sit(0, dest);
         } else {
-          System.out.println("[owner] is sitting");
           result = model.sit(1, dest);
         }
       } catch (Exception e) {
@@ -445,7 +423,6 @@ public class HouseEnv extends Environment {
       }
 
     } else if (action.getFunctor().equals("alert")) { // clf = close(fridge)
-      System.out.println(action.getTerm(0).toString());
       result = true;
       /*
       Incluir acciones moveLeft, moveRight, clean
@@ -454,51 +431,39 @@ public class HouseEnv extends Environment {
       */
     } else if (action.getFunctor().equals("clean")) {
       if (ag.equals("robot")) {
-        System.out.println("[robot] is cleanning its place");
         result = model.clean(0);
       } else {
-        System.out.println("[owner] is cleanning its place");
         result = model.clean(1);
       }
     } else if (action.getFunctor().equals("moveUp")) {
       if (ag.equals("robot")) {
-        System.out.println("[robot] is moving Up");
         result = model.moveUp(0);
       } else {
-        System.out.println("[owner] is moving Up");
         result = model.moveUp(1);
       }
     } else if (action.getFunctor().equals("moveDown")) {
       if (ag.equals("robot")) {
-        System.out.println("[robot] is moving Down");
         result = model.moveDown(0);
       } else {
-        System.out.println("[owner] is moving Down");
         result = model.moveDown(1);
       }
     } else if (action.getFunctor().equals("moveLeft")) {
       if (ag.equals("robot")) {
-        System.out.println("[robot] is moving Left");
         result = model.moveLeft(0);
       } else {
-        System.out.println("[owner] is moving Left");
         result = model.moveLeft(1);
       }
     } else if (action.getFunctor().equals("moveRight")) {
       if (ag.equals("robot")) {
-        System.out.println("[robot] is moving Right");
         result = model.moveRight(0);
       } else {
-        System.out.println("[owner] is moving Right");
         result = model.moveRight(1);
       }
     } else {
-      logger.info("Failed to execute action " + action);
     }
 
     if (result) {
       updatePercepts();
-      logger.info("stop here after " + action + "--------------------------------");
       try {
         Thread.sleep(300);
       } catch (Exception e) {
