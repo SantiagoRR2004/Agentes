@@ -62,8 +62,10 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
     for ( .member(O, Objects) ) {
         ?atRoom(O, Room);
         +couldBeDoor(O, Room);
-    // TODO Tell other agents you aren't a door
-    }.
+    };
+    .my_name(Me);
+    ?atRoom(Room);
+    .broadcast(achieve, removeDoorPossibility(Me, Room)).
 
 +at(Me, Object):
 	// If it can be at, it is not a door
@@ -76,7 +78,13 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
 	<-
 		-couldBeDoor(Object, Room);
         .println(Object, " couldn't be a door.");
-        .broadcast(untell, couldBeDoor(Object, Room)).
+        .broadcast(achieve, removeDoorPossibility(Object, Room)).
+
+
++!removeDoorPossibility(Object, Room)[source(Sender)]
+    <-
+        .println("Removing door possibility for ", Object, " in ", Room, " from ", Sender);
+        -couldBeDoor(Object, Room).
 
 
 +!moveTowardsAdvanced(Objective):
