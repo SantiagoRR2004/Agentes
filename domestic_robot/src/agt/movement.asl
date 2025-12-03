@@ -174,6 +174,27 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
         +currentlyDooring(Object).
 
 +!findDoors:
+    // TODO Maybe do a sweep instead of hallway
+            not currentlyDooring(_)
+        &
+            atRoom(CurrentRoom)
+        &
+            couldBeDoor(Object, Room)
+        &
+            numberOfDoors(MaxDepth)
+        &
+            not findPathRoom(CurrentRoom, Room, _2, Path, MaxDepth + 2)
+    <-
+        if (not atRoom(hallway)) {
+            !goToRoom(hallway);
+        } else {
+            move_towards(Object);
+            if (atDoor) {
+                !findConnection(Object);
+            };
+        }.
+
++!findDoors:
     // Search if there is another object in the room
             atDoor
         &
@@ -247,9 +268,9 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
             !reduceBattery;
         };
         if (not atDoor) {
-            ?atRoom(Room2);
-            if (not Room1 = Room2) {
-                !addConnection(Room1, Room2, Door);
+            ?atRoom(Room3);
+            if (not Room1 = Room3) {
+                !addConnection(Room1, Room3, Door);
             } else {
                 moveRight;
                 if (batteryLevel(_)) {
@@ -264,9 +285,9 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
             !reduceBattery;
         };
         if (not atDoor) {
-            ?atRoom(Room2);
-            if (not Room1 = Room2) {
-                !addConnection(Room1, Room2, Door);
+            ?atRoom(Room4);
+            if (not Room1 = Room4) {
+                !addConnection(Room1, Room4, Door);
             } else {
                 moveUp;
                 if (batteryLevel(_)) {
@@ -281,9 +302,9 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
             !reduceBattery;
         };
         if (not atDoor) {
-            ?atRoom(Room2);
-            if (not Room1 = Room2) {
-                !addConnection(Room1, Room2, Door);
+            ?atRoom(Room5);
+            if (not Room1 = Room5) {
+                !addConnection(Room1, Room5, Door);
             } else {
                 moveLeft;
                 if (batteryLevel(_)) {
@@ -305,6 +326,8 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
     <-
         +connect(Room1, Room2, Door);
         +connect(Room2, Room1, Door);
+        -couldBeDoor(Door, Room1);
+        -couldBeDoor(Door, Room2);
         // Send the belief to all other agents
         .broadcast(tell, connect(Room1, Room2, Door));
         .broadcast(tell, connect(Room2, Room1, Door));
