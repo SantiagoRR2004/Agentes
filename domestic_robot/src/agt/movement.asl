@@ -1,34 +1,6 @@
 { include("sweep.asl") }
 
 /* Initial Beliefs */
-// TODO Eliminate the connections later
-connect(kitchen, hall, doorKit1).
-connect(hall, kitchen, doorKit1).
-
-connect(hallway, kitchen, doorKit2).
-connect(kitchen, hallway, doorKit2).
-
-connect(bath1, hallway, doorBath1).
-connect(hallway, bath1, doorBath1).
-
-connect(bath2, bedroom1, doorBath2).
-connect(bedroom1, bath2, doorBath2).
-
-connect(bedroom1, hallway, doorBed1).
-connect(hallway, bedroom1, doorBed1).
-
-connect(bedroom2, hallway, doorBed2).
-connect(hallway, bedroom2, doorBed2).
-
-connect(bedroom3, hallway, doorBed3).
-connect(hallway, bedroom3, doorBed3).
-
-connect(livingroom, hallway, doorSal1).
-connect(hallway, livingroom, doorSal1).
-
-connect(robotroom, livingroom, doorSal2).
-connect(livingroom, robotroom, doorSal2).
-
 originalPatience(50).
 patience(50).
 
@@ -50,6 +22,8 @@ findPathRoom(Current, Target, _, [], MaxDepth)
 
 findPathRoom(Current, Target, Visited, Path, MaxDepth)
 	:-
+			.list(Visited)
+		&
 			connect(Current, NextRoom, Door)
 		&
 			minusOne(MaxDepth, N1)
@@ -89,7 +63,12 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
     .setof(Object, atRoom(Object ,_), Objects);
     for ( .member(O, Objects) ) {
         ?atRoom(O, Room);
-        +couldBeDoor(O, Room);
+        .term2string(O, OStr);
+        // TODO move_towards(doorHome)
+        if (.substring("door", OStr, 0) & not "doorHome"=OStr) {
+            .println(O, " could be a door in ", Room);
+            +couldBeDoor(O, Room);
+        };
     };
     .my_name(Me);
     ?atRoom(Room);
@@ -166,15 +145,9 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
 
 +!goToRoom(ObjectiveRoom):
     // Could not find a path, find doors
-        couldBeDoor(Door, _)
+            couldBeDoor(Door, _)
     <-
         !findDoors.
-
--!goToRoom(ObjectiveRoom)
-    // Could not find a path
-    <-
-        .println("Error in goToRoom.").
-
 
 
 +!findDoors:
@@ -208,7 +181,7 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
         &
             currentlyDooring(Object)
         &
-            .setof(Object2, atRoom(Object2, Room), Objects)
+            .setof(Object2, couldBeDoor(Object2, Room), Objects)
         &
             .length(Objects, Len)
         &
@@ -228,7 +201,7 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
         &
             currentlyDooring(Object)
         &
-            .setof(Object2, atRoom(Object2, Room), Objects)
+            .setof(Object2, couldBeDoor(Object2, Room), Objects)
         &
             .length(Objects, Len)
         &
@@ -268,7 +241,7 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
             };
         };
         // Check that it returned to the door
-        ?atDoor(Door);
+        ?atDoor;
         moveLeft;
         if (batteryLevel(_)) {
             !reduceBattery;
@@ -285,7 +258,7 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
             };
         };
         // Check that it returned to the door
-        ?atDoor(Door);
+        ?atDoor;
         moveDown;
         if (batteryLevel(_)) {
             !reduceBattery;
@@ -302,7 +275,7 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
             };
         };
         // Check that it returned to the door
-        ?atDoor(Door);
+        ?atDoor;
         moveRight;
         if (batteryLevel(_)) {
             !reduceBattery;
@@ -319,7 +292,7 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
             };
         };
         // Check that it returned to the door
-        ?atDoor(Door).
+        ?atDoor.
 
 -!findConnection(Door)
     // Could not find a connection
