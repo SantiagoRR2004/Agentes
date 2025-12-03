@@ -1,6 +1,34 @@
 { include("sweep.asl") }
 
 /* Initial Beliefs */
+// TODO Eliminate the connections later
+connect(kitchen, hall, doorKit1).
+connect(hall, kitchen, doorKit1).
+
+connect(hallway, kitchen, doorKit2).
+connect(kitchen, hallway, doorKit2).
+
+connect(bath1, hallway, doorBath1).
+connect(hallway, bath1, doorBath1).
+
+connect(bath2, bedroom1, doorBath2).
+connect(bedroom1, bath2, doorBath2).
+
+connect(bedroom1, hallway, doorBed1).
+connect(hallway, bedroom1, doorBed1).
+
+connect(bedroom2, hallway, doorBed2).
+connect(hallway, bedroom2, doorBed2).
+
+connect(bedroom3, hallway, doorBed3).
+connect(hallway, bedroom3, doorBed3).
+
+connect(livingroom, hallway, doorSal1).
+connect(hallway, livingroom, doorSal1).
+
+connect(robotroom, livingroom, doorSal2).
+connect(livingroom, robotroom, doorSal2).
+
 originalPatience(50).
 patience(50).
 
