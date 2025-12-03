@@ -5,6 +5,9 @@
 originalOwnerLimit(5).
 ownerLimit(5).
 
+maxBattery(400).
+batteryLevel(400).
+
 /* GOALS*/
 !main.
 
@@ -15,6 +18,7 @@ ownerLimit(5).
 	// Activate on belief
 		.my_name(Me)
 	<-
+		!reduceBattery;
 		clean(robot).
 
 +at(Me, intruder):
@@ -25,8 +29,28 @@ ownerLimit(5).
 		alert("INTRUDER ALERT! A RED SPY IS IN THE BASE!");
 		.send(owner, tell, intruderDetected).
 
++at(Me, charger):
+	// Recharge battery at charger
+	// Activate on belief
+		.my_name(Me)
+	<-
+		!resetBattery;
+		.println("Battery recharged.").
 
-+!main
+
++!main:
+	// If battery depleted, it stops functioning
+			batteryLevel(X)
+		&
+			X <= 0
+	<-
+		.println("Battery depleted.");
+		wait(5);
+		!main.
+
++!main:
+	// Normal operation loop
+		not batteryLevel(0)
 	<-
 		!cleaningLoop;
 		!evadeOwner;
@@ -80,7 +104,8 @@ ownerLimit(5).
 			ownerLimit(0)
 	<-
 		.println("Sorry owner, I will get out of your way.");
-		!moveRandomly.
+		!moveRandomly;
+		!reduceBattery.
 
 +!evadeOwner:
 	// Reset owner limit when far from owner
@@ -192,3 +217,15 @@ ownerLimit(5).
 	<-
 		// Empty plan
 		?true.
+
++!reduceBattery:
+        batteryLevel(B)
+    <-
+        -batteryLevel(B);
+        +batteryLevel(B-1).
+
++!resetBattery:
+        originalBatteryLevel(OBL)
+    <-
+        -batteryLevel(_);
+        +batteryLevel(OBL).

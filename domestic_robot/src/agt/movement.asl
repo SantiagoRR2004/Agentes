@@ -122,6 +122,9 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
             atRoom(Objective, CurrentRoom)
 	<-
         move_towards(Objective);
+        if (batteryLevel(_)) {
+            !reduceBattery;
+        };
         !reducePatience.
 
 +!moveTowardsAdvanced(Objective):
@@ -151,6 +154,9 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
             -wasAtDoor;
         };
         move_towards(FirstDoor);
+        if (batteryLevel(_)) {
+            !reduceBattery;
+        };
         if (atDoor & wasAtDoor) {
             .println("Stuck in a door.");
             !unstuckFromDoor;
@@ -247,45 +253,69 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
             couldBeDoor(Door, Room1)
     <-
         moveUp;
+        if (batteryLevel(_)) {
+            !reduceBattery;
+        };
         if (not atDoor) {
             ?atRoom(Room2);
             if (not Room1 = Room2) {
                 !addConnection(Room1, Room2, Door);
             } else {
                 moveDown;
+                if (batteryLevel(_)) {
+                    !reduceBattery;
+                };
             };
         };
         // Check that it returned to the door
         ?atDoor(Door);
         moveLeft;
+        if (batteryLevel(_)) {
+            !reduceBattery;
+        };
         if (not atDoor) {
             ?atRoom(Room2);
             if (not Room1 = Room2) {
                 !addConnection(Room1, Room2, Door);
             } else {
                 moveRight;
+                if (batteryLevel(_)) {
+                    !reduceBattery;
+                };
             };
         };
         // Check that it returned to the door
         ?atDoor(Door);
         moveDown;
+        if (batteryLevel(_)) {
+            !reduceBattery;
+        };
         if (not atDoor) {
             ?atRoom(Room2);
             if (not Room1 = Room2) {
                 !addConnection(Room1, Room2, Door);
             } else {
                 moveUp;
+                if (batteryLevel(_)) {
+                    !reduceBattery;
+                };
             };
         };
         // Check that it returned to the door
         ?atDoor(Door);
         moveRight;
+        if (batteryLevel(_)) {
+            !reduceBattery;
+        };
         if (not atDoor) {
             ?atRoom(Room2);
             if (not Room1 = Room2) {
                 !addConnection(Room1, Room2, Door);
             } else {
                 moveLeft;
+                if (batteryLevel(_)) {
+                    !reduceBattery;
+                };
             };
         };
         // Check that it returned to the door
@@ -319,6 +349,9 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
     <-
     .my_name(Me);
     .random(R);
+    if (batteryLevel(_)) {
+        !reduceBattery;
+    };
     if (R < 0.25) {
         moveLeft(Me);
     } else {
@@ -361,8 +394,14 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
             height(H)
     <-                  
         moveDown(Me);
+        if (batteryLevel(_)) {
+            !reduceBattery;
+        };
         if (not atRoom(CurrentRoom) | atDoor) {
             moveUp(Me);
+            if (batteryLevel(_)) {
+                !reduceBattery;
+            };
             -height(H);
             +height(0);
         } else {
@@ -379,8 +418,14 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
             not height(H)
     <-
         moveDown(Me);
+        if (batteryLevel(_)) {
+            !reduceBattery;
+        };
         if (not atRoom(CurrentRoom) | atDoor) {
             moveUp(Me);
+            if (batteryLevel(_)) {
+                !reduceBattery;
+            };
         }.
 
 
@@ -393,8 +438,14 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
             height(H)
     <-
         moveUp(Me);
+        if (batteryLevel(_)) {
+            !reduceBattery;
+        };
         if (not atRoom(CurrentRoom) | atDoor) {
             moveDown(Me);
+            if (batteryLevel(_)) {
+                !reduceBattery;
+            };
             -height(H);
             +height(0);
         } else {
@@ -411,8 +462,14 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
             not height(H)
     <-
         moveUp(Me);
+        if (batteryLevel(_)) {
+            !reduceBattery;
+        };
         if (not atRoom(CurrentRoom) | atDoor) {
             moveDown(Me);
+            if (batteryLevel(_)) {
+                !reduceBattery;
+            };
         }.
 
 
@@ -425,8 +482,14 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
             width(W)
     <-
         moveLeft(Me);
+        if (batteryLevel(_)) {
+            !reduceBattery;
+        };
         if (not atRoom(CurrentRoom) | atDoor) {
             moveRight(Me);
+            if (batteryLevel(_)) {
+                !reduceBattery;
+            };
             -width(W);
             +width(0);
         } else {
@@ -443,8 +506,14 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
             not width(W)
     <-
         moveLeft(Me);
+        if (batteryLevel(_)) {
+            !reduceBattery;
+        };
         if (not atRoom(CurrentRoom) | atDoor) {
             moveRight(Me);
+            if (batteryLevel(_)) {
+                !reduceBattery;
+            };
         }.
 
 
@@ -457,8 +526,14 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
             width(W)
     <-
         moveRight(Me);
+        if (batteryLevel(_)) {
+            !reduceBattery;
+        };
         if (not atRoom(CurrentRoom) | atDoor) {
             moveLeft(Me);
+            if (batteryLevel(_)) {
+                !reduceBattery;
+            };
             -width(W);
             +width(0);
         } else {
@@ -475,8 +550,14 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
             not width(W)
     <-
         moveRight(Me);
+        if (batteryLevel(_)) {
+            !reduceBattery;
+        };
         if (not atRoom(CurrentRoom) | atDoor) {
             moveLeft(Me);
+            if (batteryLevel(_)) {
+                !reduceBattery;
+            };
         }.
 
 
