@@ -53,10 +53,10 @@ public class HouseView extends GridWorldView {
   /** draw application objects */
   // @Override
   // public void drawEmpty(Graphics g, int x, int y) {
-  // g.setColor(Color.lightGray);
-  // g.fillRect(x * cellSizeW + 1, y * cellSizeH+1, cellSizeW-2, cellSizeH-2);
-  // g.setColor(Color.white);
-  // g.drawRect(x * cellSizeW, y * cellSizeH, cellSizeW, cellSizeH);
+  //    g.setColor(Color.lightGray);
+  //    g.fillRect(x * cellSizeW + 1, y * cellSizeH+1, cellSizeW-2, cellSizeH-2);
+  //    g.setColor(Color.white);
+  //    g.drawRect(x * cellSizeW, y * cellSizeH, cellSizeW, cellSizeH);
   // }
 
   @Override
@@ -436,8 +436,8 @@ public class HouseView extends GridWorldView {
     if (url == null) System.out.println("Could not find image! " + resource);
     else Img = new ImageIcon(getClass().getResource(resource));
     // ImageIcon Img = new ImageIcon(getClass().getResource(resource));
-    // g.drawImage(Img.getImage(), x * cellSizeW + 1, y * cellSizeH + 1, cellSizeW -
-    // 3, cellSizeH - 3, null);
+    // g.drawImage(Img.getImage(), x * cellSizeW + 1, y * cellSizeH + 1, cellSizeW - 3, cellSizeH -
+    // 3, null);
     // drawMultipleScaledImage(g, x, y, objPath, 2, 2, 60, 90);
     g.drawImage(
         Img.getImage(),

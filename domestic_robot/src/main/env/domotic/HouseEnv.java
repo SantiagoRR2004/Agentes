@@ -27,6 +27,7 @@ public class HouseEnv extends Environment {
   public static final Literal ac4 = Literal.parseLiteral("at(robot,chair4)");
   public static final Literal asf = Literal.parseLiteral("at(robot,sofa)");
   public static final Literal ach = Literal.parseLiteral("at(robot,charger)");
+
   public static final Literal oa = Literal.parseLiteral("at(owner,robot)");
   public static final Literal oaf = Literal.parseLiteral("at(owner,fridge)");
   public static final Literal ob1 = Literal.parseLiteral("at(owner,bed1)");
@@ -103,6 +104,10 @@ public class HouseEnv extends Environment {
       addPercept("owner", Literal.parseLiteral("atDoor"));
     }
     ;
+
+    if (lOwner.distance(lRobot) == 0 && model.carryingRobot) {
+      addPercept(Literal.parseLiteral("carryOn"));
+    }
   }
 
   void updateThingsPlace() {
@@ -167,6 +172,9 @@ public class HouseEnv extends Environment {
     Location lRobot = model.getAgPos(0);
     Location lOwner = model.getAgPos(1);
     Location lIntruder = model.getAgPos(2);
+
+    addPercept(Literal.parseLiteral("size(" + model.GSize + ")"));
+
     if (lIntruder != null) {
     } else {
     }
@@ -174,7 +182,6 @@ public class HouseEnv extends Environment {
     if (lRobot.distance(model.lFridge) < 2) {
       addPercept("robot", af);
     }
-
     if (lOwner.distance(model.lFridge) < 2) {
       addPercept("owner", oaf);
     }
@@ -192,17 +199,17 @@ public class HouseEnv extends Environment {
     }
 
     if (lIntruder != null && lRobot.distance(lIntruder) == 1) {
-      addPercept("robot", ai);
+      // addPercept("robot", ai);
+      addPercept(ai);
     }
-
     if (lIntruder != null && lOwner.distance(lIntruder) == 1) {
-      addPercept("owner", oai);
+      // addPercept("owner", oai);
+      addPercept(oai);
     }
 
     if (model.isDirty(lRobot)) {
       addPercept("robot", at);
     }
-
     if (model.isDirty(lOwner)) {
       addPercept("owner", oat);
     }
@@ -285,6 +292,7 @@ public class HouseEnv extends Environment {
         addPercept("owner", Literal.parseLiteral("dirty(" + room + ")"));
       }
     }
+    ;
   }
 
   @Override
@@ -296,51 +304,75 @@ public class HouseEnv extends Environment {
     // System.out.println("[robot] has the following percepts: "+perceptsRobot);
 
     boolean result = false;
-    if (action.getFunctor().equals("sit")) {
-      String l = action.getTerm(0).toString();
-      Location dest = null;
-      switch (l) {
-        case "bed1":
-          dest = model.lBed1;
-          break;
-        case "bed2":
-          dest = model.lBed2;
-          break;
-        case "bed3":
-          dest = model.lBed3;
-          break;
-        case "chair1":
-          dest = model.lChair1;
-          break;
-        case "chair2":
-          dest = model.lChair2;
-          break;
-        case "chair3":
-          dest = model.lChair3;
-          break;
-        case "chair4":
-          dest = model.lChair4;
-          break;
-        case "sofa":
-          dest = model.lSofa;
-          break;
-      }
-      ;
-      try {
-        if (ag.equals("robot")) {
-          result = model.sit(0, dest);
-        } else {
-          result = model.sit(1, dest);
+    if (ag.equals("owner")) {
+      if (action.getFunctor().equals("sit")) {
+        String l = action.getTerm(0).toString();
+        Location dest = null;
+        switch (l) {
+          case "bed1":
+            dest = model.lBed1;
+            break;
+          case "bed2":
+            dest = model.lBed2;
+            break;
+          case "bed3":
+            dest = model.lBed3;
+            break;
+          case "chair1":
+            dest = model.lChair1;
+            break;
+          case "chair2":
+            dest = model.lChair2;
+            break;
+          case "chair3":
+            dest = model.lChair3;
+            break;
+          case "chair4":
+            dest = model.lChair4;
+            break;
+          case "sofa":
+            dest = model.lSofa;
+            break;
         }
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-    } else if (action.equals(of)) { // of = open(fridge)
-      result = model.openFridge();
+        ;
 
+        try {
+          if (ag.equals("owner")) {
+            result = model.sit(1, dest);
+          }
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+
+      } else if (action.getFunctor().equals("alert")) {
+        System.out.println("[Environment] is calling 112" + action.getTerm(0).toString());
+        result = true;
+      } else if (action.getFunctor().equals("take")) {
+        System.out.println("[" + ag + "] is trying to take the robot");
+        result = model.takingRobot();
+      } else if (action.getFunctor().equals("drop")) {
+        System.out.println("[" + ag + "] is trying to drop the robot");
+        result = model.droppingRobot();
+      } else if (action.getFunctor().equals("moveObjectUp")) {
+        String object = action.getTerm(0).toString();
+        result = model.moveObjectUp(object);
+      } else if (action.getFunctor().equals("moveObjectDown")) {
+        String object = action.getTerm(0).toString();
+        result = model.moveObjectDown(object);
+      } else if (action.getFunctor().equals("moveObjectLeft")) {
+        String object = action.getTerm(0).toString();
+        result = model.moveObjectLeft(object);
+      } else if (action.getFunctor().equals("moveObjectRight")) {
+        String object = action.getTerm(0).toString();
+        result = model.moveObjectRight(object);
+      }
+    }
+    ;
+
+    if (action.equals(of)) { // of = open(fridge)
+      result = model.openFridge();
     } else if (action.equals(clf)) { // clf = close(fridge)
       result = model.closeFridge();
-
     } else if (action.getFunctor().equals("move_towards")) {
       String l = action.getTerm(0).toString();
       Location dest = null;
@@ -415,25 +447,27 @@ public class HouseEnv extends Environment {
       try {
         if (ag.equals("robot")) {
           result = model.moveTowards(0, dest);
-        } else {
+        } else if (ag.equals("owner")) {
           result = model.moveTowards(1, dest);
+        } else {
+          result = model.moveTowards(2, dest);
+          if (result) {
+          } else {
+          }
         }
       } catch (Exception e) {
         e.printStackTrace();
       }
 
-    } else if (action.getFunctor().equals("alert")) { // clf = close(fridge)
-      result = true;
-      /*
-      Incluir acciones moveLeft, moveRight, clean
-      Incluir percepciones dirty(Room)
-
-      */
     } else if (action.getFunctor().equals("clean")) {
-      if (ag.equals("robot")) {
-        result = model.clean(0);
-      } else {
-        result = model.clean(1);
+      try {
+        if (ag.equals("robot")) {
+          result = model.clean(0);
+        } else {
+          result = model.clean(1);
+        }
+      } catch (Exception e) {
+        e.printStackTrace();
       }
     } else if (action.getFunctor().equals("moveUp")) {
       if (ag.equals("robot")) {
