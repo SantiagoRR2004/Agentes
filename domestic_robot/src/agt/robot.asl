@@ -26,7 +26,8 @@ batteryLevel(400).
 	// Activate on belief
 		.my_name(Me)
 	<-
-		alert("INTRUDER ALERT! A RED SPY IS IN THE BASE!");
+		// Robot can't trigger the alert itself
+		.println("INTRUDER ALERT! A RED SPY IS IN THE BASE!");
 		.send(owner, tell, intruderDetected).
 
 +at(Me, charger):

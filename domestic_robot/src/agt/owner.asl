@@ -13,6 +13,7 @@ sleepOn([bed1, bed2, bed3]).
 +intruderDetected[source(robot)]
 	// Handle intruder alert from robot
 	<-
+		// Only the owner can trigger the alert
 		alert("He could be you, he could be me, he could even be-");
 		-intruderDetected[source(robot)].
 
