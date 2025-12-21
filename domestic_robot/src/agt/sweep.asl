@@ -1,19 +1,24 @@
 /* Initial beliefs and rules */
 
 originalHeight(6).
+height(6).
 originalWidth(16).
+width(16).
 
 /* GOALS*/
 
 /* Plans */
 
-+!resetSweep
++!resetSweep:
 	// Reset sweep-related beliefs
+			originalHeight(H)
+		&
+			originalWidth(W)
 	<-
-		-bottomReached;
-		-leftReached;
 		-height(X);
+		+height(H);
 		-width(Y);
+		+width(W);
 		-movingUp;
 		-movingDown;
 		-movingRight;
@@ -23,81 +28,37 @@ originalWidth(16).
 		-verticalSweepB;
 		-horizontalSweepB.
 
++!startingDirection(Room):
+    // Decide the direction based on the door
+		roomDoorDirection(Room, Door, Direction)
+    <-
+		// TODO: Make sure the Door is the right one
+		.println("Deciding starting direction from door ", Door);
+		if (Direction = up) {
+			// Sweep horizontally upwards
+			+horizontalSweepB;
+			.println("Starting horizontalSweepB.");
+		};
+		if (Direction = down) {
+			// Sweep horizontally downwards
+			+horizontalSweepA;
+			.println("Starting horizontalSweepA.");
 
-+!sweepRoom(Room):
-	// Start going down
-			atRoom(Room)
-		&
-			originalHeight(Height)
-		&
-			not bottomReached
-		&
-			not height(X)
-	<-
-	!moveUpNoExit;
-	+height(Height).
-
-+!sweepRoom(Room):
-	// Go down until bottom reached
-			atRoom(Room)
-		&
-			not bottomReached
-		&
-			height(X)
-		&
-			originalHeight(H)
-	<-
-		!moveDownNoExit;
-		if (height(0)) {
-			+bottomReached;
-			-height(0);
-			+height(H);
-			.println("Bottom reached");
-		}.
-
-+!sweepRoom(Room):
-	// Start going left
-			atRoom(Room)
-		&
-			bottomReached
-		&
-			not leftReached
-		&
-			originalWidth(Width)
-		&
-			not width(Y)
-	<-
-		+width(Width).
-
-+!sweepRoom(Room):
-	// Go left until left reached
-			atRoom(Room)
-		&
-			bottomReached
-		&
-			not leftReached
-		&
-			width(Y)
-		&
-			originalWidth(W)
-	<-
-		!moveLeftNoExit;
-		if (width(0)) {
-			+leftReached;
-			-width(0);
-			+width(W);
+		};
+		if (Direction = left) {
+			// Sweep vertically to the left
+			+verticalSweepB;
+			.println("Starting verticalSweepB.");
+		};
+		if (Direction = right) {
+			// Sweep vertically to the right
 			+verticalSweepA;
-			+movingUp;
-			.println("Left reached");
+			.println("Starting verticalSweepA.");
 		}.
 
 +!sweepRoom(Room):
 	// Perform sweeping until room is clean
 			atRoom(Room)
-		&
-			bottomReached
-		&
-			leftReached
 	<-
 		if (verticalSweepA) {
 			!verticalSweepA;
@@ -111,7 +72,7 @@ originalWidth(16).
 					if (horizontalSweepB) {
 						!horizontalSweepB;
 					} else {
-						.println("Finished cleaning room: ", Room);
+						!startingDirection(Room);
 					};
 				};
 			};
