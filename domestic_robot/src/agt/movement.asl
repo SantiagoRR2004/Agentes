@@ -254,6 +254,10 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
             ?atRoom(Room2);
             if (not Room1 = Room2) {
                 !addConnection(Room1, Room2, Door);
+                +roomDoorDirection(Room1, Door, up);
+                .broadcast(tell, roomDoorDirection(Room1, Door, up));
+                +roomDoorDirection(Room2, Door, down);
+                .broadcast(tell, roomDoorDirection(Room2, Door, down));
             } else {
                 moveDown;
                 if (batteryLevel(_)) {
@@ -271,6 +275,10 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
             ?atRoom(Room3);
             if (not Room1 = Room3) {
                 !addConnection(Room1, Room3, Door);
+                +roomDoorDirection(Room1, Door, left);
+                .broadcast(tell, roomDoorDirection(Room1, Door, left));
+                +roomDoorDirection(Room3, Door, right);
+                .broadcast(tell, roomDoorDirection(Room3, Door, right));
             } else {
                 moveRight;
                 if (batteryLevel(_)) {
@@ -288,6 +296,10 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
             ?atRoom(Room4);
             if (not Room1 = Room4) {
                 !addConnection(Room1, Room4, Door);
+                +roomDoorDirection(Room1, Door, down);
+                .broadcast(tell, roomDoorDirection(Room1, Door, down));
+                +roomDoorDirection(Room4, Door, up);
+                .broadcast(tell, roomDoorDirection(Room4, Door, up));
             } else {
                 moveUp;
                 if (batteryLevel(_)) {
@@ -305,6 +317,10 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
             ?atRoom(Room5);
             if (not Room1 = Room5) {
                 !addConnection(Room1, Room5, Door);
+                +roomDoorDirection(Room1, Door, right);
+                .broadcast(tell, roomDoorDirection(Room1, Door, right));
+                +roomDoorDirection(Room5, Door, left);
+                .broadcast(tell, roomDoorDirection(Room5, Door, left));
             } else {
                 moveLeft;
                 if (batteryLevel(_)) {
