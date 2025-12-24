@@ -39,6 +39,23 @@ batteryLevel(400).
 		.println("Battery recharged.").
 
 
++atRoom(CurrentRoom):
+	// Update charger distance when in a room
+	// Do it less often to save computation
+			numberOfDoors(MaxDepth)
+		&
+			atRoom(charger, ObjectiveRoom)
+		&
+			shortestRoomPath(CurrentRoom, ObjectiveRoom, Path, MaxDepth + 1)
+		&
+			.length(Path, L)
+		&
+			size(Y)
+	<-
+		-chargerDistance(_);
+		+chargerDistance(Y*(L+1)).
+
+
 +!main:
 	// If battery depleted, it stops functioning
 			batteryLevel(X)
@@ -47,6 +64,18 @@ batteryLevel(400).
 	<-
 		.println("Battery depleted.");
 		wait(5);
+		!main.
+
++!main:
+	// If battery low, go to charger
+			batteryLevel(X)
+		&
+			chargerDistance(D)
+		&
+			X <= D
+	<-
+		!resetSweep;
+		!goToCharger;
 		!main.
 
 +!main:
@@ -207,7 +236,7 @@ batteryLevel(400).
 		&
 			not at(Me, charger)
 	<-
-		moveTowardsAdvanced(charger);
+		!moveTowardsAdvanced(charger);
 		!reducePatience.
 
 +!goToCharger:
@@ -226,7 +255,7 @@ batteryLevel(400).
         +batteryLevel(B-1).
 
 +!resetBattery:
-        originalBatteryLevel(OBL)
+        maxBattery(OBL)
     <-
         -batteryLevel(_);
         +batteryLevel(OBL).
