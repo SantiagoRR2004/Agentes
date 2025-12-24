@@ -338,16 +338,19 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
         ?true.
 
 
-+!addConnection(Room1, Room2, Door)
++!addConnectionBroad(Room1, Room2, Door)[source(Sender)]
     <-
         +connect(Room1, Room2, Door);
         +connect(Room2, Room1, Door);
         -couldBeDoor(Door, Room1);
         -couldBeDoor(Door, Room2);
-        // Send the belief to all other agents
-        .broadcast(tell, connect(Room1, Room2, Door));
-        .broadcast(tell, connect(Room2, Room1, Door));
-        .println("Added connection: ", Room1, " <-> ", Room2, " via ", Door).
+        .println("Added connection: ", Room1, " <-> ", Room2, " via ", Door, " from ", Sender, ".").
+
++!addConnection(Room1, Room2, Door)
+    <-
+        .broadcast(achieve, addConnectionBroad(Room1, Room2, Door));
+        !addConnectionBroad(Room1, Room2, Door).
+
 
 +!unstuckFromDoor
 	<-
