@@ -36,6 +36,7 @@ batteryLevel(400).
 		.my_name(Me)
 	<-
 		!resetBattery;
+		.broadcast(tell, batteryRecharged);
 		.println("Battery recharged.").
 
 
@@ -63,7 +64,9 @@ batteryLevel(400).
 			X <= 0
 	<-
 		.println("Battery depleted.");
-		wait(5);
+		.broadcast(tell, batteryDepleted);
+		// Wait 5 seconds
+		.wait(5000);
 		!main.
 
 +!main:

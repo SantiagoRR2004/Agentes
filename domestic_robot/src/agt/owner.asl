@@ -17,6 +17,24 @@ sleepOn([bed1, bed2, bed3]).
 		alert("He could be you, he could be me, he could even be-");
 		-intruderDetected[source(robot)].
 
++batteryRecharged[source(Sender)]
+	// Handle battery recharged alert from robot
+	<-
+		-needToCharge(Sender).
+
++batteryDepleted[source(Sender)]
+	// Handle battery depleted alert from robot
+	<-
+		+needToCharge(Sender).
+
+
++!main:
+	// First objective is to charge the robot if needed
+	needToCharge(Robot)
+	<-
+		!recharge(Robot);
+		!main.
+
 +!main:
 	wantToSit(Object)
 	<-
@@ -38,6 +56,56 @@ sleepOn([bed1, bed2, bed3]).
 	<-
 	!main.
 
+
++!recharge(Robot):
+	// Owner is not carrying the robot
+			needToCharge(Robot)
+		&
+			not carryOn
+		&
+			.my_name(Me)
+		&
+			not at(Me, Robot)
+	<-
+		!moveTowardsAdvanced(Robot).
+
++!recharge(Robot):
+	// Owner is not carrying the robot
+			needToCharge(Robot)
+		&
+			not carryOn
+		&
+			.my_name(Me)
+		&
+			at(Me, Robot)
+	<-
+		take.
+
++!recharge(Robot):
+	// Owner is carrying the robot
+			needToCharge(Robot)
+		&
+			carryOn
+		&
+			.my_name(Me)
+		&
+			not at(Me, charger)
+	<-
+		!moveTowardsAdvanced(charger).
+
++!recharge(Robot):
+	// Owner is carrying the robot
+			needToCharge(Robot)
+		&
+			carryOn
+		&
+			.my_name(Me)
+		&
+			at(Me, charger)
+	<-
+		drop.
+
+
 +!chooseObjective
 	<-
 	.random(X);
@@ -49,6 +117,7 @@ sleepOn([bed1, bed2, bed3]).
 		!chooseSleepingPlace;
 	};
 	!resetPatience.
+
 
 +!chooseSittingPlace:
 		sittable(SittableList)
