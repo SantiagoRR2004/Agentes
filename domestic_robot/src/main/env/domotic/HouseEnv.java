@@ -6,7 +6,6 @@ import jason.environment.grid.Location;
 import java.util.logging.Logger;
 
 public class HouseEnv extends Environment {
-
   // common literals
   public static final Literal of = Literal.parseLiteral("open(fridge)");
   public static final Literal clf = Literal.parseLiteral("close(fridge)");
@@ -16,6 +15,7 @@ public class HouseEnv extends Environment {
   public static final Literal hob = Literal.parseLiteral("has(owner,drug)");
 
   public static final Literal af = Literal.parseLiteral("at(robot,fridge)");
+  public static final Literal aw = Literal.parseLiteral("at(robot,washer)");
   public static final Literal ao = Literal.parseLiteral("at(robot,owner)");
   public static final Literal ad = Literal.parseLiteral("at(robot,delivery)");
   public static final Literal ab1 = Literal.parseLiteral("at(robot,bed1)");
@@ -30,6 +30,7 @@ public class HouseEnv extends Environment {
 
   public static final Literal oa = Literal.parseLiteral("at(owner,robot)");
   public static final Literal oaf = Literal.parseLiteral("at(owner,fridge)");
+  public static final Literal oaw = Literal.parseLiteral("at(owner,washer)");
   public static final Literal ob1 = Literal.parseLiteral("at(owner,bed1)");
   public static final Literal ob2 = Literal.parseLiteral("at(owner,bed2)");
   public static final Literal ob3 = Literal.parseLiteral("at(owner,bed3)");
@@ -54,12 +55,10 @@ public class HouseEnv extends Environment {
   @Override
   public void init(String[] args) {
     model = new HouseModel();
-
     if (args.length == 1 && args[0].equals("gui")) {
       HouseView view = new HouseView(model);
       model.setView(view);
     }
-
     updatePercepts();
   }
 
@@ -111,11 +110,12 @@ public class HouseEnv extends Environment {
   }
 
   void updateThingsPlace() {
-
     String chargerPlace = model.getRoom(model.lCharger);
     addPercept(Literal.parseLiteral("atRoom(charger, " + chargerPlace + ")"));
     String fridgePlace = model.getRoom(model.lFridge);
     addPercept(Literal.parseLiteral("atRoom(fridge, " + fridgePlace + ")"));
+    String washerPlace = model.getRoom(model.lWasher);
+    addPercept(Literal.parseLiteral("atRoom(washer, " + washerPlace + ")"));
     String sofaPlace = model.getRoom(model.lSofa);
     addPercept(Literal.parseLiteral("atRoom(sofa, " + sofaPlace + ")"));
     String chair1Place = model.getRoom(model.lChair1);
@@ -186,6 +186,13 @@ public class HouseEnv extends Environment {
       addPercept("owner", oaf);
     }
 
+    if (lRobot.distance(model.lWasher) < 2) {
+      addPercept("robot", aw);
+    }
+    if (lOwner.distance(model.lWasher) < 2) {
+      addPercept("owner", oaw);
+    }
+
     if (lRobot.distance(model.lCharger) < 1) {
       addPercept("robot", ach);
     }
@@ -195,6 +202,8 @@ public class HouseEnv extends Environment {
 
     if (lRobot.distance(lOwner) == 1) {
       addPercept("robot", ao);
+    }
+    if (lOwner.distance(lRobot) < 1) {
       addPercept("owner", oa);
     }
 
@@ -295,6 +304,53 @@ public class HouseEnv extends Environment {
     ;
   }
 
+  private int whatIs(String obj) {
+    int itIs = 0;
+    switch (obj) {
+      case "bed1":
+        itIs = model.BED;
+        break;
+      case "bed2":
+        itIs = model.BED;
+        break;
+      case "bed3":
+        itIs = model.BED;
+        break;
+      case "chair1":
+        itIs = model.CHAIR;
+        break;
+      case "chair2":
+        itIs = model.CHAIR;
+        break;
+      case "chair3":
+        itIs = model.CHAIR;
+        break;
+      case "chair4":
+        itIs = model.CHAIR;
+        break;
+      case "sofa":
+        itIs = model.SOFA;
+        break;
+      case "fridge":
+        itIs = model.FRIDGE;
+        break;
+      case "table":
+        itIs = model.TABLE;
+        break;
+      case "charger":
+        itIs = model.CHARGER;
+        break;
+      case "washer":
+        itIs = model.WASHER;
+        break;
+      case "dirty":
+        itIs = model.DIRTY;
+        break;
+    }
+    ;
+    return itIs;
+  }
+
   @Override
   public boolean executeAction(String ag, Structure action) {
 
@@ -304,76 +360,33 @@ public class HouseEnv extends Environment {
     // System.out.println("[robot] has the following percepts: "+perceptsRobot);
 
     boolean result = false;
-    if (ag.equals("owner")) {
-      if (action.getFunctor().equals("sit")) {
-        String l = action.getTerm(0).toString();
-        Location dest = null;
-        switch (l) {
-          case "bed1":
-            dest = model.lBed1;
-            break;
-          case "bed2":
-            dest = model.lBed2;
-            break;
-          case "bed3":
-            dest = model.lBed3;
-            break;
-          case "chair1":
-            dest = model.lChair1;
-            break;
-          case "chair2":
-            dest = model.lChair2;
-            break;
-          case "chair3":
-            dest = model.lChair3;
-            break;
-          case "chair4":
-            dest = model.lChair4;
-            break;
-          case "sofa":
-            dest = model.lSofa;
-            break;
-        }
-        ;
+    if (ag.equals("robot")) {
+      result = executeRobotAction(action);
+    } else if (ag.equals("owner")) {
+      result = executeOwnerAction(action);
+    } else if (ag.equals("intruder")) {
+      result = executeIntruderAction(action);
+    } else {
+      logger.info("Failed to execute action " + action + "---- AGENT UNKNOWN ----");
+    }
 
-        try {
-          if (ag.equals("owner")) {
-            result = model.sit(1, dest);
-          }
-        } catch (Exception e) {
-          e.printStackTrace();
-        }
-
-      } else if (action.getFunctor().equals("alert")) {
-        System.out.println("[Environment] is calling 112" + action.getTerm(0).toString());
-        result = true;
-      } else if (action.getFunctor().equals("take")) {
-        System.out.println("[" + ag + "] is trying to take the robot");
-        result = model.takingRobot();
-      } else if (action.getFunctor().equals("drop")) {
-        System.out.println("[" + ag + "] is trying to drop the robot");
-        result = model.droppingRobot();
-      } else if (action.getFunctor().equals("moveObjectUp")) {
-        String object = action.getTerm(0).toString();
-        result = model.moveObjectUp(object);
-      } else if (action.getFunctor().equals("moveObjectDown")) {
-        String object = action.getTerm(0).toString();
-        result = model.moveObjectDown(object);
-      } else if (action.getFunctor().equals("moveObjectLeft")) {
-        String object = action.getTerm(0).toString();
-        result = model.moveObjectLeft(object);
-      } else if (action.getFunctor().equals("moveObjectRight")) {
-        String object = action.getTerm(0).toString();
-        result = model.moveObjectRight(object);
+    if (result) {
+      updatePercepts();
+      logger.info("stop here after doing" + action + "--------------------------------");
+      try {
+        Thread.sleep(300);
+      } catch (Exception e) {
       }
+    } else {
+      logger.info("The " + action + " could not be done.");
     }
     ;
+    return result;
+  }
 
-    if (action.equals(of)) { // of = open(fridge)
-      result = model.openFridge();
-    } else if (action.equals(clf)) { // clf = close(fridge)
-      result = model.closeFridge();
-    } else if (action.getFunctor().equals("move_towards")) {
+  public boolean executeMoveAction(String ag, Structure action) {
+    boolean result = false;
+    if (action.getFunctor().equals("move_towards")) {
       String l = action.getTerm(0).toString();
       Location dest = null;
       switch (l) {
@@ -450,21 +463,13 @@ public class HouseEnv extends Environment {
         } else if (ag.equals("owner")) {
           result = model.moveTowards(1, dest);
         } else {
-          result = model.moveTowards(2, dest);
-          if (result) {
+          if (model.friend) {
+            System.out.println("[guest] is trying to move towards " + dest);
           } else {
+            System.out.println("[ghest] is trying to move towards " + dest);
           }
-        }
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-
-    } else if (action.getFunctor().equals("clean")) {
-      try {
-        if (ag.equals("robot")) {
-          result = model.clean(0);
-        } else {
-          result = model.clean(1);
+          ;
+          result = model.moveTowards(2, dest);
         }
       } catch (Exception e) {
         e.printStackTrace();
@@ -472,37 +477,405 @@ public class HouseEnv extends Environment {
     } else if (action.getFunctor().equals("moveUp")) {
       if (ag.equals("robot")) {
         result = model.moveUp(0);
-      } else {
+      } else if (ag.equals("owner")) {
         result = model.moveUp(1);
+      } else {
+        if (model.friend) {
+          System.out.println("[guest] is moving Up");
+        } else {
+          System.out.println("[ghest] is moving Up");
+        }
+        ;
+        result = model.moveUp(2);
       }
     } else if (action.getFunctor().equals("moveDown")) {
       if (ag.equals("robot")) {
         result = model.moveDown(0);
-      } else {
+      } else if (ag.equals("owner")) {
         result = model.moveDown(1);
+      } else {
+        if (model.friend) {
+          System.out.println("[guest] is moving Down");
+        } else {
+          System.out.println("[ghest] is moving Down");
+        }
+        ;
+        result = model.moveDown(2);
       }
     } else if (action.getFunctor().equals("moveLeft")) {
       if (ag.equals("robot")) {
         result = model.moveLeft(0);
-      } else {
+      } else if (ag.equals("owner")) {
         result = model.moveLeft(1);
+      } else {
+        if (model.friend) {
+          System.out.println("[guest] is moving Left");
+        } else {
+          System.out.println("[ghest] is moving Left");
+        }
+        ;
+        result = model.moveLeft(2);
       }
     } else if (action.getFunctor().equals("moveRight")) {
       if (ag.equals("robot")) {
         result = model.moveRight(0);
-      } else {
+      } else if (ag.equals("owner")) {
         result = model.moveRight(1);
+      } else {
+        if (model.friend) {
+          System.out.println("[guest] is moving Right");
+        } else {
+          System.out.println("[ghest] is moving Right");
+        }
+        ;
+        result = model.moveRight(2);
       }
     } else {
+      logger.info("Failed to execute action " + action);
     }
 
-    if (result) {
-      updatePercepts();
-      try {
-        Thread.sleep(300);
-      } catch (Exception e) {
-      }
+    return result;
+  }
+
+  public boolean executeMoveObjAction(String ag, Structure action) {
+    // System.out.println("["+ag+"] doing: "+action);
+    boolean result = false;
+    String object = action.getTerm(0).toString();
+    String dir = "other";
+
+    if (action.getFunctor().equals("moveObjectUp")) {
+      dir = "up";
+      result = model.moveObjectUp(whatIs(object));
+    } else if (action.getFunctor().equals("moveObjectDown")) {
+      dir = "down";
+      result = model.moveObjectDown(whatIs(object));
+    } else if (action.getFunctor().equals("moveObjectLeft")) {
+      dir = "left";
+      result = model.moveObjectLeft(whatIs(object));
+    } else if (action.getFunctor().equals("moveObjectRight")) {
+      dir = "right";
+      result = model.moveObjectRight(whatIs(object));
     }
+    ;
+
+    System.out.println("[owner] is moving " + object + " to " + dir);
+
+    return result;
+  }
+
+  public boolean executeAlertAction(Structure action) {
+
+    boolean result = false;
+
+    if (action.getFunctor().equals("alert")) {
+      System.out.println("[Environment] is calling 112. " + action.getTerm(0).toString());
+      model.detected = true;
+      model.friend = false;
+      result = true;
+    } else if (action.getFunctor().equals("noAlert")) {
+      System.out.println("[owner] inform the environment that intruder is a guest.");
+      model.detected = true;
+      model.friend = true;
+      result = true;
+    } else {
+      System.out.println("[owner] is trying to do a wrong alert action.");
+    }
+    ;
+
+    return result;
+  }
+
+  public boolean executeTakeAction(Structure action) {
+    boolean result = false;
+
+    if (action.getFunctor().equals("take")) {
+      System.out.println("[owner] is trying to take the robot");
+      result = model.takingRobot();
+    } else {
+      System.out.println("[owner] is trying to do a wrong take action.");
+    }
+    ;
+
+    return result;
+  }
+
+  public boolean executeDropAction(Structure action) {
+    boolean result = false;
+
+    if (action.getFunctor().equals("drop")) {
+      System.out.println("[owner] is trying to drop the robot");
+      result = model.droppingRobot();
+    } else {
+      System.out.println("[owner] is trying to do a wrong drop action.");
+    }
+
+    return result;
+  }
+
+  public boolean executeOpenAction(int ag, Structure action) {
+    boolean result = false;
+    String agent = "owner";
+
+    if (ag < 1) {
+      agent = "robot";
+    }
+    ;
+
+    if (action.getFunctor().equals("open")) {
+      System.out.println("[" + agent + "] is trying to open the fridge");
+      result = model.openFridge();
+    } else {
+      System.out.println("[" + agent + "] is trying to do a wrong action.");
+    }
+
+    return result;
+  }
+
+  public boolean executeCloseAction(int ag, Structure action) {
+    boolean result = false;
+    String agent = "owner";
+
+    if (ag < 1) {
+      agent = "robot";
+    }
+    ;
+
+    if (action.getFunctor().equals("close")) {
+      System.out.println("[" + agent + "] is trying to close the fridge");
+      result = model.openFridge();
+    } else {
+      System.out.println("[" + agent + "] is trying to do a wrong action.");
+    }
+
+    return result;
+  }
+
+  public boolean executeCleanAction(int ag, Structure action) {
+    boolean result = false;
+    String agent = "owner";
+
+    if (ag < 1) {
+      agent = "robot";
+    }
+    ;
+
+    if (action.getFunctor().equals("clean")) {
+      System.out.println("[" + agent + "] is trying to clean the place");
+      result = model.clean(ag);
+    } else {
+      System.out.println("[" + agent + "] is trying to do a wrong action.");
+    }
+
+    return result;
+  }
+
+  public boolean executeSitAction(int ag, Structure action) {
+    boolean result = false;
+
+    if (action.getFunctor().equals("sit")) {
+      String l = action.getTerm(0).toString();
+      Location dest = null;
+      switch (l) {
+        case "bed1":
+          dest = model.lBed1;
+          break;
+        case "bed2":
+          dest = model.lBed2;
+          break;
+        case "bed3":
+          dest = model.lBed3;
+          break;
+        case "chair1":
+          dest = model.lChair1;
+          break;
+        case "chair2":
+          dest = model.lChair2;
+          break;
+        case "chair3":
+          dest = model.lChair3;
+          break;
+        case "chair4":
+          dest = model.lChair4;
+          break;
+        case "sofa":
+          dest = model.lSofa;
+          break;
+      }
+      ;
+
+      if (ag < 2) {
+        System.out.println("[owner] is resting on " + l);
+        result = model.sit(1, dest);
+      } else {
+        System.out.println("[owner] is resting on " + l);
+        result = model.sit(2, dest);
+      }
+      ;
+    }
+    ;
+
+    return result;
+  }
+
+  public boolean executeOwnerAction(Structure action) {
+    System.out.println("[owner] doing: " + action);
+    java.util.List<Literal> perceptsOwner = consultPercepts("owner");
+    System.out.println("[owner] has the following percepts: " + perceptsOwner);
+
+    boolean result = false;
+    String theAction = action.getFunctor();
+
+    try {
+      switch (theAction) {
+        // These are common actions
+        case "move_towards":
+          result = executeMoveAction("owner", action);
+          break;
+        case "moveUp":
+          result = executeMoveAction("owner", action);
+          break;
+        case "moveDown":
+          result = executeMoveAction("owner", action);
+          break;
+        case "moveLeft":
+          result = executeMoveAction("owner", action);
+          break;
+        case "moveRight":
+          result = executeMoveAction("owner", action);
+        // These actions are only available for owner
+        case "moveObjectUp":
+          result = executeMoveObjAction("owner", action);
+          break;
+        case "moveObjectDown":
+          result = executeMoveObjAction("owner", action);
+          break;
+        case "moveObjectLeft":
+          result = executeMoveObjAction("owner", action);
+          break;
+        case "moveObjectRight":
+          result = executeMoveObjAction("owner", action);
+          break;
+        case "alert":
+          result = executeAlertAction(action);
+          break;
+        case "noAlert":
+          result = executeAlertAction(action);
+          break;
+        case "take":
+          result = executeTakeAction(action);
+          break;
+        case "drop":
+          result = executeDropAction(action);
+          break;
+        // This action is proper of owner and intruder when guest
+        case "sit":
+          result = executeSitAction(1, action);
+          break;
+        // These actions are proper of owner and robot
+        case "open":
+          result = executeOpenAction(1, action);
+          break;
+        case "close":
+          result = executeCloseAction(1, action);
+          break;
+        case "clean":
+          result = executeCleanAction(1, action);
+          break;
+      }
+      ;
+    } catch (Exception e) {
+      System.out.println("Owner is trying to do a wrong action ");
+      e.printStackTrace();
+    }
+    ;
+    return result;
+  }
+
+  public boolean executeIntruderAction(Structure action) {
+
+    System.out.println("[intruder] doing: " + action);
+    java.util.List<Literal> perceptsIntruder = consultPercepts("intruder");
+    System.out.println("[intruder] has the following percepts: " + perceptsIntruder);
+
+    boolean result = false;
+    String theAction = action.getFunctor();
+
+    try {
+      switch (theAction) {
+        // These are common actions
+        case "move_towards":
+          result = executeMoveAction("intruder", action);
+          break;
+        case "moveUp":
+          result = executeMoveAction("intruder", action);
+          break;
+        case "moveDown":
+          result = executeMoveAction("intruder", action);
+          break;
+        case "moveLeft":
+          result = executeMoveAction("intruder", action);
+          break;
+        case "moveRight":
+          result = executeMoveAction("intruder", action);
+          break;
+        // This action is proper of owner and intruder when guest
+        case "sit":
+          result = (model.detected && model.friend && executeSitAction(2, action));
+          break;
+      }
+      ;
+    } catch (Exception e) {
+      System.out.println("Intruder is trying to do a not allowed action ");
+      e.printStackTrace();
+    }
+    ;
+    return result;
+  }
+
+  public boolean executeRobotAction(Structure action) {
+
+    System.out.println("[robot] doing: " + action);
+    java.util.List<Literal> perceptsRobot = consultPercepts("robot");
+    System.out.println("[robot] has the following percepts: " + perceptsRobot);
+
+    boolean result = false;
+    String theAction = action.getFunctor();
+
+    try {
+      switch (theAction) {
+        // These are common actions
+        case "move_towards":
+          result = executeMoveAction("robot", action);
+          break;
+        case "moveUp":
+          result = executeMoveAction("robot", action);
+          break;
+        case "moveDown":
+          result = executeMoveAction("robot", action);
+          break;
+        case "moveLeft":
+          result = executeMoveAction("robot", action);
+          break;
+        case "moveRight":
+          result = executeMoveAction("robot", action);
+          break;
+        // These actions are proper of owner and robot
+        case "open":
+          result = executeOpenAction(0, action);
+          break;
+        case "close":
+          result = executeCloseAction(0, action);
+          break;
+        case "clean":
+          result = executeCleanAction(0, action);
+          break;
+      }
+      ;
+    } catch (Exception e) {
+      System.out.println("Robot is trying to do a not allowed action ");
+      e.printStackTrace();
+    }
+    ;
     return result;
   }
 }

@@ -31,6 +31,9 @@ public class HouseModel extends GridWorldModel {
   boolean fridgeOpen = false; // whether the fridge is open
   boolean carryingDrug = false; // whether the fridge is open
   boolean carryingRobot = false; // whether the robot is carrying drug
+  boolean detected = false; // whether the intruder is detected
+  boolean friend = false; // whether the robot is friendly
+
   int sipCount = 0; // how many sip the owner did
   int availableDrugs = 2; // how many drugs are available
 
@@ -154,7 +157,7 @@ public class HouseModel extends GridWorldModel {
 
     setAgPos(2, 12, 3);
 
-    Location locIntruder = getAgPos(2);
+    // Location locIntruder = getAgPos(2);
 
     // System.out.println("Hay un intruso en (" + locIntruder.x + ", "+locIntruder.y+").");
 
@@ -219,8 +222,7 @@ public class HouseModel extends GridWorldModel {
 
     dirtyPlaces.start();
 
-    // intruder.start();
-
+    intruder.start();
   }
 
   void initRooms() {
@@ -536,23 +538,47 @@ public class HouseModel extends GridWorldModel {
     }
   }
 
-  boolean moveObjectLeft(String Obj) {
-
+  boolean moveObjectLeft(int Obj) {
+    Location loc = getAgPos(1);
+    if (hasObject(Obj, loc.x, loc.y)
+        && canMoveTo(0, loc.x - 1, loc.y)
+        && isFreeBed(loc.x - 1, loc.y)) {
+      remove(Obj, loc.x, loc.y);
+      add(Obj, loc.x - 1, loc.y);
+    }
     return true;
   }
 
-  boolean moveObjectRight(String Obj) {
-
+  boolean moveObjectRight(int Obj) {
+    Location loc = getAgPos(1);
+    if (hasObject(Obj, loc.x, loc.y)
+        && canMoveTo(0, loc.x + 1, loc.y)
+        && isFreeBed(loc.x + 1, loc.y)) {
+      remove(Obj, loc.x, loc.y);
+      add(Obj, loc.x + 1, loc.y);
+    }
     return true;
   }
 
-  boolean moveObjectUp(String Obj) {
-
+  boolean moveObjectUp(int Obj) {
+    Location loc = getAgPos(1);
+    if (hasObject(Obj, loc.x, loc.y)
+        && canMoveTo(0, loc.x, loc.y - 1)
+        && isFreeBed(loc.x, loc.y - 1)) {
+      remove(Obj, loc.x, loc.y);
+      add(Obj, loc.x, loc.y - 1);
+    }
     return true;
   }
 
-  boolean moveObjectDown(String Obj) {
-
+  boolean moveObjectDown(int Obj) {
+    Location loc = getAgPos(1);
+    if (hasObject(Obj, loc.x, loc.y)
+        && canMoveTo(0, loc.x, loc.y + 1)
+        && isFreeBed(loc.x, loc.y + 1)) {
+      remove(Obj, loc.x, loc.y);
+      add(Obj, loc.x, loc.y + 1);
+    }
     return true;
   }
 
