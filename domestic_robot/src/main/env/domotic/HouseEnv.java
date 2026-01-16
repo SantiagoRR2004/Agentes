@@ -720,7 +720,7 @@ public class HouseEnv extends Environment {
   public boolean executeOwnerAction(Structure action) {
     System.out.println("[owner] doing: " + action);
     java.util.List<Literal> perceptsOwner = consultPercepts("owner");
-    System.out.println("[owner] has the following percepts: " + perceptsOwner);
+    // System.out.println("[owner] has the following percepts: " + perceptsOwner);
 
     boolean result = false;
     String theAction = action.getFunctor();
@@ -795,7 +795,7 @@ public class HouseEnv extends Environment {
 
     System.out.println("[intruder] doing: " + action);
     java.util.List<Literal> perceptsIntruder = consultPercepts("intruder");
-    System.out.println("[intruder] has the following percepts: " + perceptsIntruder);
+    // System.out.println("[intruder] has the following percepts: " + perceptsIntruder);
 
     boolean result = false;
     String theAction = action.getFunctor();
@@ -836,7 +836,7 @@ public class HouseEnv extends Environment {
 
     System.out.println("[robot] doing: " + action);
     java.util.List<Literal> perceptsRobot = consultPercepts("robot");
-    System.out.println("[robot] has the following percepts: " + perceptsRobot);
+    // System.out.println("[robot] has the following percepts: " + perceptsRobot);
 
     boolean result = false;
     String theAction = action.getFunctor();
