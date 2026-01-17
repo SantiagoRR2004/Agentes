@@ -10,12 +10,17 @@ sleepOn([bed1, bed2, bed3]).
 
 /* Plans */
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
 +intruderDetected[source(robot)]
 	// Handle intruder alert from robot
 	<-
 		// Only the owner can trigger the alert
 		alert("He could be you, he could be me, he could even be-");
-		-intruderDetected[source(robot)].
+		-intruderDetected[source(robot)];
+		
+		+intruderDetected(intruder).
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 +batteryRecharged[source(Sender)]
 	// Handle battery recharged alert from robot
@@ -26,6 +31,13 @@ sleepOn([bed1, bed2, bed3]).
 	// Handle battery depleted alert from robot
 	<-
 		+needToCharge(Sender).
+
+
++!main:
+    intruderDetected(Intruder)
+<-
+    !runFromIntruder(Intruder);
+    !main.
 
 
 +!main:
@@ -253,3 +265,45 @@ sleepOn([bed1, bed2, bed3]).
 		if (Y < 0.1) {
 			-wantToSleep(ChosenPlace);
 		}.
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+/* Elegir la habitación más lejana y huir */
++!runFromIntruder(Intruder):
+        atRoom(CurrentRoom) & numberOfDoors(MaxDepth)
+	<-
+		.setof(Room, atRoom(_,Room), Rooms);
+		-furthestRoom(_,_); +furthestRoom(CurrentRoom,-1);
+		for (.member(R,Rooms) & not R = CurrentRoom) {
+			if (shortestRoomPath(CurrentRoom,R,Path,MaxDepth+1)) {
+				.length(Path,L); ?furthestRoom(_,BestL);
+				if (L > BestL) { -furthestRoom(_,_); +furthestRoom(R,L); };
+			};
+		};
+		?furthestRoom(SafeRoom,_);
+		!escapeToRoom(SafeRoom,Intruder).
+
++!escapeToRoom(SafeRoom,Intruder):
+        intruderDetected(Intruder) & not atRoom(SafeRoom)
+	<-
+		!moveTowardsAdvanced(SafeRoom);
+		!escapeToRoom(SafeRoom,Intruder).
+
++!escapeToRoom(SafeRoom,Intruder):
+        atRoom(SafeRoom)
+	<-
+    	-intruderDetected(Intruder).
+
+
+
+
++at(Me, F): my_name(Me) & intruderDetected(_)
+	<-
+		.random(R);
+		if (R < 0.25) { moveObjectUp(F); }
+		else { if (R < 0.5) { moveObjectDown(F); }
+		else { if (R < 0.75) { moveObjectLeft(F); }
+		else { moveObjectRight(F); }}}.
+
+
+	////////////////////////////////////////////////////////////////////////////////////
