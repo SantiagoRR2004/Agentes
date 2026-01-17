@@ -17,7 +17,7 @@ MAS domestic_robot {
     agents:
             robot;
             owner;
-            intruder supermarket.asl;
+            intruder;
 
     aslSourcePath: "src/agt";
 }
