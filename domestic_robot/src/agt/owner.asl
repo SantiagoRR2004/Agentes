@@ -30,6 +30,15 @@ sleepOn([bed1, bed2, bed3]).
 			}
 		}.
 
++at(Me, intruder):
+	// Detect intruder
+	// Activate on belief
+			.my_name(Me)
+		&
+			atRoom(Room)
+	<-
+		+unknownAgentDetected(intruder, Room).
+
 
 +batteryRecharged[source(Sender)]
 	// Handle battery recharged alert from robot
