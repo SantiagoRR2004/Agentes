@@ -55,37 +55,37 @@ public class HouseModel extends GridWorldModel {
   Location lBed1 = new Location(GSize / 2 - 1, GSize - 4); // (6,10) on //(13,7,20,11)
 
   // Initialization of the doors location on the domotic home scene
-  Location lDoorHome = new Location(1, GSize - 1); // (1,13)		<- *
-  Location lDoorKit1 = new Location(1, GSize / 2); // (1,7) 		<- *
-  Location lDoorKit2 = new Location(GSize / 2 + 1, GSize / 2 - 1); // (8,6)		<- *
-  Location lDoorBath2 = new Location(GSize - 4, GSize - 2); // (10,12)		<- *
-  Location lDoorBed1 = new Location(GSize - 5, GSize / 2); // (9,7)		<- Mal
-  Location lDoorSal1 = new Location(GSize + 1, GSize / 2); // (15,7)		<- *
-  Location lDoorBath1 = new Location(GSize - 1, (GSize + 1) / 3); // (13,5)		<- *
-  Location lDoorBed2 = new Location(GSize * 3 / 2 + 1, (GSize + 1) / 3); // (22,5)		<- *
-  Location lDoorBed3 = new Location(GSize * 3 / 2 - 1, (GSize + 1) / 3); // (20,5)		<- *
-  Location lDoorSal2 = new Location(GSize * 2 - 5, GSize / 2 + 1); // (23,8)		<- *
+  Location lDoorHome = new Location(1, GSize - 1); // (1,13) <- *
+  Location lDoorKit1 = new Location(1, GSize / 2); // (1,7) <- *
+  Location lDoorKit2 = new Location(GSize / 2 + 1, GSize / 2 - 1); // (8,6) <- *
+  Location lDoorBath2 = new Location(GSize - 4, GSize - 2); // (10,12) <- *
+  Location lDoorBed1 = new Location(GSize - 5, GSize / 2); // (9,7) <- Mal
+  Location lDoorSal1 = new Location(GSize + 1, GSize / 2); // (15,7) <- *
+  Location lDoorBath1 = new Location(GSize - 1, (GSize + 1) / 3); // (13,5) <- *
+  Location lDoorBed2 = new Location(GSize * 3 / 2 + 1, (GSize + 1) / 3); // (22,5) <- *
+  Location lDoorBed3 = new Location(GSize * 3 / 2 - 1, (GSize + 1) / 3); // (20,5) <- *
+  Location lDoorSal2 = new Location(GSize * 2 - 5, GSize / 2 + 1); // (23,8) <- *
 
   // Initialization of the area modeling the home rooms
-  Area kitchen = new Area(1, 1, GSize / 2, GSize / 2); // (1,1,8,7)	<-
-  Area livingroom = new Area(GSize + 1, GSize / 2, GSize * 3 / 2 + 1, GSize - 1); // (15,7,22,13)	<-
-  Area bath1 = new Area(GSize / 2 + 1, 1, GSize - 1, GSize / 2 - 2); // (8,1,13,5)	<-
-  Area bath2 = new Area(GSize - 4, GSize / 2 + 1, GSize - 1, GSize - 1); // (10,8,13,13)	<-
-  Area bedroom1 = new Area(GSize / 2 - 1, GSize / 2, GSize - 5, GSize - 1); // (6,7,9,13)	<-
-  Area bedroom3 = new Area(GSize, 1, GSize * 3 / 2 - 1, GSize / 2 - 2); // (14,1,20,5)	<-
-  Area bedroom2 = new Area(GSize * 3 / 2, 1, GSize * 2 - 2, GSize / 2 - 2); // (21,1,26,5)	<-
-  Area hall = new Area(1, GSize / 2 + 1, GSize / 2 - 2, GSize - 1); // (1,8,5,13)	<-
+  Area kitchen = new Area(1, 1, GSize / 2, GSize / 2); // (1,1,8,7) <-
+  Area livingroom = new Area(GSize + 1, GSize / 2, GSize * 3 / 2 + 1, GSize - 1); // (15,7,22,13) <-
+  Area bath1 = new Area(GSize / 2 + 1, 1, GSize - 1, GSize / 2 - 2); // (8,1,13,5) <-
+  Area bath2 = new Area(GSize - 4, GSize / 2 + 1, GSize - 1, GSize - 1); // (10,8,13,13) <-
+  Area bedroom1 = new Area(GSize / 2 - 1, GSize / 2, GSize - 5, GSize - 1); // (6,7,9,13) <-
+  Area bedroom3 = new Area(GSize, 1, GSize * 3 / 2 - 1, GSize / 2 - 2); // (14,1,20,5) <-
+  Area bedroom2 = new Area(GSize * 3 / 2, 1, GSize * 2 - 2, GSize / 2 - 2); // (21,1,26,5) <-
+  Area hall = new Area(1, GSize / 2 + 1, GSize / 2 - 2, GSize - 1); // (1,8,5,13) <-
   Area hallway =
-      new Area(GSize / 2 + 1, GSize / 2 - 1, GSize * 2 - 1, GSize / 2 - 1); // (8,6,27,6)	<-
-  Area robotroom = new Area(GSize * 2 - 5, GSize / 2, GSize * 2 - 1, GSize - 1); // (23,7,27,13)	<-
+      new Area(GSize / 2 + 1, GSize / 2 - 1, GSize * 2 - 1, GSize / 2 - 1); // (8,6,27,6) <-
+  Area robotroom = new Area(GSize * 2 - 5, GSize / 2, GSize * 2 - 1, GSize - 1); // (23,7,27,13) <-
 
   /*
-  Modificar el modelo para que la casa sea un conjunto de habitaciones
-  Dar un codigo a cada habitación y vincular un Area a cada habitación
-  Identificar los objetos de manera local a la habitación en que estén
-  Crear un método para la identificación del tipo de agente existente
-  Identificar objetos globales que precisen de un único identificador
-  */
+   * Modificar el modelo para que la casa sea un conjunto de habitaciones
+   * Dar un codigo a cada habitación y vincular un Area a cada habitación
+   * Identificar los objetos de manera local a la habitación en que estén
+   * Crear un método para la identificación del tipo de agente existente
+   * Identificar objetos globales que precisen de un único identificador
+   */
   Map<String, Integer> dirtyRooms = new HashMap<>();
 
   Thread intruder =
@@ -153,13 +153,16 @@ public class HouseModel extends GridWorldModel {
 
     // initial location of robot
 
-    setAgPos(1, 11, 3);
+    // setAgPos(1, 11, 3);
+
+    setAgPos(1, 23, 9);
 
     setAgPos(2, 12, 3);
 
     // Location locIntruder = getAgPos(2);
 
-    // System.out.println("Hay un intruso en (" + locIntruder.x + ", "+locIntruder.y+").");
+    // System.out.println("Hay un intruso en (" + locIntruder.x + ",
+    // "+locIntruder.y+").");
 
     // Do new methods to create literals for each object placed on
     // the model indicating their nature to inform agents their existence
@@ -522,7 +525,13 @@ public class HouseModel extends GridWorldModel {
   }
 
   boolean canMoveTo(int Ag, int x, int y) {
-    if (Ag < 1) {
+    if (Ag == 1) {
+      return (!hasObject(OBSTACLE, x, y)
+          && !hasObject(FRIDGE, x, y)
+          && !hasObject(CHARGER, x, y)
+          && !hasObject(WASHER, x, y)
+          && !hasObject(TABLE, x, y));
+    } else if (Ag < 1) {
       return (isFree(x, y)
           && !hasObject(FRIDGE, x, y)
           && !hasObject(WASHER, x, y)

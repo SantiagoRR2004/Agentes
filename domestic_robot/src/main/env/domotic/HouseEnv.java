@@ -455,8 +455,15 @@ public class HouseEnv extends Environment {
         case "doorBath2":
           dest = model.lDoorBath2;
           break;
+        case "robot":
+          dest = model.getAgPos(0);
+          break;
+        case "intruder":
+          dest = model.getAgPos(2);
+          break;
       }
       try {
+        Location loc = null;
         if (ag.equals("robot")) {
           result = model.moveTowards(0, dest);
         } else if (ag.equals("owner")) {
@@ -792,7 +799,6 @@ public class HouseEnv extends Environment {
 
     System.out.println("[intruder] doing: " + action);
     java.util.List<Literal> perceptsIntruder = consultPercepts("intruder");
-    // System.out.println("[intruder] has the following percepts: " + perceptsIntruder);
 
     boolean result = false;
     String theAction = action.getFunctor();
@@ -832,7 +838,6 @@ public class HouseEnv extends Environment {
   public boolean executeRobotAction(Structure action) {
 
     java.util.List<Literal> perceptsRobot = consultPercepts("robot");
-    // System.out.println("[robot] has the following percepts: " + perceptsRobot);
 
     boolean result = false;
     String theAction = action.getFunctor();
