@@ -16,10 +16,19 @@ sleepOn([bed1, bed2, bed3]).
 		intruderDetected(_)
 	<-
 		.random(R);
-		if (R < 0.25) { moveObjectUp(F); }
-		else { if (R < 0.5) { moveObjectDown(F); }
-		else { if (R < 0.75) { moveObjectLeft(F); }
-		else { moveObjectRight(F); }}}.
+		if (R < 0.25) {
+			moveObjectUp(F);
+		} else { 
+			if (R < 0.5) {
+				moveObjectDown(F);
+			} else {
+				if (R < 0.75) {
+					moveObjectLeft(F);
+				} else {
+					moveObjectRight(F);
+				}
+			}
+		}.
 
 
 +batteryRecharged[source(Sender)]
@@ -98,10 +107,10 @@ sleepOn([bed1, bed2, bed3]).
 		& 
 			sittable(FurnitureList)  // Obtener la lista de muebles donde puede sentarse
     <-
-		.send(Agent, askOne, friendly, Response, 1000);
+		.send(Agent, askOne, friendly, Response);
 
-		if (Response) {
-			.print("Estoy con ", Agent, ". Iniciando protocolo de bienvenida.");
+		if (Response == friendly[source(Agent)]) {
+			.println("Estoy con ", Agent, ". Iniciando protocolo de bienvenida.");
 
 			// Ejecutar noAlert inmediatamente (ya se esta con el intruso)
 			noAlert;
@@ -115,19 +124,19 @@ sleepOn([bed1, bed2, bed3]).
 			.random(R);
 			Index = math.floor(R * Len);
 			.nth(Index, FurnitureList, ChosenFurniture);
-			?atRoom(ChosenFurniture, Room);
+			?atRoom(ChosenFurniture, FRoom);
 			
 			// Comunicar al invitado la habitación asignada y enviarle el mensaje para que se dirija allí
 			// La creencia temporal se tendria que gestionar luego en el plan del intruso para que sepa donde ir y tambien borrarla luego
-			.print("Hola ", Agent, ", bienvenido. Puedes descansar en: ", Room);
-			.send(Agent, tell, useRoom(Room));
+			.println("Hola ", Agent, ", bienvenido. Puedes descansar en: ", FRoom);
+			.send(Agent, tell, useRoom(FRoom));
 
 			// Se borra el objetivo para que el owner intente saludar al intruso nuevamente si vuelve a detectarlo (en bucle)
-			-goGreetIntruder(Agent, Room);
+			-unknownAgentDetected(Agent, Room);
 		} else {
 			alert("He could be you, he could be me, he could even be-");
 
-			-goGreetIntruder(Agent, Room);
+			-unknownAgentDetected(Agent, Room);
 			+intruderDetected(Agent);
 		}.
 
