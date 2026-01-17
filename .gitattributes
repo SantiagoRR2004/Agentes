@@ -4,3 +4,6 @@
 # Closest language is ASL
 *.asl linguist-language=ASL linguist-detectable=true
 *.mas2j linguist-language=ASL linguist-detectable=true
+
+# UML files
+*.puml linguist-language=PlantUML linguist-detectable=true
