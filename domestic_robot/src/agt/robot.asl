@@ -29,7 +29,7 @@ batteryLevel(400).
 			atRoom(Room)
 	<-
 		// Robot can't trigger the alert itself
-		.send(owner, tell, unknownAgentDetected(Room)).
+		.send(owner, tell, unknownAgentDetected(intruder, Room)).
 
 +at(Me, charger):
 	// Recharge battery at charger
