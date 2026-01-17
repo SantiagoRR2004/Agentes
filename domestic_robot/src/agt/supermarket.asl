@@ -34,3 +34,29 @@
      .wait(5000);
      move_towards(owner);
      .println("Me desplazo hacia el owner para impedir que avise al 112.").
+
+
+
+/*
+// Primero, asegúrate de que el intruso pueda moverse bien
+{ include("movement.asl") } 
+
+// Plan para reaccionar cuando el owner le dice dónde ir
++useRoom(Room)[source(Sender)]
+    <-
+    .print("Entendido, gracias ", Sender, ". Iré a descansar a ", Room);
+    
+    // 1. Ir a la habitación asignada (usa lógica de movement.asl)
+    !goToRoom(Room);
+    
+    // 2. Buscar dónde sentarse en esa habitación
+    // (Lógica simplificada: intenta sentarse en cualquier cosa de la sala)
+    ?atRoom(Object, Room); // Busca un objeto que esté en esa sala
+    !sit(Object).          // Intenta sentarse
+
++!sit(Object)
+    <-
+    move_towards(Object);
+    sit(Object). // Esta acción solo funcionará si el Owner ya ejecutó 'noAlert'
+
+*/

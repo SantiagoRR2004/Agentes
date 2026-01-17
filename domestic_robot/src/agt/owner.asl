@@ -36,6 +36,13 @@ sleepOn([bed1, bed2, bed3]).
 		!main.
 
 +!main:
+    goGreetIntruder(Agent)
+    <-
+    // Llamamos al plan pasando el Agente como argumento
+    !greetIntruder(Agent);
+    !main.
+
++!main:
 	wantToSit(Object)
 	<-
 	!sitOnObjective;
@@ -56,6 +63,51 @@ sleepOn([bed1, bed2, bed3]).
 	<-
 	!main.
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* Plan to greet a known intruder (Guest) */
+
+// PLAN 1 de "greetIntruder": si tengo que saludar pero no se encuentra al lado del intruso, se acerca
++!greetIntruder(Agent):
+    .my_name(Me) &
+    not at(Me, Agent)   // Condición de guardia: el owner no está cerca del intruso conocido
+    <-
+    .print("El invitado está lejos. Yendo hacia ", Agent);
+    
+    // Se procede el owner a desplazarse hacia el intruso
+    !moveTowardsAdvanced(Agent). 
+
+
+// PLAN 2 de "greetIntruder": En el momento de estar al lado del intruso, se ejecuta el saludo y mandarlo a una habitación
++!greetIntruder(Agent):
+    .my_name(Me) &
+    at(Me, Agent) &      // Condición de guardia: el owner está al lado del intruso conocido
+    sittable(FurnitureList)  // Obtener la lista de muebles donde puede sentarse
+    <-
+    .print("Estoy con ", Agent, ". Iniciando protocolo de bienvenida."); //print chorra que se puede quitar
+
+    // Ejecutar noAlert inmediatamente (ya se esta con el intruso)
+    noAlert;
+    
+	// Esta linea de codigo se puede quitar si no se quiere avisar al robot aunque seria recomendable tenerlo en cuenta
+	// para que el robot no grite alarma al ver al intruso nuevamente por algun casual si lo llega a ver otra vez
+    //.send(robot, tell, friend(Agent));
+    
+    // Elegir habitación seleccionando un mueble al azar de la lista (similar a la lógica de chooseSittingPlace)
+    .length(FurnitureList, Len);
+    .random(R);
+    Index = math.floor(R * Len);
+    .nth(Index, FurnitureList, ChosenFurniture);
+    ?atRoom(ChosenFurniture, Room);
+    
+    // Comunicar al invitado la habitación asignada y enviarle el mensaje para que se dirija allí
+	// La creencia temporal se tendria que gestionar luego en el plan del intruso (supermarket.asl) para que sepa donde ir y tambien borrarla luego
+    .print("Hola ", Agent, ", bienvenido. Puedes descansar en: ", Room);
+    .send(Agent, tell, useRoom(Room));
+
+    // Se borra el objetivo para que el owner intente saludar al intruso nuevamente si vuelve a detectarlo (en bucle)
+	-goGreetIntruder(Agent).        // Borramos el objetivo
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 +!recharge(Robot):
 	// Owner is not carrying the robot
