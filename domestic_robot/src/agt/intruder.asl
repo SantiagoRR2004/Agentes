@@ -1,6 +1,25 @@
 { include("movement.asl") }
 /* Initial Beliefs */
 
+connect(kitchen, hall, doorKit1).
+connect(hall, kitchen, doorKit1).
+connect(hallway, kitchen, doorKit2).
+connect(kitchen, hallway, doorKit2).
+connect(bath1, hallway, doorBath1).
+connect(hallway, bath1, doorBath1).
+connect(bath2, bedroom1, doorBath2).
+connect(bedroom1, bath2, doorBath2).
+connect(bedroom1, hallway, doorBed1).
+connect(hallway, bedroom1, doorBed1).
+connect(bedroom2, hallway, doorBed2).
+connect(hallway, bedroom2, doorBed2).
+connect(bedroom3, hallway, doorBed3).
+connect(hallway, bedroom3, doorBed3).
+connect(livingroom, hallway, doorSal1).
+connect(hallway, livingroom, doorSal1).
+connect(robotroom, livingroom, doorSal2).
+connect(livingroom, robotroom, doorSal2).
+
 /* Initial goals */
 
 !init.
@@ -19,6 +38,8 @@
          .println("I am an intruder (hostile).");
          +hostile;
       }
+      // TODO: Fix the environment to make the intruder know the room he is in
+      +atRoom(kitchen);
       .wait(1000);
       !main.
 
