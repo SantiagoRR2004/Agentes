@@ -372,7 +372,6 @@ public class HouseEnv extends Environment {
 
     if (result) {
       updatePercepts();
-      logger.info("stop here after doing" + action + "--------------------------------");
       try {
         Thread.sleep(300);
       } catch (Exception e) {
@@ -718,9 +717,7 @@ public class HouseEnv extends Environment {
   }
 
   public boolean executeOwnerAction(Structure action) {
-    System.out.println("[owner] doing: " + action);
     java.util.List<Literal> perceptsOwner = consultPercepts("owner");
-    // System.out.println("[owner] has the following percepts: " + perceptsOwner);
 
     boolean result = false;
     String theAction = action.getFunctor();
@@ -834,7 +831,6 @@ public class HouseEnv extends Environment {
 
   public boolean executeRobotAction(Structure action) {
 
-    System.out.println("[robot] doing: " + action);
     java.util.List<Literal> perceptsRobot = consultPercepts("robot");
     // System.out.println("[robot] has the following percepts: " + perceptsRobot);
 
