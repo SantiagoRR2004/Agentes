@@ -14,7 +14,7 @@ MAS domestic_robot {
 
     environment: domotic.HouseEnv(gui) // use "nogui" as parameter to not show the GUI
     
-    agents: 
+    agents:
             robot;
             owner;
             intruder supermarket.asl;

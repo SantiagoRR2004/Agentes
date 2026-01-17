@@ -9,7 +9,7 @@ maxBattery(400).
 batteryLevel(400).
 
 /* GOALS*/
-!main.
+!start.
 
 /* Plans */
 
@@ -57,6 +57,11 @@ batteryLevel(400).
 		-chargerDistance(_);
 		+chargerDistance(Y*(L+1)).
 
++start
+	// Initial delay
+	<-
+		.wait(2000);
+		!main.
 
 +!main:
 	// If battery depleted, it stops functioning

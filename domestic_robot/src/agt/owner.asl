@@ -6,18 +6,9 @@ sleepOn([bed1, bed2, bed3]).
 
 /* Initial goals */
 
-!main.
+!start.
 
 /* Plans */
-
-// +intruderDetected[source(robot)]
-// 	// Handle intruder alert from robot
-// 	<-
-// 		// Only the owner can trigger the alert
-// 		alert("He could be you, he could be me, he could even be-");
-		
-// 		+intruderDetected(intruder).
-
 
 +at(Me, F): 
 		my_name(Me)
@@ -41,6 +32,12 @@ sleepOn([bed1, bed2, bed3]).
 	<-
 		+needToCharge(Sender).
 
+
++!start
+	// Delay 
+	<-
+		.wait(2000);
+		!main.
 
 +!main:
 		// First objective is to run from intruder if detected

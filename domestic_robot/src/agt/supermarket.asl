@@ -19,6 +19,7 @@
          .println("I am an intruder (hostile).");
          +hostile;
       }
+      .wait(1000);
       !main.
 
 
