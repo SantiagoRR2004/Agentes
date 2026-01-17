@@ -1,4 +1,18 @@
-last_order_id(1). // initial belief
+!init.
+
+/* Plans */
+
++!init
+  <- .my_name(Me);
+     .println("My name is ", Me);
+     .random(X);
+     if (X < 0.5) {
+        .println("I am a guest (friendly).");
+        +friendly;
+     } else {
+        .println("I am an intruder (hostile).");
+        +hostile;
+     }.
 
 // plan to achieve the goal "order" for agent Ag
 +!order(Product,Qtd)[source(Ag)] : true
@@ -9,7 +23,7 @@ last_order_id(1). // initial belief
 	   .wait(3000);
      .send(Ag, tell, delivered(Product,Qtd,OrderId)).
 
-+at(robot,intruder) : true
++at(robot,intruder)
   <- .println("Me han pillado tengo que ir rápido a la cocina.");
      .wait(2000);
      move_towards(fridge);
