@@ -10,16 +10,25 @@ sleepOn([bed1, bed2, bed3]).
 
 /* Plans */
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-+intruderDetected[source(robot)]
-	// Handle intruder alert from robot
-	<-
-		// Only the owner can trigger the alert
-		alert("He could be you, he could be me, he could even be-");
-		-intruderDetected[source(robot)];
+// +intruderDetected[source(robot)]
+// 	// Handle intruder alert from robot
+// 	<-
+// 		// Only the owner can trigger the alert
+// 		alert("He could be you, he could be me, he could even be-");
 		
-		+intruderDetected(intruder).
-/////////////////////////////////////////////////////////////////////////////////////////////////////
+// 		+intruderDetected(intruder).
+
+
++at(Me, F): 
+		my_name(Me)
+	&
+		intruderDetected(_)
+	<-
+		.random(R);
+		if (R < 0.25) { moveObjectUp(F); }
+		else { if (R < 0.5) { moveObjectDown(F); }
+		else { if (R < 0.75) { moveObjectLeft(F); }
+		else { moveObjectRight(F); }}}.
 
 
 +batteryRecharged[source(Sender)]
@@ -34,25 +43,32 @@ sleepOn([bed1, bed2, bed3]).
 
 
 +!main:
-    intruderDetected(Intruder)
-<-
-    !runFromIntruder(Intruder);
-    !main.
-
+		// First objective is to run from intruder if detected
+		intruderDetected(Intruder)
+	<-
+		!runFromIntruder(Intruder);
+		!main.
 
 +!main:
-	// First objective is to charge the robot if needed
+	// Charge the robot if needed
 	needToCharge(Robot)
 	<-
 		!recharge(Robot);
 		!main.
 
 +!main:
-    goGreetIntruder(Agent)
+	// Go to check on the unknown agent
+		unknownAgentDetected(Room)
+	<-
+		!goToRoom(Room);
+		!main.
+
++!main:
+		goGreetIntruder(Agent)
     <-
-    // Llamamos al plan pasando el Agente como argumento
-    !greetIntruder(Agent);
-    !main.
+		// Llamamos al plan pasando el Agente como argumento
+		!greetIntruder(Agent);
+		!main.
 
 +!main:
 	wantToSit(Object)
@@ -293,17 +309,3 @@ sleepOn([bed1, bed2, bed3]).
         atRoom(SafeRoom)
 	<-
     	-intruderDetected(Intruder).
-
-
-
-
-+at(Me, F): my_name(Me) & intruderDetected(_)
-	<-
-		.random(R);
-		if (R < 0.25) { moveObjectUp(F); }
-		else { if (R < 0.5) { moveObjectDown(F); }
-		else { if (R < 0.75) { moveObjectLeft(F); }
-		else { moveObjectRight(F); }}}.
-
-
-	////////////////////////////////////////////////////////////////////////////////////

@@ -24,11 +24,12 @@ batteryLevel(400).
 +at(Me, intruder):
 	// Detect intruder
 	// Activate on belief
-		.my_name(Me)
+			.my_name(Me)
+		&
+			atRoom(Room)
 	<-
 		// Robot can't trigger the alert itself
-		.println("INTRUDER ALERT! A RED SPY IS IN THE BASE!");
-		.send(owner, tell, intruderDetected).
+		.send(owner, tell, unknownAgentDetected(Room)).
 
 +at(Me, charger):
 	// Recharge battery at charger
