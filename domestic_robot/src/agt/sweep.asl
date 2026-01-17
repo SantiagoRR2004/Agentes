@@ -56,6 +56,29 @@ width(16).
 			.println("Starting verticalSweepA.");
 		}.
 
++!startingDirection(Room):
+    // Random direction if door direction is unknown
+		not roomDoorDirection(Room, Door, Direction)
+	<-
+		.random(X);
+		if (X < 0.25) {
+			+horizontalSweepA;
+			.println("Starting horizontalSweepA (random).");
+		} else {
+			if (X < 0.5) {
+				+horizontalSweepB;
+				.println("Starting horizontalSweepB (random).");
+			} else {
+				if (X < 0.75) {
+					+verticalSweepA;
+					.println("Starting verticalSweepA (random).");
+				} else {
+					+verticalSweepB;
+					.println("Starting verticalSweepB (random).");
+				};
+			};
+		}.
+
 +!sweepRoom(Room):
 	// Perform sweeping until room is clean
 			atRoom(Room)
