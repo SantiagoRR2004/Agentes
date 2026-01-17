@@ -1,4 +1,4 @@
-{ include("movement.asl") }
+{ include("mapping.asl") }
 
 /* Initial Beliefs */
 sittable([sofa, chair1, chair2, chair3, chair4]).

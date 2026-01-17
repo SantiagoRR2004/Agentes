@@ -1,4 +1,4 @@
-{ include("movement.asl") }
+{ include("mapping.asl") }
 
 /* Initial beliefs and rules */
 
@@ -57,7 +57,7 @@ batteryLevel(400).
 		-chargerDistance(_);
 		+chargerDistance(Y*(L+1)).
 
-+start
++!start
 	// Initial delay
 	<-
 		.wait(2000);
