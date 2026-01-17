@@ -59,9 +59,9 @@ sleepOn([bed1, bed2, bed3]).
 
 +!main:
 		// First objective is to run from intruder if detected
-		intruderDetected(Intruder)
+		intruderDetected(Room)
 	<-
-		!runFromIntruder(Intruder);
+		!runFromIntruder(Room);
 		!main.
 
 +!main:
@@ -146,7 +146,7 @@ sleepOn([bed1, bed2, bed3]).
 			alert("He could be you, he could be me, he could even be-");
 
 			-unknownAgentDetected(Agent, Room);
-			+intruderDetected(Agent);
+			+intruderDetected(Room);
 		}.
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -299,11 +299,14 @@ sleepOn([bed1, bed2, bed3]).
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 /* Elegir la habitación más lejana y huir */
-+!runFromIntruder(Intruder):
-        atRoom(CurrentRoom) & numberOfDoors(MaxDepth)
++!runFromIntruder(Room):
+			numberOfDoors(MaxDepth)
+		&
+			atRoom(CurrentRoom)
 	<-
-		.setof(Room, atRoom(_,Room), Rooms);
-		-furthestRoom(_,_); +furthestRoom(CurrentRoom,-1);
+		.setof(R, atRoom(_, R), Rooms);
+		-furthestRoom(_,_);
+		+furthestRoom(CurrentRoom,-1);
 		for (.member(R,Rooms) & not R = CurrentRoom) {
 			if (shortestRoomPath(CurrentRoom,R,Path,MaxDepth+1)) {
 				.length(Path,L); ?furthestRoom(_,BestL);
@@ -311,15 +314,16 @@ sleepOn([bed1, bed2, bed3]).
 			};
 		};
 		?furthestRoom(SafeRoom,_);
-		!escapeToRoom(SafeRoom,Intruder).
+		!escapeToRoom(SafeRoom).
 
-+!escapeToRoom(SafeRoom,Intruder):
-        intruderDetected(Intruder) & not atRoom(SafeRoom)
++!escapeToRoom(SafeRoom):
+			intruderDetected(Room) 
+		&
+			not atRoom(SafeRoom)
 	<-
-		!moveTowardsAdvanced(SafeRoom);
-		!escapeToRoom(SafeRoom,Intruder).
+		!goToRoom(SafeRoom).
 
-+!escapeToRoom(SafeRoom,Intruder):
++!escapeToRoom(SafeRoom):
         atRoom(SafeRoom)
 	<-
-    	-intruderDetected(Intruder).
+    	-intruderDetected(Room).
