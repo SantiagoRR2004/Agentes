@@ -110,6 +110,7 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
     !moveRandomly;
 	// Keep trying
 	if (atDoor) {
+        .wait(1000);
 		!unstuckFromDoor;
 	}.
 

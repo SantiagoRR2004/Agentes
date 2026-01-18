@@ -65,7 +65,7 @@ connect(livingroom, robotroom, doorSal2).
       &
          friendly
    <-
-      .wait(1000);
+      .wait(500);
       move_towards(owner);
       !main.
 

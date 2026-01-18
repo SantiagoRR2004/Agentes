@@ -74,9 +74,9 @@ sleepOn([bed1, bed2, bed3]).
 
 +!main:
 		// First objective is to run from intruder if detected
-		intruderDetected(Room)
+		safeRoom(SafeRoom)
 	<-
-		!runFromIntruder(Room);
+		!escapeToRoom(SafeRoom);
 		!main.
 
 +!main:
@@ -161,7 +161,7 @@ sleepOn([bed1, bed2, bed3]).
 			alert("He could be you, he could be me, he could even be-");
 
 			-unknownAgentDetected(Agent, Room);
-			+intruderDetected(Room);
+			!runFromIntruder(Room);
 		}.
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -339,10 +339,10 @@ sleepOn([bed1, bed2, bed3]).
 			};
 		};
 		?furthestRoom(SafeRoom,_);
-		!escapeToRoom(SafeRoom).
+		+safeRoom(SafeRoom).
 
 +!escapeToRoom(SafeRoom):
-			intruderDetected(Room) 
+			safeRoom(SafeRoom) 
 		&
 			not atRoom(SafeRoom)
 	<-
@@ -351,4 +351,4 @@ sleepOn([bed1, bed2, bed3]).
 +!escapeToRoom(SafeRoom):
         atRoom(SafeRoom)
 	<-
-    	-intruderDetected(Room).
+    	-safeRoom(SafeRoom).
