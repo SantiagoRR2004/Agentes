@@ -107,3 +107,13 @@ connect(livingroom, robotroom, doorSal2).
    <-
       sit(Object);
       .wait(1000).
+
++!removeDoorPossibility(Object, Room)[source(Sender)]
+   // Empty plan to avoid warnings
+   <-
+      ?true.
+
++!addConnectionBroad(Room1, Room2, Door)[source(Sender)]
+   // Empty plan to avoid warnings
+   <-
+      ?true.
