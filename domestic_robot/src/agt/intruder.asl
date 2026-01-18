@@ -23,6 +23,7 @@ connect(livingroom, robotroom, doorSal2).
 /* Initial goals */
 
 !init.
+!randomState.
 
 /* Plans */
 
@@ -30,10 +31,6 @@ connect(livingroom, robotroom, doorSal2).
   <- 
       .my_name(Me);
       .println("My name is ", Me);
-      
-      // llamar a un objetivo que en paralelo vaya cambiando el estado de friendly a hostile
-      !randomState;
-
       // TODO: Fix the environment to make the intruder know the room he is in
       +atRoom(kitchen);
       +atRoom(livingroom);
