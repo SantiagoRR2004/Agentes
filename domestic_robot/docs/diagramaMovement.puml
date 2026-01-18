@@ -1,32 +1,28 @@
 @startuml
 start
 
-:Llamada a goToRoom(Target) o moveTowardsAdvanced(Objective);
+:Llamada a moveTowardsAdvanced(Objective);
 
 if (¿Está en la misma habitación que el objetivo?) then (sí)
   :move_towards(Objective);
+  if (¿BatteryLevel definido?) then (sí)
+    :!reduceBattery;
+  endif
+  :!reducePatience;
 else (no)
-  :Calcular camino más corto usando shortestRoomPath;
-  :Obtener primera puerta del camino;
-  
-  if (¿Está en una puerta?) then (sí)
-    :Marcar wasAtDoor = true;
-  else (no)
-    :Marcar wasAtDoor = false;
-  endif
-  
-  :Mover hacia primera puerta;
-  
-  if (¿Está en puerta Y wasAtDoor?) then (sí)
-    :Atasco detectado;
-    repeat
-      :Movimiento aleatorio (unstuckFromDoor);
-    repeat while (¿Sigue en puerta?) is (sí)
-    ->no;
-  endif
+  :!goToRoom(ObjectiveRoom);
+  note right
+    Ver diagrama detallado en
+    diagramaGoToRoom.puml
+  end note
+  :!reducePatience (Reducción adicional);
 endif
 
-:Decrementar paciencia;
-
 stop
+
+note right
+  El mecanismo de paciencia (reset/exhausted)
+  se detalla en diagramaPatience.puml
+end note
+
 @enduml

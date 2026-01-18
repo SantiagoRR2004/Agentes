@@ -1,0 +1,32 @@
+@startuml
+start
+
+:Llamada a !goToRoom(ObjectiveRoom);
+
+:Obtener numberOfDoors(MaxDepth);
+:Calcular camino con shortestRoomPath(Current, Objective, Path, MaxDepth+1);
+
+:Obtener primera puerta (FirstDoor) del Path;
+
+if (¿atDoor?) then (sí)
+  :wasAtDoor = true;
+else (no)
+  :wasAtDoor = false;
+endif
+
+:move_towards(FirstDoor);
+
+if (¿BatteryLevel definido?) then (sí)
+  :!reduceBattery;
+endif
+
+if (¿atDoor Y wasAtDoor?) then (sí)
+  :Imprimir "Stuck in a door.";
+  :!unstuckFromDoor;
+endif
+
+:!reducePatience;
+:-wasAtDoor;
+
+stop
+@enduml

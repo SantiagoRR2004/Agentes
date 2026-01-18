@@ -1,23 +1,60 @@
 @startuml
-[*] --> SeleccionarActividad
+start
+:!start;
+:Esperar 2000ms;
+:!main;
 
-SeleccionarActividad --> ElegirDondeSentarse : 50% sit
-SeleccionarActividad --> ElegirDondeDormir : 50% sleep
+partition "Bucle Principal (!main)" {
+  if (¿intruderDetected(Room)?) then (sí)
+    :!runFromIntruder(Room);
+    :Calcular habitación más lejana;
+    :!escapeToRoom(SafeRoom);
+  elseif (¿needToCharge(Robot)?) then (sí)
+    :!recharge(Robot);
+    if (¿Cargando al robot?) then (sí)
+      if (¿En cargador?) then (sí)
+        :drop (Dejar robot);
+        :Enviar moveTowardsAdvanced(charger) al Robot;
+      else (no)
+        :Enviar moveTowardsAdvanced(charger) al Robot;
+        :!moveTowardsAdvanced(charger);
+      endif
+    else (no)
+      if (¿Junto al robot?) then (sí)
+        :take (Coger robot);
+      else (no)
+        :!moveTowardsAdvanced(Robot);
+      endif
+    endif
+  elseif (¿unknownAgentDetected?) then (sí)
+    :!greetIntruder;
+    if (¿En la misma habitación?) then (sí)
+      :Interrogar agente (askOne);
+      if (¿Respuesta == friendly?) then (sí)
+        :Asignar habitación de invitado;
+        :Eliminar unknownAgentDetected;
+      else (no)
+        :alert();
+        :Marcar como intruso (intruderDetected);
+      endif
+    else (no)
+      :!goToRoom(Room);
+    endif
+  elseif (¿wantToSit?) then (sí)
+    :!sitOnObjective;
+  elseif (¿wantToSleep?) then (sí)
+    :!sleepOnObjective;
+  else
+    :!chooseObjective;
+    note right
+      Elección aleatoria:
+      - 49.5% Sit
+      - 49.5% Sleep
+      - 1% Beehive
+    end note
+  endif
+}
 
-ElegirDondeSentarse --> NavegarAObjetoSit
-ElegirDondeDormir --> NavegarAObjetoSleep
-
-NavegarAObjetoSit --> NavegarAObjetoSit : No llegó
-NavegarAObjetoSit --> Sentarse : Llegó
-
-NavegarAObjetoSleep --> NavegarAObjetoSleep : No llegó
-NavegarAObjetoSleep --> Acostarse : Llegó
-
-Sentarse --> EvaluarCambio : Esperar 1-2s
-Acostarse --> EvaluarCambio : Esperar 2-7s
-
-EvaluarCambio --> SeleccionarActividad : 10% cambiar
-EvaluarCambio --> Sentarse : 90% continuar (si sentado)
-EvaluarCambio --> Acostarse : 90% continuar (si acostado)
-
+:Repetir !main;
+stop
 @enduml

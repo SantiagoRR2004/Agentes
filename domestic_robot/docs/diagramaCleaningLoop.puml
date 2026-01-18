@@ -1,0 +1,43 @@
+@startuml
+start
+
+:!cleaningLoop;
+
+if (¿dirty(Room) & !currentlyCleaning?) then (sí)
+  partition "Elegir Habitación" {
+    :!chooseRoomToClean;
+    :Obtener habitaciones sucias;
+    :Barajar habitaciones;
+    :Calcular path a cada una;
+    :Elegir la más cercana
+    (Evitar Hallway si es posible);
+    :!resetPatience;
+    :currentlyCleaning(Room) = true;
+  }
+elseif (¿currentlyCleaning(Room)?) then (sí)
+  partition "Limpiar Habitación Activa" {
+    :!cleanRoom(Room);
+    if (¿Está en la habitación?) then (sí)
+      partition "Barrido Sistemático (!sweepRoom)" {
+        if (verticalSweepA) then (sí)
+          :!verticalSweepA;
+        elseif (horizontalSweepA) then (sí)
+          :!horizontalSweepA;
+        elseif (verticalSweepB) then (sí)
+          :!verticalSweepB;
+        elseif (horizontalSweepB) then (sí)
+          :!horizontalSweepB;
+        else
+          :!startingDirection;
+        endif
+      }
+    else (no)
+      :!goToRoom(Room);
+    endif
+  }
+elseif (¿No hay habitaciones sucias?) then (sí)
+  :!goToCharger;
+endif
+
+stop
+@enduml

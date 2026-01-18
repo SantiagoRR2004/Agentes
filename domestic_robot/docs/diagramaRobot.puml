@@ -1,47 +1,40 @@
 @startuml
-left to right direction
+start
+:!start;
+:Esperar 2000ms;
+:!main;
 
-[*] --> BuclePrincipal
-
-state BuclePrincipal {
-  [*] --> CleaningLoop
-  CleaningLoop --> EvadeOwner
-  EvadeOwner --> CleaningLoop
-  
-  state CleaningLoop {
-    [*] --> VerificarHabitacionesSucias
-    VerificarHabitacionesSucias --> ElegirHabitacion : Hay sucias
-    VerificarHabitacionesSucias --> IrACargador : No hay sucias
-    
-    ElegirHabitacion --> NavegarAHabitacion
-    NavegarAHabitacion --> BarrerHabitacion : Llegó
-    NavegarAHabitacion --> NavegarAHabitacion : No llegó
-    
-    state BarrerHabitacion {
-      [*] --> Posicionamiento
-      Posicionamiento --> VerticalA
-      VerticalA --> HorizontalB : Completado
-      HorizontalB --> VerticalB : Completado
-      VerticalB --> HorizontalA : Completado
-      HorizontalA --> [*] : Completado
+partition "Bucle Principal (!main)" {
+  if (¿Battery <= 0?) then (sí)
+    :Broadcast batteryDepleted;
+    :Esperar 5000ms;
+  elseif (¿Battery <= DistanceToCharger?) then (sí)
+    :!resetSweep;
+    :!goToCharger;
+  else
+    partition "Operación Normal" {
+      :!cleaningLoop;
+      note right
+        Ver lógica detallada en
+        diagramaCleaningLoop.puml
+      end note
+      
+      :!evadeOwner;
+      if (¿Limit 0 reached?) then (sí)
+        :!moveRandomly;
+        :!reduceBattery;
+      endif
     }
-    
-    BarrerHabitacion --> [*] : Habitación limpia
-    IrACargador --> [*]
-  }
-  
-  state EvadeOwner {
-    [*] --> VerificarProximidad
-    VerificarProximidad --> ContarEncuentros : Cerca del owner
-    VerificarProximidad --> ReiniciarContador : Lejos del owner
-    ContarEncuentros --> MovimientoAleatorio : Límite alcanzado
-    MovimientoAleatorio --> [*]
-    ContarEncuentros --> [*] : Límite no alcanzado
-    ReiniciarContador --> [*]
-  }
-  
-  CleaningLoop -[hidden]right-> EvadeOwner
+  endif
 }
 
-BuclePrincipal --> BuclePrincipal
+:Repetir !main;
+
+group "Eventos Reactivos" {
+  :at(robot, dirty) -> !reduceBattery, clean(robot);
+  :at(robot, intruder) -> send owner unknownAgentDetected;
+  :at(robot, charger) -> !resetBattery;
+}
+
+stop
 @enduml

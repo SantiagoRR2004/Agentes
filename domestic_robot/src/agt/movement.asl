@@ -94,7 +94,7 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
             -wasAtDoor;
         };
         move_towards(FirstDoor);
-        if (batteryLevel(_)) {
+        if (batteryLevel(_)) { // if battery is defined
             !reduceBattery;
         };
         if (atDoor & wasAtDoor) {
