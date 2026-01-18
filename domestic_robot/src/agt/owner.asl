@@ -1,3 +1,4 @@
+{ include("beeMovie.asl") }
 { include("mapping.asl") }
 
 /* Initial Beliefs */
@@ -203,12 +204,17 @@ sleepOn([bed1, bed2, bed3]).
 +!chooseObjective
 	<-
 	.random(X);
-	// 50% chance to want to sit
-	if (X < 0.5) {
+	// 49.5% chance to want to sit
+	if (X < 0.495) {
 		!chooseSittingPlace;
 	} else {
-		// 50% chance to want to sleep
-		!chooseSleepingPlace;
+		if (X < 0.99) {
+			// 49.5% chance to want to sleep
+			!chooseSleepingPlace;
+		} else {
+			// 1% chance
+			!beehive;
+		}
 	};
 	!resetPatience.
 
