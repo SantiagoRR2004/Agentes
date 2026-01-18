@@ -40,6 +40,14 @@ connect(livingroom, robotroom, doorSal2).
       }
       // TODO: Fix the environment to make the intruder know the room he is in
       +atRoom(kitchen);
+      +atRoom(livingroom);
+      +atRoom(hallway);
+      +atRoom(bath1);
+      +atRoom(bedroom1);
+      +atRoom(bedroom2);
+      +atRoom(bedroom3);
+      +atRoom(bath2);
+      +atRoom(robotroom);
       .wait(1000);
       !main.
 
@@ -58,12 +66,13 @@ connect(livingroom, robotroom, doorSal2).
          friendly
    <-
       .wait(1000);
+      move_towards(owner);
       !main.
 
 +!main:
       hostile
    <-
-      move_towards(owner).
+      move_towards(owner);
       !main.
 
 -!main

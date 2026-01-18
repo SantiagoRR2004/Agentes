@@ -143,7 +143,7 @@ sleepOn([bed1, bed2, bed3]).
 			.println("Hola ", Agent, ", bienvenido. Puedes descansar en: ", FRoom);
 			.send(Agent, tell, useRoom(FRoom));
 
-			// Se borra el objetivo para que el owner intente saludar al intruso nuevamente si vuelve a detectarlo (en bucle)
+			// Se borra la creencia para que el owner intente saludar al intruso nuevamente si vuelve a detectarlo (en bucle)
 			-unknownAgentDetected(Agent, Room);
 		} else {
 			alert("He could be you, he could be me, he could even be-");
