@@ -329,12 +329,6 @@ shortestRoomPath(Current, Target, Path, MaxDepth)
         }.
 
 
-+patience(0)
-    <-
-        !moveRandomly;
-        .println("Patience exhausted, moving randomly.");
-        !resetPatience.
-
 +!reducePatience:
         patience(P)
     <-

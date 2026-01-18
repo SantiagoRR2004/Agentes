@@ -60,6 +60,18 @@ sleepOn([bed1, bed2, bed3]).
 		.wait(2000);
 		!main.
 
+
++!main:
+	// Move randomly if patience is available
+			patience(Pat)
+		&
+			Pat <= 0
+	<-
+        !moveRandomly;
+        .println("Patience exhausted, moving randomly.");
+        !resetPatience;
+		!main.
+
 +!main:
 		// First objective is to run from intruder if detected
 		intruderDetected(Room)

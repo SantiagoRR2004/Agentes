@@ -63,6 +63,18 @@ batteryLevel(400).
 		.wait(2000);
 		!main.
 
+
++!main:
+	// Move randomly if patience is available
+			patience(Pat)
+		&
+			Pat <= 0
+	<-
+        !moveRandomly;
+        .println("Patience exhausted, moving randomly.");
+        !resetPatience;
+		!main.
+
 +!main:
 	// If battery depleted, it stops functioning
 			batteryLevel(X)
