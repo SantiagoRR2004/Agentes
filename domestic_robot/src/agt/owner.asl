@@ -156,11 +156,11 @@ sleepOn([bed1, bed2, bed3]).
 			.send(Agent, tell, useRoom(FRoom));
 
 			// Se borra la creencia para que el owner intente saludar al intruso nuevamente si vuelve a detectarlo (en bucle)
-			-unknownAgentDetected(Agent, Room);
+			-unknownAgentDetected(Agent, Room)[source(X)];
 		} else {
 			alert("He could be you, he could be me, he could even be-");
 
-			-unknownAgentDetected(Agent, Room);
+			-unknownAgentDetected(Agent, Room)[source(X)];
 			!runFromIntruder(Room);
 		}.
 
@@ -351,4 +351,4 @@ sleepOn([bed1, bed2, bed3]).
 +!escapeToRoom(SafeRoom):
         atRoom(SafeRoom)
 	<-
-    	-safeRoom(SafeRoom).
+    	-safeRoom(_).

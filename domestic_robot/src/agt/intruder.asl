@@ -82,6 +82,7 @@ connect(livingroom, robotroom, doorSal2).
 +!main:
       hostile
    <-
+      .wait(500);
       move_towards(owner);
       !main.
 
