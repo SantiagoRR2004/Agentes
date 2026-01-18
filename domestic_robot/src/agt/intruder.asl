@@ -30,14 +30,10 @@ connect(livingroom, robotroom, doorSal2).
   <- 
       .my_name(Me);
       .println("My name is ", Me);
-      .random(X);
-      if (X < 0.5) {
-         .println("I am a guest (friendly).");
-         +friendly;
-      } else {
-         .println("I am an intruder (hostile).");
-         +hostile;
-      }
+      
+      // llamar a un objetivo que en paralelo vaya cambiando el estado de friendly a hostile
+      !randomState;
+
       // TODO: Fix the environment to make the intruder know the room he is in
       +atRoom(kitchen);
       +atRoom(livingroom);
@@ -51,6 +47,20 @@ connect(livingroom, robotroom, doorSal2).
       .wait(1000);
       !main.
 
++!randomState <-
+      .random(X);
+      if (X < 0.5) {
+         .println("I am a guest (friendly).");
+         +friendly;
+         .wait(30000+40000); // this is the time the java threads for the intruder sleeps 
+         -friendly;
+      } else {
+         .println("I am an intruder (hostile).");
+         +hostile;
+         .wait(30000+40000);
+         -hostile;
+      };
+      !randomState.
 
 +!main:
          useRoom(Room)
