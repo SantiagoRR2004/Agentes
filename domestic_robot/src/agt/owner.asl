@@ -44,11 +44,13 @@ sleepOn([bed1, bed2, bed3]).
 +batteryRecharged[source(Sender)]
 	// Handle battery recharged alert from robot
 	<-
+		-batteryRecharged[source(Sender)];
 		-needToCharge(Sender).
 
 +batteryDepleted[source(Sender)]
 	// Handle battery depleted alert from robot
 	<-
+		-batteryDepleted[source(Sender)];
 		+needToCharge(Sender).
 
 
@@ -186,6 +188,10 @@ sleepOn([bed1, bed2, bed3]).
 		&
 			not at(Me, charger)
 	<-
+	    .send(Robot, achieve, moveTowardsAdvanced(charger));
+		.wait(100);
+		.send(Robot, achieve, moveTowardsAdvanced(charger));
+		.wait(100);
 		!moveTowardsAdvanced(charger).
 
 +!recharge(Robot):
@@ -198,8 +204,9 @@ sleepOn([bed1, bed2, bed3]).
 		&
 			at(Me, charger)
 	<-
-		drop.
-
+		drop;
+		.send(Robot, achieve, moveTowardsAdvanced(charger));
+		.wait(100).
 
 +!chooseObjective
 	<-
