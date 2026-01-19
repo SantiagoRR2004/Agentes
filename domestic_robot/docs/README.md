@@ -57,9 +57,34 @@ domestic_robot/
 
 El módulo de movimiento actúa como biblioteca base para todos los agentes del sistema. La representación del entorno se basa en conexiones entre habitaciones mediante predicados del tipo `connect(habitacion1, habitacion2, puerta)`. Por ejemplo, `connect(kitchen, hall, doorKit1)` indica que la cocina y el hall están conectados a través de la puerta doorKit1. Estos connect que se obtienen permiten a los diferentes agentes realizar las rutas a correspondientes habitaciones que precisen ir según la necesidad.
 
+### Mapeo de la Casa
+
+Para la obtención de los predicados de tipo `connect(habitacion1, habitacion2, puerta)`, se lleva a cabo el mapeo de la casa. Para ello, tanto el owner como el robot realizan las siguientes acciones:
+
+1. Obtener todos los objetos de la casa y filtrar las puertas si contienen el fragmento o secuencia de string `“door”`, para adicionarlas a una listado de puertas que tienen que descubrir.
+
+2. Obtener los objetos de la habitación donde se encuentra el agente mediante la creencia `atRoom(Object, Room)` e identificar cuáles de estos objetos corresponden a puertas.
+
+3. Dependiendo si el agente ya ha visitado la puerta, se dan dos casuísticas:
+   1. Si no la ha visitado, entonces se mueve a ella mediante el uso de `move_towards()`.
+
+   2. Si ya la ha visitado, se va al pasillo y se mueve a otras puertas que sigan en la lista de puertas que no han sido visitadas aún.
+
+4. El agente cruza la habitación para saber que la puerta visitada conecta dos habitaciones contiguas y adiciona la creencia `connect(habitacion1, habitacion2, puerta)`.
+
+5. El agente responsable de descubrir cada puerta en su momento, realiza un broadcast para comunicar a todos los agentes la conexión obtenida.
+
 ### Planificación de Rutas
 
-La planificación de rutas se realiza mediante dos predicados principales. El predicado `findPathRoom` implementa una búsqueda en profundidad limitada que explora recursivamente las conexiones entre habitaciones. Este predicado es especialmente interesante porque mantiene una lista de puertas visitadas para evitar ciclos:
+La planificación de rutas se realiza mediante dos predicados principales.
+
+#### `findPathRoom`
+
+El predicado `findPathRoom` implementa una búsqueda en profundidad limitada que explora recursivamente las conexiones entre habitaciones. Este predicado es especialmente interesante porque mantiene una lista de puertas visitadas para evitar ciclos, asegurando que el agente no cruce la misma entrada repetidamente en un solo trayecto. La regla funciona identificando primero una conexión válida entre la habitación actual y una adyacente a través de una puerta específica. Posteriormente, se verifica que dicha puerta no haya sido transitada previamente y que el límite de profundidad permitido, controlado por la variable `N1`, sea aún superior a cero. Si estas condiciones se cumplen, se realiza una llamada recursiva que añade la puerta a la lista de elementos visitados y reduce el contador de profundidad.
+
+Finalmente, la ruta completa se construye mediante la concatenación de la puerta actual con el subcamino encontrado, devolviendo al agente una secuencia lógica de movimientos para alcanzar su destino.
+
+Este enfoque estructurado permite que los agentes naveguen por la casa de forma segura, respetando los límites de exploración y optimizando el descubrimiento de rutas viables hacia las habitaciones objetivo.
 
 ```prolog
 findPathRoom(Current, Target, Visited, Path, MaxDepth)
@@ -77,7 +102,27 @@ findPathRoom(Current, Target, Visited, Path, MaxDepth)
    Path = [Door|SubPath].
 ```
 
-El predicado `shortestRoomPath` optimiza la búsqueda intentando primero con profundidades menores, lo que garantiza encontrar el camino más corto.
+#### `shortestRoomPath`
+
+El predicado `shortestRoomPath` implementa una estrategia de búsqueda de profundidad iterativa que optimiza la navegación al explorar el entorno en capas concéntricas. Mediante el uso del operador de disyunción, el sistema prioriza sistemáticamente la búsqueda en profundidades menores `N-1` antes de intentar el límite actual, lo que garantiza que el camino devuelto sea siempre el más corto posible entre dos habitaciones.
+
+Esta estructura recursiva se apoya en la regla `minusOne` para decrementar el nivel de exploración hasta agotar las posibilidades dentro del rango permitido. El control de seguridad `MaxDepth > 0` previene ciclos infinitos y asegura que la búsqueda se detenga si se supera el número total de conexiones detectadas en la casa. Una vez hallada la ruta óptima, el predicado delega en `findPathRoom` la construcción de la lista secuencial de puertas que el agente debe cruzar para alcanzar su objetivo.
+
+```prolog
+shortestRoomPath(Current, Target, Path, MaxDepth)
+ :-
+   MaxDepth > 0
+  &
+   (
+    (
+     minusOne(MaxDepth, N1)
+    &
+     shortestRoomPath(Current, Target, Path, N1)
+    )
+   |
+    findPathRoom(Current, Target, [], Path, MaxDepth)
+   ).
+```
 
 ### Navegación entre Habitaciones
 
@@ -85,19 +130,21 @@ La navegación entre habitaciones se gestiona mediante el plan `goToRoom`, que c
 
 Un aspecto crítico de la navegación es la detección y resolución de atascos. Si el agente se encuentra en una puerta durante dos ciclos consecutivos (lo que se detecta mediante la variable temporal `wasAtDoor`), se considera que está atascado y ejecuta movimientos aleatorios hasta liberarse.
 
+<img src="./diagramaGoToRoom.png"/>
+
 ### Mecanismo de Paciencia
 
 Un elemento clave para la robustez del sistema es el mecanismo de paciencia. Cada agente mantiene un contador (`patience`) que se decrementa con cada movimiento. Cuando este contador llega a cero, se activa automáticamente un plan reactivo (mediante `+patience(0)`) que ejecuta un movimiento aleatorio y reinicia el contador. Este mecanismo funciona de forma similar a como se activan otros planes reactivos como `+at(robot, dirty)`.
 
 El contador de paciencia se reinicia en dos situaciones: automáticamente cuando llega a cero tras el movimiento aleatorio, o manualmente cuando el robot o el owner alcanzan sus objetivos y llaman a `!resetPatience`.
 
+<img src="./diagramaPatience.png"/>
+
 ### Movimientos Especiales para el Barrido
 
 Para el robot, que debe barrer habitaciones sin salir de ellas, existen variantes especiales de los movimientos básicos: `moveUpNoExit`, `moveDownNoExit`, `moveLeftNoExit` y `moveRightNoExit`. Estas versiones verifican después de cada movimiento si el agente ha salido de la habitación o está en una puerta, y en ese caso deshacen el movimiento. Además, actualizan los contadores de posición (`height` y `width`) que el robot usa para controlar el barrido sistemático.
 
-<img src="./diagramaMovement.png" width="500"/>
-
-<img src="./diagramaPatience.png" width="420"/>
+<img src="./diagramaMovement.png"/>
 
 ## Agente Robot
 
@@ -132,7 +179,7 @@ Además de la limpieza, el robot reacciona a percepciones del entorno mediante p
 
 La evasión del propietario es un comportamiento interesante que añade "cortesía" al robot. El sistema cuenta cuántas veces consecutivas el robot coincide con el dueño en la misma celda. Tras 5 coincidencias, el robot se disculpa y realiza un movimiento aleatorio para salir del camino. Este contador se reinicia cuando el robot ya no está cerca del propietario.
 
-<img src="./diagramaRobot.png" width="400"/>
+<img src="./diagramaRobot.png"/>
 
 ## Agente Owner
 
@@ -144,7 +191,7 @@ Una vez elegido el objetivo, el propietario navega hacia él utilizando el plan 
 
 El owner también puede recibir comunicación del robot. Específicamente, si el robot detecta un intruso, envía un mensaje que el propietario recibe y procesa, aunque en esta implementación solo emite una alerta.
 
-<img src="./diagramaOwner.png" width="600"/>
+<img src="./diagramaOwner.png"/>
 
 ## Características Destacadas del Diseño
 
