@@ -2,19 +2,28 @@
 
 ## Introducción
 
-Este documento analiza el comportamiento de un sistema multi-agente desarrollado en Jason (AgentSpeak) que simula un entorno doméstico. El sistema está compuesto por un robot de limpieza autónomo que debe mantener la casa limpia mientras interactúa con agentes humanos (propietarios) que se mueven libremente por el hogar.
+Este documento analiza el comportamiento de un sistema multi-agente desarrollado en Jason (AgentSpeak) que simula un entorno doméstico. El sistema está compuesto por un robot de limpieza autónomo que debe mantener la casa limpia mientras interactúa con agentes humanos (propietario e intruso) que se mueven libremente por el hogar.
 
 El problema que se aborda es el siguiente: un robot debe recorrer todas las habitaciones de una casa y limpiarlas completamente, mientras que los habitantes se desplazan de manera aparentemente aleatoria, sentándose, durmiéndose y realizando otras actividades cotidianas. El robot detecta la suciedad en las celdas que ocupa mediante la percepción `at(robot, dirty)` y debe garantizar que cada habitación quede completamente limpia al salir de ella.
 
 ## Arquitectura del Sistema
 
-El sistema se compone de tres archivos principales que definen el comportamiento de los agentes:
+El sistema se compone de siete archivos principales que definen el comportamiento de la lógica de los agentes:
 
 - [`movement.asl`](../src/agt/movement.asl) es un módulo compartido que proporciona las funcionalidades básicas de navegación. Contiene la representación del entorno (cómo están conectadas las habitaciones), algoritmos de planificación de rutas y mecanismos para evitar que los agentes se queden atascados.
 
 - [`robot.asl`](../src/agt/robot.asl) define el comportamiento del robot limpiador, incluyendo la estrategia de selección de habitaciones a limpiar, el algoritmo de barrido sistemático de cada habitación y la lógica para evitar molestar al propietario.
 
 - [`owner.asl`](../src/agt/owner.asl) simula el comportamiento humano del dueño de la casa, que elige aleatoriamente entre diversas actividades como sentarse en diferentes muebles o acostarse en las camas.
+
+- [`mapping.asl`](../src/agt/mapping.asl) es un módulo que proporciona funcionalidades para mapear la casa, obteniendo las conexiones de habitaciones contiguas.
+
+- [`sweep.asl`](../src/agt/sweep.asl) es un módulo que proporciona funcionalidades para recorrer las habitaciones al limpiarlas. Incorpora 4 tipos de barrido diferentes cambiando su dirección, para asegurar la limpieza de las habitaciones.
+
+- [`intruder.asl`](../src/agt/intruder.asl) simula el comportamiento de un extraño en la casa, que puede ser hostil o conocido, y que en base a esto, tendrá comportamientos distintos.
+
+- [`beeMovie.asl`](../src/agt/beeMovie.asl) el owner ha trabajado demasiado con Jason y a veces dice frases aleatorias de la película.
+
 Para que funcionen estos agentes con su entorno, se necesita la siguiente configuración de carpetas:
 
 ```text
@@ -26,9 +35,13 @@ domestic_robot/
 │ │   └── All the .jar dependencies
 │ └── src/
 │     ├── agt/
+│     │   ├── beeMovie.asl
+│     │   ├── intruder.asl
+│     │   ├── mapping.asl
 │     │   ├── movement.asl
 │     │   ├── owner.asl
-│     │   └── robot.asl
+│     │   ├── robot.asl
+│     │   └── sweep.asl
 │     └── main/
 │     │   └── env/
 │     │       └── domotic/
@@ -42,7 +55,7 @@ domestic_robot/
 
 ## Módulo de Movimiento y Navegación
 
-El módulo de movimiento actúa como biblioteca base para todos los agentes del sistema. La representación del entorno se basa en conexiones explícitas entre habitaciones mediante predicados del tipo `connect(habitacion1, habitacion2, puerta)`. Por ejemplo, `connect(kitchen, hall, doorKit1)` indica que la cocina y el hall están conectados a través de la puerta doorKit1.
+El módulo de movimiento actúa como biblioteca base para todos los agentes del sistema. La representación del entorno se basa en conexiones entre habitaciones mediante predicados del tipo `connect(habitacion1, habitacion2, puerta)`. Por ejemplo, `connect(kitchen, hall, doorKit1)` indica que la cocina y el hall están conectados a través de la puerta doorKit1. Estos connect que se obtienen permiten a los diferentes agentes realizar las rutas a correspondientes habitaciones que precisen ir según la necesidad.
 
 ### Planificación de Rutas
 
