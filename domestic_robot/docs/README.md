@@ -181,46 +181,239 @@ La evasión del propietario es un comportamiento interesante que añade "cortes�
 
 <img src="./diagramaRobot.png"/>
 
+<img src="./diagramaCleaningLoop.png"/>
+
+### Sistema de Batería y Gestión del Cargador
+
+Además de los comportamientos de limpieza y evasión, el robot incorpora un sistema de batería que gestiona su autonomía energética. La batería se inicia con 400 unidades y se decrementa en 1 unidad por cada movimiento realizado, lo que obliga al robot a monitorizar su estado y planificar el regreso al cargador cuando sea necesario.
+
+### Detección de Batería Baja y Decisión de Regreso
+
+Para determinar cuándo debe volver al cargador, el robot utiliza una heurística que asigna a cada habitación un valor de [umbral de batería](./size.csv). Este valor representa el consumo estimado de batería necesario para llegar al cargador desde esa habitación en el peor caso y se calcula como: `+chargerDistance(Y*(L+1)).`, donde `Y` es el tamaño del grid y `L` es la longitud del camino que ha tomado.
+
+Cuando el robot detecta que su batería restante es igual o inferior al umbral correspondiente a la habitación en la que se encuentra, entonces interrumpe el proceso de barrido y se activa un plan de regreso al cargador. Este enfoque garantiza que el robot nunca se quede sin energía antes de alcanzar el punto de recarga.
+
+#### Limitaciones del Enfoque
+
+La estrategia no es óptima, ya que el robot sólo conoce la habitación actual (no la celda exacta dentro de ella). Por ello, el umbral utilizado es conservador, calculado para cubrir la máxima distancia posible dentro de la habitación hasta el cargador. Aunque esto puede llevar a un regreso anticipado en algunos casos, asegura la fiabilidad del sistema. En la práctica, el consumo real de batería durante el regreso es significativamente menor que el umbral en la mayoría de las situaciones.
+
+[Este](./perfect.csv) sería el mapa del coste óptimo de batería que tendrá el robot dependiendo de el recuadro donde se encuentre.
+
+Este es el costo que le atribuímos a cada una de las casillas del entorno, le damos el mismo coste a todas las casillas de cada habitación. Hemos calculado la pérdida de eficiencia y sería solamente un `6%` con respecto a la ruta ideal.
+
+#### Eficiencia Energética
+
+Según los datos del mapeo, el robot gasta en promedio solo un `6,23%` de su batería total (aproximadamente 25 unidades) en el trayecto de regreso al cargador. Esto demuestra que, a pesar de la aproximación no óptima, el sistema es eficiente y minimiza el tiempo de inactividad por recarga. El resto de la batería se dedica a tareas de limpieza y navegación, optimizando la productividad del robot.
+
+#### Integración con el Comportamiento Existente
+
+El monitoreo de la batería se ejecuta en paralelo a los bucles de limpieza y evasión, añadiendo una capa adicional de autonomía. Cuando se activa el plan de regreso al cargador, el robot interrumpe temporalmente la limpieza y navega hacia la estación de carga. Una vez recargado, reinicia sus actividades normales desde el punto más cercano a la última habitación limpiada.
+
+### Detección Intruso
+
+Otra de las funcionalidades que implementa el robot es alertar al owner en el caso de si se encuentra a un intruso en la casa. Si el robot se encuentra al lado de un agente distinto al owner (posible intruso), alertará al propietario de su presencia y la habitación donde se encuentra mediante la sentencia:
+
+`.send(owner, tell, unknownAgentDetected(intruder, Room)).`
+
+## Agente Intruder
+
+El agente Intruder (intruso/invitado) simula la presencia de un tercer individuo en el entorno doméstico, cuya naturaleza, amistosa o hostil, se determina de forma aleatoria al inicio de su ejecución. Este agente está diseñado para añadir una capa de dinamismo e imprevisibilidad al sistema, aunque en la implementación actual presenta limitaciones significativas que restringen su funcionalidad.
+
+### Determinación del Rol: Invitado (Friendly) vs. Intruso (Hostile)
+
+Al iniciar la ejecución del agente, se establece de forma automática su rol dentro del sistema. Esta decisión se toma durante la ejecución del objetivo `!init`, el cual incluye la siguiente lógica:
+
+Se genera un valor aleatorio X entre 0 y 1 utilizando la acción `.random(X)`. Este valor se utiliza como criterio para asignar el rol del agente:
+
+- Si X < 0.5, el agente se considera un invitado (`friendly`). En este caso, se añade la creencia `friendly`.
+- Si X >= 0.5, el agente se clasifica como un intruso (`hostile`). En este caso, se añade la creencia `hostile`.
+
+### Comportamiento Previsto según el Rol
+
+El diseño conceptual del agente contempla dos patrones de comportamiento distintos basados en el rol asignado:
+
+#### Comportamiento como Invitado (Friendly)
+
+El intruso, cuando es amistoso, su ciclo principal estaría diseñado para:
+
+1. Recibir un saludo por parte del owner, el cual selecciona una habitación que disponga de un objeto en el que pueda descansar y se lo comunica al intruso.
+
+2. Navegar hasta esa habitación utilizando el módulo compartido de movimiento.
+
+3. Una vez en la habitación, interactuar con objetos disponibles (sentarse en sillas, sofás, etc.).
+
+4. Permanecer en ese estado durante un tiempo aleatorio antes de seleccionar una nueva actividad.
+
+Este comportamiento simula a un invitado que realiza visitas tranquilas sin interferir con las actividades domésticas.
+
+#### Comportamiento como Intruso (Hostile)
+
+Como intruso, el agente debería mostrar un comportamiento que afecte al normal funcionamiento del hogar. Entre los comportamientos previstos podrían incluirse:
+
+1. Movimiento errático por la casa, accediendo a habitaciones de forma impredecible.
+
+2. Activación de mecanismos de alarma que requieran la intervención del propietario.
+
+### Limitación Técnica Actual: Problema de Localización
+
+En la implementación actual se ha predefinido que el intruso se dirija directamente al owner tanto para el caso que sea hostil como que no. Esto se ha hecho para facilitar la interacción, aunque sea forzada, para que se pueda activar alguno de los escenarios anteriormente descritos.
+
+El problema radica en el mecanismo de generación del agente:
+
+- El intruder aparece aleatoriamente en una habitación al inicio de la simulación.
+
+- No existe un mecanismo para que el agente detecte automáticamente en qué habitación se encuentra.
+
+- Sin la creencia `atRoom(Room)`, el módulo de movimiento compartido puede no funcionar, ya que todos los algoritmos de navegación dependen de conocer la ubicación actual.
+
+Consecuencia:
+
+Los planes de navegación requieren la creencia `atRoom(Room)` para calcular rutas. Los comportamientos reactivos que podrían activarse por percepciones del entorno no se disparan porque el agente no puede interpretar correctamente su posición relativa.
+
+En su lugar, se ha introducido forzosamente las creencias `atRoom(Room)` de todas las habitaciones para que las posea el intruso, así como las conexiones entre todas las habitaciones, y que el intruso se dirija directamente al owner, pese a que en la mayoría de los casos queda bloqueado debido a la presencia de la pared o de algún objeto. Esto no se puede solucionar sin saber en qué habitación se encuentra el intruso para poder hacer que se dirija a las puertas.
+
+### Estructura del Código y Funcionalidad No Operativa
+
+El código del agente Intruder sigue la misma estructura modular que el resto del sistema, incluyendo el módulo de movimiento ([movement.asl](../src/agt/movement.asl)). Contiene:
+
+- Plan de inicialización (`!init`): Establece el rol aleatorio y muestra mensajes informativos.
+
+- Ciclo principal (`!main`):
+
+Para modo friendly: Intenta ejecutar `!goingToSit(Room)`
+
+Para modo hostile: En versiones de prueba incluye `move_towards(owner)`, y sí que se desplazaba hacia el owner y este interactuaba con el de la manera que se pedía.
+
+### Solución Técnica Requerida
+
+Para que el agente Intruder funcione como se concibió originalmente, se necesitarían las siguientes modificaciones:
+
+1. Mecanismo de autodetección de ubicación: Añadir en `!init` una llamada al entorno para obtener la habitación inicial, similar a lo que hacen otros agentes durante el mapeo.
+
+2. Sistema de actualización de ubicación: Implementar planes reactivos para `+atRoom(Room)` que mantengan actualizada la creencia de posición cuando el agente cruce puertas.
+
+3. Comportamientos específicos implementados: Desarrollar los planes concretos para los modos friendly y hostile, más allá del esqueleto actual.
+
 ## Agente Owner
 
-El propietario tiene un comportamiento mucho más simple pero igualmente interesante. Su ciclo principal consiste en elegir una actividad, ejecutarla y eventualmente cambiar a otra actividad.
+El agente Owner representa al propietario de la vivienda y su comportamiento está pensado para simular acciones humanas sencillas dentro del entorno. El agente alterna entre actividades cotidianas y reacciones ante eventos que considera importantes, como la aparición de un intruso o problemas con la batería del robot.
 
-El proceso comienza con la selección aleatoria entre dos tipos de objetivos: sentarse (50% de probabilidad) o dormir (50% de probabilidad). Una vez elegido el tipo, el agente selecciona aleatoriamente un objeto específico de las listas predefinidas. Por ejemplo, para sentarse puede elegir entre el sofá o varias sillas, mientras que para dormir elige entre las camas disponibles.
-
-Una vez elegido el objetivo, el propietario navega hacia él utilizando el plan `moveTowardsAdvanced` del módulo de movimiento. Al llegar, ejecuta la acción correspondiente (sentarse o acostarse) durante un tiempo aleatorio: entre 1 y 2 segundos para sentarse, o entre 2 y 7 segundos para dormir. Tras este periodo, hay un 10% de probabilidad de que decida cambiar de actividad, reiniciando el ciclo.
-
-El owner también puede recibir comunicación del robot. Específicamente, si el robot detecta un intruso, envía un mensaje que el propietario recibe y procesa, aunque en esta implementación solo emite una alerta.
+El funcionamiento del agente se basa en un bucle principal que se ejecuta de forma continua y evalúa distintas condiciones para decidir qué acción realizar en cada momento.
 
 <img src="./diagramaOwner.png"/>
 
-## Características Destacadas del Diseño
+### Comportamiento general del Owner
 
-El sistema presenta varias características que merecen destacarse. En términos de robustez, los mecanismos de paciencia y detección de atascos garantizan que los agentes nunca se bloqueen indefinidamente. La validación de movimientos durante el barrido asegura que el robot no abandone prematuramente una habitación.
+El comportamiento del owner sigue un orden de prioridad claro:
 
-Respecto a la eficiencia, la planificación de rutas encuentra siempre el camino más corto entre habitaciones, y el algoritmo de barrido garantiza una cobertura completa. La priorización inteligente de habitaciones evita trabajo innecesario en el pasillo.
+1. Si no ocurre nada relevante, realiza actividades cotidianas.
 
-La coordinación entre agentes es emergente más que explícita. El robot evita proactivamente al propietario tras múltiples encuentros, pero no hay negociación ni planificación conjunta. La comunicación se limita a alertas asíncronas mediante mensajes. Cada agente persigue sus objetivos de manera independiente, y el sistema funciona por la suma de estos comportamientos individuales.
+2. Si el robot necesita ser recargado, intenta ayudarle.
 
-## Mejoras al entorno
+3. Si se detecta un agente desconocido, se va a comprobar quién es.
 
-Nos gustaría proponer algunas mejoras al entorno:
+4. Si encuentra a un intruso hostil, el owner huye.
 
-### Charger
+5. Si encuentra a un intruso amigable, lo saluda y lo manda a sentarse.
 
-Ahora mismo el `move_towards` no funciona con el cargador aunque el robot se encuentre en la misma habitación.
+### Actividades Cotidianas
 
-### Detectar obstáculos
+Cuando no hay eventos críticos, el owner elige de forma aleatoria qué hacer. Las dos actividades principales son:
 
-Ahora mismo el robot limpia muy lentamente porque no sabe cuando no puede continuar. Esto se podría solucionar de varias formas, por ejemplo:
+- Sentarse, eligiendo entre el sofá o distintas sillas (49.5% de probabilidad).
+- Dormir, eligiendo una de las camas disponibles (49% de probabilidad).
+- Decir una frase del guión de la película [`Bee Movie`](../src/agt/beeMovie.asl) (0.5% de probabilidad)
 
-- Añadir una percepción cuando se choque con un obstáculo.
-- Añadir unas percepciones que dicen si hay obstáculos en las celdas adyacentes (arriba, abajo, izquierda, derecha).
-- Añadir unas percepciones que dicen la distancia al obstáculo más cercano en cada dirección.
+Una vez seleccionado el objetivo, el agente se desplaza, y al llegar al objetivo, se ejecuta la acción correspondiente durante un tiempo aleatorio:
+
+- Entre 1 y 2 segundos en el caso de sentarse.
+
+- Entre 2 y 7 segundos en el caso de dormir.
+
+Después de completar la acción, existe una probabilidad del 10% de que el owner decida dejar lo que estaba haciendo y elegir una nueva actividad. Esto evita que el agente se quede “bloqueado” en una misma acción durante toda la simulación.
+
+### Detección de Agentes Desconocidos
+
+Cuando el owner detecta un agente desconocido en su misma posición, registra esta información junto con la habitación en la que ocurre. A partir de ese momento, su objetivo principal pasa a ser acercarse a dicho agente para comprobar de quién se trata.
+
+Este comportamiento simula una reacción básica de curiosidad o vigilancia ante la presencia de alguien que no pertenece al entorno habitual.
+
+### Interacción con el Agente Desconocido
+
+Al llegar a la habitación donde se encuentra el agente, el owner intenta comunicarse con él para determinar si es amistoso o no. Para ello, envía un mensaje solicitando una respuesta mediante `.send(Agent, askOne, friendly, Response)`.
+
+- Si el agente resulta ser amistoso, el owner hará lo siguiente:
+
+  - Cancelar cualquier alerta activa.
+
+  - Elige aleatoriamente un mueble donde el invitado pueda sentarse.
+
+  - Obtiene la habitación asociada a dicho mueble.
+
+  - Comunica al agente qué habitación puede utilizar.
+
+- Si el agente resulta ser hostil, lo que hará es:
+
+  - Se activa una alerta.
+
+  - El owner empieza a huir a otra habitación.
+  
+  - El owner mueve muebles en su huida.
+
+### Comportamiento de Huida ante Intrusos
+
+Cuando se detecta un intruso, el owner interrumpe cualquier otra acción y ejecuta un plan para ponerse a salvo. Para ello:
+
+1. Obtiene la lista de habitaciones del entorno.
+
+2. Calcula la distancia a cada una mediante planificación de caminos.
+
+3. Selecciona la habitación más alejada de su posición actual.
+
+4. Se desplaza hacia ella como zona segura.
+
+Una vez alcanza la habitación elegida, se elimina el estado de intrusión y el owner puede volver a su comportamiento normal.
+
+### Interacción con el Entorno durante la Huida
+
+El sistema incorpora un mecanismo para mover muebles que se activa cuando se detecta la presencia de un intruso en el entorno.
+
+El movimiento de los muebles se gestiona mediante el plan que se activa cuando el agente se encuentra en la misma posición que un objeto (`at(Me, F)`) y existe la creencia `intruderDetected(_)`, lo que indica que un intruso ha sido detectado en alguna habitación. Es decir, el owner desplaza cualquier objeto al encontrarse con él mientras huye del intruso.
+
+Una vez cumplidas estas condiciones, el agente genera un valor aleatorio mediante la acción `.random(R)`, que se utiliza para decidir la dirección en la que se moverá el mueble. Este valor se divide en cuatro rangos, cada uno con una probabilidad del 25%:
+
+- Si R < 0.25, el mueble se desplaza hacia arriba (`moveObjectUp(F)`).
+
+- Si 0.25 ≤ R < 0.5, el mueble se desplaza hacia abajo (`moveObjectDown(F)`).
+
+- Si 0.5 ≤ R < 0.75, el mueble se desplaza hacia la izquierda (`moveObjectLeft(F)`).
+
+- Si R ≥ 0.75, el mueble se desplaza hacia la derecha (`moveObjectRight(F)`).
+
+### Gestión de la Batería del Robot
+
+El owner también recibe mensajes del robot relacionados con su batería. Cuando el robot notifica que su batería se ha agotado, el owner activa un comportamiento de asistencia:
+
+- Se desplaza hacia la posición del robot.
+
+- Intenta recogerlo.
+
+- Se dirige hacia el cargador.
+
+Este comportamiento no siempre se completa correctamente debido a las limitaciones del modelo, pero refleja la intención de cooperación entre ambos agentes.
+
+Cuando el robot informa de que la batería ha sido recargada, el owner elimina el estado de ayuda y continúa con sus actividades normales.
+
+## Retos y problemas encontrados
+
+El intruso no tiene conocimiento por parte del entorno sobre en qué habitación se encuentra. Eso limita su capacidad de moverse puesto que no sabe cuál es su puerta más cercana y el `move_towards` hace que se dirija en línea recta al objetivo y el intruso choca con la pared.
+
+Al desaparecer el intruso, se produce un error de java de `null pointer exception` del objeto `r1`.
+
+Como la desaparición del intruso no consiste en eliminar el hilo y volver a crearlo, si no que simplemente transporta el intruso a las coordenadas (-1,-1), no se puede simplemente hacer que la naturaleza del intruso cambia al reaparecer entre conocido o desconocido porque el init solo se ejecuta una vez al crear el thread. En su lugar, hay que meter un contador de tiempo que alterna entre uno y otro.
 
 ## Conclusiones
 
 El sistema demuestra cómo la arquitectura BDI (Beliefs-Desires-Intentions) de Jason permite implementar comportamientos complejos de manera declarativa. El diseño modular, con el módulo de movimiento compartido, facilita la reutilización de código y simplifica el mantenimiento.
 
 El robot implementa un comportamiento determinista y complejo para cumplir su objetivo de limpieza exhaustiva, mientras que el propietario exhibe un comportamiento estocástico que añade imprevisibilidad al entorno. Esta combinación crea un sistema dinámico donde el robot debe adaptarse constantemente a las condiciones cambiantes.
-
-La robustez del sistema ante situaciones imprevistas (atascos, colisiones) demuestra que los mecanismos de recuperación implementados son efectivos. El sistema puede funcionar indefinidamente sin intervención externa, cumpliendo con el objetivo de mantener la casa limpia mientras respeta el espacio del propietario.
